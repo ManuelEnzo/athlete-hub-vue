@@ -2,10 +2,6 @@
 import NumberFlow from '@number-flow/vue'
 import { TrendingDown, TrendingUp, AlertTriangle, UserCheck } from 'lucide-vue-next'
 
-// Definizione di un componente fittizio per la selezione dell'Atleta
-// In un'applicazione reale, questo permetterebbe di filtrare o navigare verso l'atleta specifico.
-const AthleteSelector = { template: '<select><option>Tutti gli Atleti</option><option>Marco Rossi</option><option>Laura Bianchi</option></select>' }
-
 // 1. Dati per le Metriche Principali (Riflettendo la terminologia del Preparatore)
 const dataCard = ref({
   totalLoad: 6250, // Carico Totale Settimanale (es. basato su sRPE x Minuti)
@@ -72,9 +68,9 @@ const upcomingSessions = [
 <template>
   <div class="w-full flex flex-col gap-8">
     <div class="flex flex-wrap items-center justify-between gap-2">
-      <h2 class="text-2xl font-bold tracking-tight">🏋️ Athlete Hub Dashboard</h2>
+      <h2 class="text-2xl font-bold tracking-tight">Athlete Hub Dashboard</h2>
       <div class="flex items-center space-x-2">
-        <AthleteSelector /> <BaseDateRangePicker />
+        <BaseDateRangePicker />
         <Button>Export Dati</Button>
       </div>
     </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ConfigProvider } from 'reka-ui'
-import { Toaster } from '@/components/ui/sonner'
 import 'vue-sonner/style.css'
+import { Toaster } from 'vue-sonner'
 
 const colorMode = useColorMode()
 const color = computed(() => colorMode.value === 'dark' ? '#09090b' : '#ffffff')
@@ -62,7 +62,7 @@ const dir = computed(() => textDirection.value === 'rtl' ? 'rtl' : 'ltr')
         <AppSettings />
       </div>
 
-      <Toaster :theme="colorMode.preference as any || 'system'" />
+     <Toaster position="top-right" richColors closeButton  />
     </ConfigProvider>
   </Body>
 </template>

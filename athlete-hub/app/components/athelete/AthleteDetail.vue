@@ -179,11 +179,6 @@ const performanceComparison = computed(() => {
 <template>
   <div class="w-full flex flex-col gap-8">
     
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <h2 class="text-3xl font-bold tracking-tight">👤 Dettaglio Atleta: {{ athleteData.name }}</h2>
-      <Button variant="outline">Torna alla Dashboard</Button>
-    </div>
-
     <div class="grid grid-cols-1 gap-6 @xl:grid-cols-3">
         
       <Card class="col-span-1">

@@ -9,20 +9,25 @@ export const navMenu: NavMenu[] = [
         icon: 'i-lucide-home',
         link: '/',
       },
-       {
+      {
         title: 'Agenda',
-        icon: 'i-lucide-calendar-range',
+        icon: 'i-lucide-calendar-range', // calendario
         link: '/agenda',
       },
       {
         title: 'Athlete Details',
-        icon: 'i-lucide-biceps-flexed',
+        icon: 'i-lucide-biceps-flexed', // dettagli prestazioni / forza
         link: '/athletedetails',
       },
       {
-        title: 'Data Entry',
-        icon: 'i-lucide-calendar-range',
-        link: '/dataentry',
+        title: 'Athlete Health',
+        icon: 'i-lucide-heart-pulse', // salute / cardio
+        link: '/athletehealth',
+      },
+      {
+        title: 'Athlete Management',
+        icon: 'i-lucide-users', // gestione atleti
+        link: '/athletemanagement',
       },
       {
         title: 'Email',

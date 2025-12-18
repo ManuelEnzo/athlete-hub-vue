@@ -3,8 +3,8 @@
   "type": "module",
   "version": "1.0.2",
   "packageManager": "pnpm@10.10.0",
-  "description": "Shadcn Dashboard built with Nuxt",
-  "author": "Dian Pratama <dianpratama2@gmail.com>",
+  "description": "Athlete-Hub",
+  "author": "Manuel Enzo (manuelenzo2000@gmail.com)",
   "license": "MIT",
   "homepage": "https://dashboard.dianprata.com/",
   "repository": {
@@ -58,6 +58,7 @@
     "@tanstack/vue-table": "^8.21.3",
     "@unovis/ts": "^1.6.1",
     "@unovis/vue": "^1.6.1",
+    "axios": "^1.13.2",
     "embla-carousel": "^8.6.0",
     "embla-carousel-vue": "^8.6.0",
     "nanoid": "^5.1.6",

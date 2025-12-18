@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useSidebar } from '~/components/ui/sidebar'
+import { useAuthStore } from '~/stores/auth' // Usa ~/ per sicurezza
 
 defineProps<{
   user: {
@@ -8,11 +9,13 @@ defineProps<{
     avatar: string
   }
 }>()
-
+const authStore = useAuthStore()
 const { isMobile, setOpenMobile } = useSidebar()
 
-function handleLogout() {
-  navigateTo('/login')
+async function handleLogout() {
+  console.log("COMPONENTE: Click logout");
+  console.log("COMPONENTE: authStore ha logout?", !!authStore.logout);
+  await authStore.logout()
 }
 
 const showModalTheme = ref(false)
