@@ -30,6 +30,11 @@ export const navMenu: NavMenu[] = [
         link: '/athletemanagement',
       },
       {
+        title: 'Athlete Measurements',
+        icon: 'i-lucide-users', // gestione atleti
+        link: '/athletemeasurements',
+      },
+      {
         title: 'Email',
         icon: 'i-lucide-mail',
         link: '/email',

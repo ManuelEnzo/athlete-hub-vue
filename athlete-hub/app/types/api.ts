@@ -68,3 +68,56 @@ export interface AthleteCreateRequest {
 
 // Per l'update possiamo riutilizzare il create o renderlo parziale
 export type AthleteUpdateRequest = Partial<AthleteCreateRequest>;
+
+// -------------------- REQUEST --------------------
+
+// Per creare una nuova misurazione
+export interface AthleteMeasurementsCreateRequest {
+  athleteId: number;
+  weight: number;
+  height: number;
+  chest: number;
+  waist: number;
+  hip: number;
+  thigh: number;
+  arm: number;
+  calf?: number | null;
+  forearm?: number | null;
+  neck?: number | null;
+  notes?: string | null;
+}
+
+// Per aggiornare una misurazione esistente
+export interface AthleteMeasurementsUpdateRequest {
+  weight: number;
+  height: number;
+  chest: number;
+  waist: number;
+  hip: number;
+  thigh: number;
+  arm: number;
+  calf?: number | null;
+  forearm?: number | null;
+  neck?: number | null;
+  notes?: string | null;
+}
+
+// -------------------- RESPONSE --------------------
+export interface AthleteMeasurementsResponse {
+  id: number;
+  athleteId: number;
+  athleteName: string; // es. "Marco Rossi"
+  weight: number;
+  height: number;
+  chest: number;
+  waist: number;
+  hip: number;
+  thigh: number;
+  arm: number;
+  calf?: number | null;
+  forearm?: number | null;
+  neck?: number | null;
+  notes?: string | null;
+  createdAt: string; // ISO string dal backend
+  updatedAt?: string | null; // ISO string dal backend
+}
