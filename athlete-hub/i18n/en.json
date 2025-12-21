@@ -1,0 +1,201 @@
+{
+    "dashboard": {
+        "title": "Athlete Hub Dashboard",
+        "export": "Export Data"
+    },
+    "metrics": {
+        "totalLoad": "Weekly Total Load",
+        "avgRPE": "Average RPE (Perceived Exertion)",
+        "monitoredAthletes": "Monitored Athletes",
+        "unavailabilityRate": "Unavailability Rate"
+    },
+    "charts": {
+        "weeklyLoad": "📈 Weekly Load & ACWR Trend",
+        "physiological": "❤️ Physiological Monitoring (HR & RPE)",
+        "athleteDistribution": "🧑‍🤝‍🧑 Athlete Distribution by Discipline",
+        "readiness": "✅ Readiness Status"
+    },
+    "alerts": {
+        "highLoadTitle": "High Load Alerts (ACWR > 1.3)",
+        "highLoadDescription": "Athletes at risk of injury or over-fatigue.",
+        "noAlerts": "No ACWR alerts. Load well managed.",
+        "acwr": "ACWR",
+        "week": "Week",
+        "highRisk": "⚠️ Some athletes are at high risk! Check load and recovery.",
+        "noRisk": "✅ No athletes at high risk."
+    },
+    "sessions": {
+        "title": "Scheduled Sessions",
+        "description": "Upcoming sessions with focus and target intensity.",
+        "focus": "Focus",
+        "targetRPE": "Target RPE"
+    },
+    "measurements": {
+        "filterAthlete": "Select athlete to filter",
+        "newMeasurement": "New Measurement",
+        "editMeasurement": "Edit Measurement",
+        "form": {
+            "athlete": "Athlete",
+            "selectAthlete": "Select athlete",
+            "weight": "Weight (kg)",
+            "height": "Height (cm)",
+            "chest": "Chest",
+            "waist": "Waist",
+            "hip": "Hip",
+            "thigh": "Thigh",
+            "arm": "Arm",
+            "calf": "Calf",
+            "forearm": "Forearm",
+            "neck": "Neck",
+            "notes": "Notes",
+            "notesPlaceholder": "Optional notes",
+            "cancel": "Cancel",
+            "create": "Create",
+            "update": "Update"
+        },
+        "validation": {
+            "selectAthlete": "Select an athlete",
+            "weightLow": "Weight too low",
+            "heightLow": "Height too low",
+            "chestLow": "Chest too small",
+            "waistLow": "Waist too small",
+            "hipLow": "Hip too small"
+        },
+        "toast": {
+            "loadAthletesError": "Error loading athletes",
+            "loadMeasurementsError": "Error loading measurements",
+            "communicationError": "Communication error",
+            "created": "Measurement created",
+            "updated": "Measurement updated",
+            "deleted": "Measurement deleted",
+            "saveError": "Error saving measurement",
+            "deleteError": "Error deleting measurement"
+        },
+        "card": {
+            "weight": "Weight",
+            "height": "Height"
+        },
+        "dialog": {
+            "deleteTitle": "Confirm deletion",
+            "deleteText": "Delete?"
+        },
+        "actions": {
+            "edit": "Edit Measurement",
+            "delete": "Delete Measurement",
+            "create": "Create",
+            "update": "Update",
+            "cancel": "Cancel"
+        }
+    },
+    "fields": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "discipline": "Discipline",
+        "birthDate": "Birth Date",
+        "weight": "Weight",
+        "height": "Height",
+        "age": "Age",
+        "athlete": "Athlete",
+        "status": "Status",
+        "readiness": "Readiness"
+    },
+    "athlete": {
+        "new": "New Athlete",
+        "edit": "Edit Athlete",
+        "deleteConfirm": "Confirm Deletion",
+        "deleteQuestion": "Delete?",
+        "success": {
+            "created": "Athlete created successfully",
+            "updated": "Athlete updated successfully",
+            "deleted": "Athlete deleted"
+        },
+        "errors": {
+            "load": "Error loading athletes",
+            "required": "Please fill all required fields"
+        },
+        "unknown": "Unknown Athlete"
+    },
+    "errors": {
+        "server": "Server communication error",
+        "save": "Error saving data",
+        "delete": "Error deleting data",
+        "generic": "Unexpected error"
+    },
+    "risk": {
+        "optimal": "✅ Optimal",
+        "moderate": "⚡ Moderate",
+        "high": "⚠️ High Risk",
+        "low": "Low Risk",
+        "medium": "Medium Risk"
+    },
+    "team": {
+        "individualStatus": "Individual Athlete Status",
+        "sortByAcwr": "Sort by ACWR",
+        "averages": "Team Averages",
+        "riskDistribution": "Risk Distribution",
+        "alerts": "Team Alerts",
+        "lastUpdate": "Last Update",
+        "updatedAt": "Updated at {time} on {date}"
+    },
+    "stats": {
+        "avgAcwr": "Average ACWR",
+        "readiness": "Readiness",
+        "hooper": "Hooper Fatigue",
+        "sleep": "Average Sleep",
+        "stress": "Average Stress"
+    },
+    "readiness": {
+        "title": "Readiness Status",
+        "score": "Recovery Score"
+    },
+    "acwr": {
+        "current": "Current ACWR (Week: {week})"
+    },
+    "anthropometrics": {
+        "title": "Anthropometric Data",
+        "weight": "Weight: {value} kg",
+        "height": "Height: {value} m",
+        "bmi": "BMI: {value}"
+    },
+    "injuries": {
+        "none": "🎉 No injuries recorded"
+    },
+    "tests": {
+        "cmj": "CMJ (cm)",
+        "squat1rm": "Squat 1RM (kg)",
+        "sprint30m": "Sprint 30m (s)"
+    },
+    "calendar": {
+        "days": [
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thu",
+            "Fri",
+            "Sat",
+            "Sun"
+        ],
+        "addEvent": "Add Event",
+        "noEvents": "No events scheduled.",
+        "addNow": "Add now!",
+        "eventDetails": "Details for {date}",
+        "scheduledEvents": "{count} scheduled events",
+        "newEventTitle": "Add New Session/Appointment",
+        "planEventFor": "Plan an event for {date}.",
+        "title": "Title",
+        "athlete": "Athlete/Group",
+        "date": "Date",
+        "time": "Time",
+        "type": "Event Type",
+        "cancel": "Cancel",
+        "createEvent": "Create Event"
+    },
+    "eventTypes": {
+        "Forza": "Strength",
+        "Resistenza": "Endurance",
+        "Test": "Test",
+        "Recupero": "Recovery",
+        "Visita": "Visit"
+    }
+}

@@ -24,6 +24,7 @@ const processQueue = (error: any, token: string | null = null) => {
 
 const PUBLIC_ROUTES = ['/Auth/sign-in', '/Auth/sign-up', '/Auth/refresh']
 
+
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   // Se stiamo già uscendo, annulliamo ogni nuova richiesta in partenza
   if (isLoggingOut && !config.url?.includes('/Auth/logout')) {

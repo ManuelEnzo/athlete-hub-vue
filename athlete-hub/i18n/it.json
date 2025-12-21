@@ -1,0 +1,201 @@
+{
+    "dashboard": {
+        "title": "Athlete Hub Dashboard",
+        "export": "Esporta Dati"
+    },
+    "metrics": {
+        "totalLoad": "Carico Totale Settimanale",
+        "avgRPE": "RPE Medio (Percezione Sforzo)",
+        "monitoredAthletes": "Atleti Monitorati",
+        "unavailabilityRate": "Tasso di Indisponibilità"
+    },
+    "charts": {
+        "weeklyLoad": "📈 Andamento Carico Settimanale & ACWR",
+        "physiological": "❤️ Monitoraggio Fisiologico (HR & RPE)",
+        "athleteDistribution": "🧑‍🤝‍🧑 Distribuzione Atleti per Disciplina",
+        "readiness": "✅ Stato di Prontezza (Readiness)"
+    },
+    "alerts": {
+        "highLoadTitle": "Allerte Carico Alto (ACWR > 1.3)",
+        "highLoadDescription": "Atleti a rischio infortunio o affaticamento eccessivo.",
+        "noAlerts": "Nessuna allerta ACWR. Carico ben gestito.",
+        "acwr": "ACWR",
+        "week": "Settimana",
+        "highRisk": "⚠️ Alcuni atleti sono in alto rischio! Controlla carichi e recupero.",
+        "noRisk": "✅ Nessun atleta in alto rischio."
+    },
+    "sessions": {
+        "title": "Sessioni in Programma",
+        "description": "Prossimi impegni con focus e intensità target.",
+        "focus": "Focus",
+        "targetRPE": "RPE Target"
+    },
+    "measurements": {
+        "filterAthlete": "Seleziona atleta per filtrare",
+        "newMeasurement": "Nuova Misurazione",
+        "editMeasurement": "Modifica Misurazione",
+        "form": {
+            "athlete": "Atleta",
+            "selectAthlete": "Seleziona atleta",
+            "weight": "Peso (kg)",
+            "height": "Altezza (cm)",
+            "chest": "Torace",
+            "waist": "Vita",
+            "hip": "Fianchi",
+            "thigh": "Coscia",
+            "arm": "Braccio",
+            "calf": "Polpaccio",
+            "forearm": "Avambraccio",
+            "neck": "Collo",
+            "notes": "Note",
+            "notesPlaceholder": "Eventuali note",
+            "cancel": "Annulla",
+            "create": "Crea",
+            "update": "Aggiorna"
+        },
+        "validation": {
+            "selectAthlete": "Seleziona un atleta",
+            "weightLow": "Peso troppo basso",
+            "heightLow": "Altezza troppo bassa",
+            "chestLow": "Torace troppo piccolo",
+            "waistLow": "Vita troppo piccola",
+            "hipLow": "Fianchi troppo piccoli"
+        },
+        "toast": {
+            "loadAthletesError": "Errore caricamento atleti",
+            "loadMeasurementsError": "Errore caricamento misurazioni",
+            "communicationError": "Errore di comunicazione",
+            "created": "Misurazione creata",
+            "updated": "Misurazione aggiornata",
+            "deleted": "Misurazione eliminata",
+            "saveError": "Errore durante il salvataggio",
+            "deleteError": "Errore durante eliminazione"
+        },
+        "card": {
+            "weight": "Peso",
+            "height": "Altezza"
+        },
+        "dialog": {
+            "deleteTitle": "Conferma eliminazione",
+            "deleteText": "Eliminare?"
+        },
+        "actions": {
+            "edit": "Modifica misurazione",
+            "delete": "Elimina misurazione",
+            "create": "Crea",
+            "update": "Aggiorna",
+            "cancel": "Annulla"
+        }
+    },
+    "fields": {
+        "firstName": "Nome",
+        "lastName": "Cognome",
+        "email": "Email",
+        "discipline": "Disciplina",
+        "birthDate": "Data di nascita",
+        "weight": "Peso",
+        "height": "Altezza",
+        "age": "Età",
+        "athlete": "Atleta",
+        "status": "Stato",
+        "readiness": "Readiness"
+    },
+    "athlete": {
+        "new": "Nuovo Atleta",
+        "edit": "Modifica Atleta",
+        "deleteConfirm": "Conferma eliminazione",
+        "deleteQuestion": "Eliminare?",
+        "success": {
+            "created": "Atleta creato con successo",
+            "updated": "Atleta aggiornato con successo",
+            "deleted": "Atleta eliminato"
+        },
+        "errors": {
+            "load": "Errore nel caricamento atleti",
+            "required": "Compila tutti i campi obbligatori"
+        },
+        "unknown": "Atleta sconosciuto"
+    },
+    "errors": {
+        "server": "Errore di comunicazione con il server",
+        "save": "Errore durante il salvataggio",
+        "delete": "Errore durante eliminazione",
+        "generic": "Errore imprevisto"
+    },
+    "risk": {
+        "optimal": "✅ Ottimale",
+        "moderate": "⚡ Moderato",
+        "high": "⚠️ Alto Rischio",
+        "low": "Basso Rischio",
+        "medium": "Rischio Medio"
+    },
+    "team": {
+        "individualStatus": "Stato Individuale Atleti",
+        "sortByAcwr": "Ordina per ACWR",
+        "averages": "Medie Squadra",
+        "riskDistribution": "Distribuzione Rischio",
+        "alerts": "Alert Squadra",
+        "lastUpdate": "Ultimo Aggiornamento",
+        "updatedAt": "Aggiornato alle {time} del {date}"
+    },
+    "stats": {
+        "avgAcwr": "ACWR Medio",
+        "readiness": "Readiness",
+        "hooper": "Fatica Hooper",
+        "sleep": "Sonno Medio",
+        "stress": "Stress Medio"
+    },
+    "readiness": {
+        "title": "Stato di Prontezza",
+        "score": "Punteggio di Recupero"
+    },
+    "acwr": {
+        "current": "ACWR corrente (Settimana: {week})"
+    },
+    "anthropometrics": {
+        "title": "Dati Antropometrici",
+        "weight": "Peso: {value} kg",
+        "height": "Altezza: {value} m",
+        "bmi": "BMI: {value}"
+    },
+    "injuries": {
+        "none": "🎉 Nessun infortunio registrato"
+    },
+    "tests": {
+        "cmj": "CMJ (cm)",
+        "squat1rm": "Squat 1RM (kg)",
+        "sprint30m": "Sprint 30m (s)"
+    },
+    "calendar": {
+        "days": [
+            "Lun",
+            "Mar",
+            "Mer",
+            "Gio",
+            "Ven",
+            "Sab",
+            "Dom"
+        ],
+        "addEvent": "Aggiungi Evento",
+        "noEvents": "Nessun evento pianificato.",
+        "addNow": "Aggiungi ora!",
+        "eventDetails": "Dettagli per il {date}",
+        "scheduledEvents": "{count} eventi in programma",
+        "newEventTitle": "Aggiungi Nuova Sessione/Appuntamento",
+        "planEventFor": "Pianifica un evento per il {date}.",
+        "title": "Titolo",
+        "athlete": "Atleta/Gruppo",
+        "date": "Data",
+        "time": "Orario",
+        "type": "Tipo Evento",
+        "cancel": "Annulla",
+        "createEvent": "Crea Evento"
+    },
+    "eventTypes": {
+        "Forza": "Forza",
+        "Resistenza": "Resistenza",
+        "Test": "Test",
+        "Recupero": "Recupero",
+        "Visita": "Visita"
+    }
+}
