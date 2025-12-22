@@ -121,3 +121,57 @@ export interface AthleteMeasurementsResponse {
   createdAt: string; // ISO string dal backend
   updatedAt?: string | null; // ISO string dal backend
 }
+
+// -------------------- CALENDAR DTOs --------------------
+
+/**
+ * Risposta per gli eventi del calendario (mappa CalendarEventResponseDto.cs)
+ */
+export interface CalendarEventResponse {
+  id: number;
+  athleteId: number | null;
+  athleteFullName: string; // "Nome Cognome" o "Gruppo"
+  title: string;
+  date: string; // Formato ISO 8601 (es. 2023-12-22T10:30:00)
+  type: string; // Forza, Cardio, Test, ecc.
+  color?: string | null;
+  focus?: string | null;
+  targetRPE?: number | null;
+}
+
+/**
+ * Richiesta per la creazione di un evento (mappa CalendarEventCreateDto.cs)
+ */
+export interface CalendarEventCreateRequest {
+  title: string;
+  athleteId: number | null; // null se l'evento è per tutto il gruppo
+  date: string; // Formato ISO string
+  type: string; // Deve corrispondere ai nomi dell'Enum EventType in C#
+  color?: string | null;
+  focus?: string | null;
+  targetRPE?: number | null;
+}
+
+/**
+ * Richiesta per l'aggiornamento di un evento (mappa CalendarEventUpdateDto.cs)
+ */
+export interface CalendarEventUpdateRequest {
+  title?: string;
+  athleteId?: number | null;
+  date?: string;
+  type?: string;
+  color?: string | null;
+  focus?: string | null;
+  targetRPE?: number | null;
+}
+
+/**
+ * Risposta sintetica per il widget Dashboard (mappa CalendarSessionResponse.cs)
+ */
+export interface CalendarSessionResponse {
+  date: string;
+  type: string;
+  focus?: string | null;
+  targetRPE?: number | null;
+  athleteName?: string | null;
+}
