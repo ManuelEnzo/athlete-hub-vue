@@ -11,28 +11,34 @@ export const navMenu: NavMenu[] = [
       },
       {
         title: 'Agenda',
-        icon: 'i-lucide-calendar-range', // calendario
+        icon: 'i-lucide-calendar-range',
         link: '/agenda',
       },
       {
-        title: 'Athlete Details',
-        icon: 'i-lucide-biceps-flexed', // dettagli prestazioni / forza
-        link: '/athletedetails',
-      },
-      {
-        title: 'Athlete Health',
-        icon: 'i-lucide-heart-pulse', // salute / cardio
-        link: '/athletehealth',
-      },
-      {
-        title: 'Athlete Management',
-        icon: 'i-lucide-users', // gestione atleti
-        link: '/athletemanagement',
-      },
-      {
-        title: 'Athlete Measurements',
-        icon: 'i-lucide-users', // gestione atleti
-        link: '/athletemeasurements',
+        title: 'Athletes',
+        icon: 'i-lucide-users',
+        children: [
+          {
+            title: 'Management',
+            icon: 'i-lucide-user-plus',
+            link: '/athletemanagement',
+          },
+          {
+            title: 'Measurements',
+            icon: 'i-lucide-ruler',
+            link: '/athletemeasurements',
+          },
+          {
+            title: 'Details',
+            icon: 'i-lucide-biceps-flexed',
+            link: '/athletedetails',
+          },
+          {
+            title: 'Health Status',
+            icon: 'i-lucide-heart-pulse',
+            link: '/athletehealth',
+          },
+        ],
       },
       {
         title: 'Email',

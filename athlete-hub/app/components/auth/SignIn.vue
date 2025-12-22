@@ -80,4 +80,10 @@ async function onSubmit(event: Event) {
       Login
     </Button>
   </form>
+  <div class="mt-4 text-center text-sm">
+    Don't have an account?
+    <NuxtLink to="/register" class="underline underline-offset-4">
+      Sign up
+    </NuxtLink>
+  </div>
 </template>

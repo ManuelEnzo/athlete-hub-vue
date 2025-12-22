@@ -42,7 +42,7 @@ async function refreshData() {
 // Quando cambia l'atleta, resettiamo eventuali stati temporanei se necessario
 watch(selectedAthleteId, () => {
   // Se vuoi nascondere il form quando cambi atleta:
-  // isFormVisible.value = false 
+  // isFormVisible.value = false
 })
 
 onMounted(() => {
@@ -52,7 +52,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen mx-auto p-4">
+  <div class="min-h-screen mx-auto">
     <div class="flex flex-wrap items-center justify-between pb-6 gap-4">
       <h2 class="text-2xl font-bold tracking-tight">Athletes' Health Status</h2>
 
@@ -62,7 +62,7 @@ onMounted(() => {
             <SelectValue placeholder="Tutti gli atleti" />
           </SelectTrigger>
           <SelectContent>
-             <SelectItem :value="null">Tutti gli atleti</SelectItem>
+            <SelectItem :value="null">Tutti gli atleti</SelectItem>
             <SelectItem v-for="a in athletes" :key="a.id" :value="a.id">
               {{ a.firstName }} {{ a.lastName }}
             </SelectItem>
@@ -76,19 +76,19 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="relative">
-      <AthletesMeasurements 
-        v-model:showForm="isFormVisible" 
-        :selectedAthleteId="selectedAthleteId"
-        :athletes="athletes" 
-        :measurements="measurements" 
-        :loading="loading"
-        @refresh="refreshData" 
-      />
+    <div v-if="loading && measurements.length === 0" class="flex justify-center items-center py-20">
+      <Loader2 class="h-12 w-12 animate-spin text-primary" />
+    </div>
 
-      <div v-if="loading" class="absolute inset-0 flex items-center justify-center z-50 bg-white/50 backdrop-blur-sm">
-        <Loader2 class="h-10 w-10 animate-spin text-primary" />
-      </div>
+    <div v-else>
+      <AthletesMeasurements
+        v-model:showForm="isFormVisible"
+        :selectedAthleteId="selectedAthleteId"
+        :athletes="athletes"
+        :measurements="measurements"
+        :loading="loading"
+        @refresh="refreshData"
+      />
     </div>
   </div>
 </template>

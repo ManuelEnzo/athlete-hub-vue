@@ -99,9 +99,12 @@ function editMeasurement(m: AthleteMeasurementsResponse) {
   })
   emit('update:showForm', true)
 }
-
 async function saveMeasurement() {
-  if (!form.athleteId) { toast.error('Seleziona un atleta'); return }
+  if (!form.athleteId) {
+    toast.error('Seleziona un atleta')
+    return
+  }
+
   saving.value = true
   try {
     const response = editingId.value
@@ -109,10 +112,19 @@ async function saveMeasurement() {
       : await athleteApi.createMeasurement(form)
 
     if (response.data.isSuccess) {
-      toast.success(editingId.value ? 'Aggiornato!' : 'Salvato!')
+      toast.success(editingId.value ? 'Rilevazione aggiornata!' : 'Nuova rilevazione salvata!')
+
+      // 1. Rilancia la query nel padre
       emit('refresh')
+
+      // 2. Chiude il form e resetta i campi
       resetForm()
+    } else {
+      toast.error(response.data.error?.description || 'Errore durante il salvataggio')
     }
+  } catch (err) {
+    console.error(err)
+    toast.error('Errore di comunicazione con il server')
   } finally {
     saving.value = false
   }
