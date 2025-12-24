@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Trash2, Edit3, User, Plus, Loader2, Scale, Ruler, ClipboardList, TrendingUp, Activity } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { toast } from 'vue-sonner' 
 
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -29,6 +30,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:showForm', 'refresh'])
+const { t } = useI18n()
 
 // ---------------- State ----------------
 const saving = ref(false)
@@ -46,7 +48,7 @@ const form = reactive<AthleteMeasurementsCreateRequest>({
 // ---------------- Helpers & Computed ----------------
 function getAthleteFullName(athleteId: number) {
   const athlete = props.athletes.find(a => a.id === athleteId)
-  return athlete ? `${athlete.firstName} ${athlete.lastName}` : 'Atleta Sconosciuto'
+  return athlete ? `${athlete.firstName} ${athlete.lastName}` : t('athlete.unknown')
 }
 
 const filteredMeasurements = computed(() => {
@@ -59,11 +61,11 @@ const chartData = computed(() => {
   return [...filteredMeasurements.value]
     .sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime())
     .map(m => ({
-      date: m.createdAt ? new Date(m.createdAt).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' }) : 'N/D',
-      Peso: m.weight,
-      Vita: m.waist,
-      Torace: m.chest,
-      Fianchi: m.hip
+      date: m.createdAt ? new Date(m.createdAt).toLocaleDateString() : 'N/D',
+      [t('measurements.card.weight')]: m.weight,
+      [t('measurements.form.waist')]: m.waist,
+      [t('measurements.form.chest')]: m.chest,
+      [t('measurements.form.hip')]: m.hip
     }))
 })
 
@@ -101,7 +103,7 @@ function editMeasurement(m: AthleteMeasurementsResponse) {
 }
 async function saveMeasurement() {
   if (!form.athleteId) {
-    toast.error('Seleziona un atleta')
+    toast.error(t('measurements.validation.selectAthlete'))
     return
   }
 
@@ -112,7 +114,7 @@ async function saveMeasurement() {
       : await athleteApi.createMeasurement(form)
 
     if (response.data.isSuccess) {
-      toast.success(editingId.value ? 'Rilevazione aggiornata!' : 'Nuova rilevazione salvata!')
+      toast.success(editingId.value ? t('measurements.toast.updated') : t('measurements.toast.created'))
 
       // 1. Rilancia la query nel padre
       emit('refresh')
@@ -120,11 +122,11 @@ async function saveMeasurement() {
       // 2. Chiude il form e resetta i campi
       resetForm()
     } else {
-      toast.error(response.data.error?.description || 'Errore durante il salvataggio')
+      toast.error(response.data.error?.description || t('measurements.toast.saveError'))
     }
   } catch (err) {
     console.error(err)
-    toast.error('Errore di comunicazione con il server')
+    toast.error(t('measurements.toast.communicationError'))
   } finally {
     saving.value = false
   }
@@ -136,7 +138,7 @@ async function confirmDelete() {
   try {
     const res = await athleteApi.deleteMeasurement(measurementToDelete.value.id)
     if (res.data.isSuccess) {
-      toast.success('Eliminato')
+      toast.success(t('measurements.toast.deleted'))
       emit('refresh')
       isDeleteDialogOpen.value = false
     }
@@ -154,53 +156,53 @@ async function confirmDelete() {
         <CardHeader class="pb-4">
           <CardTitle class="text-xl flex items-center gap-2">
             <Plus class="h-5 w-5 text-primary" />
-            {{ editingId ? 'Modifica Rilevazione' : 'Inserisci Nuove Misure' }}
+            {{ editingId ? t('measurements.editMeasurement') : t('measurements.newMeasurement') }} 
           </CardTitle>
         </CardHeader>
         <CardContent class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="md:col-span-2">
-            <label class="text-[11px] font-bold uppercase mb-1 block">Atleta</label>
+            <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.athlete') }}</label>
             <Select v-model="form.athleteId">
               <SelectTrigger>
-                <SelectValue placeholder="Seleziona..." />
-              </SelectTrigger>
+                <SelectValue :placeholder="t('measurements.form.selectAthlete')" />
+              </SelectTrigger> 
               <SelectContent>
                 <SelectItem v-for="a in props.athletes" :key="a.id" :value="a.id">{{ a.firstName }} {{ a.lastName }}
                 </SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div><label class="text-[11px] font-bold uppercase mb-1 block">Peso (kg)</label><Input
+          <div><label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.weight') }}</label><Input
               v-model.number="form.weight" type="number" step="0.1" /></div>
-          <div><label class="text-[11px] font-bold uppercase mb-1 block">Altezza (cm)</label><Input
-              v-model.number="form.height" type="number" /></div>
+          <div><label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.height') }}</label><Input
+              v-model.number="form.height" type="number" /></div> 
 
           <div class="md:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t mt-2">
-            <div><label class="text-[10px] font-bold uppercase">Torace</label><Input v-model.number="form.chest"
+            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.chest') }}</label><Input v-model.number="form.chest"
                 type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">Vita</label><Input v-model.number="form.waist"
+            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.waist') }}</label><Input v-model.number="form.waist"
                 type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">Fianchi</label><Input v-model.number="form.hip"
+            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.hip') }}</label><Input v-model.number="form.hip"
                 type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">Coscia</label><Input v-model.number="form.thigh"
+            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.thigh') }}</label><Input v-model.number="form.thigh"
                 type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">Braccio</label><Input v-model.number="form.arm"
+            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.arm') }}</label><Input v-model.number="form.arm"
                 type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">Collo</label><Input v-model.number="form.neck"
+            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.neck') }}</label><Input v-model.number="form.neck"
                 type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">Polpaccio</label><Input v-model.number="form.calf"
+            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.calf') }}</label><Input v-model.number="form.calf"
                 type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">Avambraccio</label><Input v-model.number="form.forearm"
+            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.forearm') }}</label><Input v-model.number="form.forearm"
                 type="number" step="0.1" /></div>
           </div>
-          <div class="md:col-span-4"><label class="text-[11px] font-bold uppercase mb-1 block">Note</label><Input
-              v-model="form.notes" placeholder="Annotazioni opzionali..." /></div>
+          <div class="md:col-span-4"><label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.notes') }}</label><Input
+              v-model="form.notes" :placeholder="t('measurements.form.notesPlaceholder')" /></div>
         </CardContent>
         <CardFooter class="flex justify-end gap-3 bg-muted/5 py-4 border-t">
-          <Button variant="ghost" @click="resetForm">Annulla</Button>
+          <Button variant="ghost" @click="resetForm">{{ t('measurements.form.cancel') }}</Button>
           <Button @click="saveMeasurement" :disabled="saving">
             <Loader2 v-if="saving" class="mr-2 h-4 w-4 animate-spin" />
-            {{ editingId ? 'Aggiorna' : 'Salva' }}
+            {{ editingId ? t('measurements.form.update') : t('measurements.form.create') }}
           </Button>
         </CardFooter>
       </Card>
@@ -208,7 +210,7 @@ async function confirmDelete() {
 
     <div class="space-y-4">
       <h2 class="text-lg font-bold flex items-center gap-2 px-1">
-        <Activity class="h-5 w-5 text-primary" /> Ultime Misurazioni
+        <Activity class="h-5 w-5 text-primary" /> {{ t('measurements.listTitle') }}
       </h2>
       <TransitionGroup tag="div" name="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card v-for="m in filteredMeasurements" :key="m.id"
@@ -224,24 +226,24 @@ async function confirmDelete() {
             </div>
             <div class="p-5 flex justify-around items-center border-b">
               <div class="text-center">
-                <p class="text-[10px] uppercase text-muted-foreground">Peso</p>
+                <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.card.weight') }}</p>
                 <p class="font-black text-xl">{{ m.weight }}<span class="text-xs font-normal ml-0.5">kg</span></p>
               </div>
               <div class="w-px h-8 bg-border"></div>
               <div class="text-center">
-                <p class="text-[10px] uppercase text-muted-foreground">Altezza</p>
+                <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.card.height') }}</p>
                 <p class="font-black text-xl">{{ m.height }}<span class="text-xs font-normal ml-0.5">cm</span></p>
               </div>
             </div>
             <div class="grid grid-cols-3 divide-x bg-muted/10">
               <div class="p-2 text-center text-xs">
-                <p class="text-[9px] uppercase text-muted-foreground">Torace</p><b>{{ m.chest }}</b>
+                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.chest') }}</p><b>{{ m.chest }}</b>
               </div>
               <div class="p-2 text-center text-xs">
-                <p class="text-[9px] uppercase text-muted-foreground">Vita</p><b>{{ m.waist }}</b>
+                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.waist') }}</p><b>{{ m.waist }}</b>
               </div>
               <div class="p-2 text-center text-xs">
-                <p class="text-[9px] uppercase text-muted-foreground">Fianchi</p><b>{{ m.hip }}</b>
+                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.hip') }}</p><b>{{ m.hip }}</b>
               </div>
             </div>
           </CardContent>
@@ -267,16 +269,16 @@ async function confirmDelete() {
             <div>
               <CardTitle class="text-sm font-bold flex items-center gap-2">
                 <TrendingUp class="h-4 w-4 text-primary" />
-                Analisi Progressi: {{ getAthleteFullName(props.selectedAthleteId) }}
+                {{ t('measurements.analysisTitle') }}: {{ getAthleteFullName(props.selectedAthleteId) }}
               </CardTitle>
-              <CardDescription class="text-[11px]">Variazione dei parametri nel tempo</CardDescription>
+              <CardDescription class="text-[11px]">{{ t('measurements.analysis.description') }}</CardDescription> 
             </div>
           </div>
         </CardHeader>
 
         <CardContent class="p-2 sm:p-4">
           <div class="h-[300px] w-full min-w-0">
-            <LineChart :data="chartData" index="date" :categories="['Peso', 'Vita', 'Torace', 'Fianchi']"
+            <LineChart :data="chartData" index="date" :categories="[t('measurements.card.weight'), t('measurements.form.waist'), t('measurements.form.chest'), t('measurements.form.hip')]"
               :colors="['#2563eb', '#10b981', '#f59e0b', '#8b5cf6']" :y-formatter="(tick) => `${tick}`"
               :show-legend="true" :show-grid-line="true" :show-tooltip="true" class="w-full h-full" />
           </div>
@@ -287,14 +289,14 @@ async function confirmDelete() {
     <Dialog v-model:open="isDeleteDialogOpen">
       <DialogContent class="max-w-xs">
         <DialogHeader>
-          <DialogTitle>Conferma</DialogTitle>
+          <DialogTitle>{{ t('measurements.dialog.deleteTitle') }}</DialogTitle>
         </DialogHeader>
-        <p class="text-sm py-2">Eliminare la misurazione?</p>
+        <p class="text-sm py-2">{{ t('measurements.dialog.deleteText') }}</p>
         <div class="flex flex-col gap-2">
           <Button variant="destructive" @click="confirmDelete" :disabled="deleting">
-            <Loader2 v-if="deleting" class="mr-2 h-4 w-4 animate-spin" /> Elimina
+            <Loader2 v-if="deleting" class="mr-2 h-4 w-4 animate-spin" /> {{ t('measurements.actions.delete') }}
           </Button>
-          <Button variant="ghost" @click="isDeleteDialogOpen = false">Annulla</Button>
+          <Button variant="ghost" @click="isDeleteDialogOpen = false">{{ t('measurements.actions.cancel') }}</Button>
         </div>
       </DialogContent>
     </Dialog>

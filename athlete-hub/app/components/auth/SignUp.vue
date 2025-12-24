@@ -4,7 +4,8 @@ import { Loader2 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/auth'
-
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('') // Aggiunto per il check
@@ -44,14 +45,14 @@ async function onSubmit(event: Event) {
         result.value.refreshToken
       )
 
-      toast.success('Account creato con successo!')
+      toast.success(t('auth.signup.success'))
       await navigateTo('/')
     } else {
       // Gestione errori del tuo Result Pattern C#
       toast.error(result.error?.message || 'Errore durante la registrazione')
     }
   } catch (error: any) {
-    toast.error('Errore di rete o server non raggiungibile')
+    toast.error(t('auth.signup.networkError'))
   } finally {
     isLoading.value = false
   }

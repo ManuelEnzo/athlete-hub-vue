@@ -11,7 +11,9 @@ import {
 import Draggable from 'vuedraggable'
 import { useKanban } from '~/composables/useKanban'
 import CardFooter from '../ui/card/CardFooter.vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const { board, addTask, updateTask, removeTask, setColumns, removeColumn, updateColumn } = useKanban()
 
 const df = new DateFormatter('en-US', {
@@ -321,8 +323,8 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
           <CardFooter class="px-2 mt-auto">
             <Button size="sm" variant="ghost" class="text-muted-foreground" @click="openNewTask(col.id)">
               <Icon name="lucide:plus" />
-              Add Task
-            </Button>
+              {{ t('kanban.addTask') }}
+            </Button> 
           </CardFooter>
         </Card>
       </template>
@@ -333,35 +335,35 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
   <Dialog v-model:open="showModalTask.open">
     <DialogContent class="sm:max-w-[520px]">
       <DialogHeader>
-        <DialogTitle>{{ showModalTask.type === 'create' ? 'New Task' : 'Edit Task' }}</DialogTitle>
+        <DialogTitle>{{ showModalTask.type === 'create' ? t('kanban.dialog.title.create') : t('kanban.dialog.title.edit') }}</DialogTitle>
         <DialogDescription class="sr-only">
-          {{ showModalTask.type === 'create' ? 'Add a new task to the board' : 'Edit the task' }}
+          {{ showModalTask.type === 'create' ? t('kanban.dialog.description.create') : t('kanban.dialog.description.edit') }}
         </DialogDescription>
-      </DialogHeader>
+      </DialogHeader> 
       <div class="flex flex-col gap-3">
         <div class="grid items-baseline grid-cols-1 md:grid-cols-4 md:[&>label]:col-span-1 *:col-span-3 gap-3">
-          <Label>Title</Label>
-          <Input v-model="newTask.title" placeholder="Title" />
-          <Label>Description</Label>
-          <Textarea v-model="newTask.description" placeholder="Description (optional)" rows="4" />
-          <Label>Priority</Label>
+          <Label>{{ t('kanban.labels.title') }}</Label>
+          <Input v-model="newTask.title" :placeholder="t('kanban.labels.title')" />
+          <Label>{{ t('kanban.labels.description') }}</Label>
+          <Textarea v-model="newTask.description" :placeholder="t('kanban.labels.description') + ' (' + t('common.optional') + ')'" rows="4" />
+          <Label>{{ t('kanban.labels.priority') }}</Label>
           <Select v-model="newTask.priority">
             <SelectTrigger class="w-full">
-              <SelectValue placeholder="Select a priority" />
+              <SelectValue :placeholder="t('kanban.labels.selectPriority')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="low">
-                Low
+                {{ t('kanban.labels.priorityOptions.low') }}
               </SelectItem>
               <SelectItem value="medium">
-                Medium
+                {{ t('kanban.labels.priorityOptions.medium') }}
               </SelectItem>
               <SelectItem value="high">
-                High
+                {{ t('kanban.labels.priorityOptions.high') }}
               </SelectItem>
             </SelectContent>
           </Select>
-          <Label>Due Date</Label>
+          <Label>{{ t('kanban.labels.dueDate') }}</Label> 
           <div class="flex items-center gap-1">
             <Popover>
               <PopoverTrigger as-child>
@@ -373,7 +375,7 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
                   )"
                 >
                   <Icon name="lucide:calendar" class="mr-2" />
-                  {{ dueDate ? df.format(dueDate.toDate(getLocalTimeZone())) : "Pick a date" }}
+                  {{ dueDate ? df.format(dueDate.toDate(getLocalTimeZone())) : t('kanban.labels.pickDate') }}
                 </Button>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
@@ -396,8 +398,8 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
           Cancel
         </Button>
         <Button @click="showModalTask.type === 'create' ? createTask() : editTask()">
-          {{ showModalTask.type === 'create' ? 'Create' : 'Update' }}
-        </Button>
+          {{ showModalTask.type === 'create' ? t('kanban.actions.create') : t('kanban.actions.update') }}
+        </Button> 
       </DialogFooter>
     </DialogContent>
   </Dialog>

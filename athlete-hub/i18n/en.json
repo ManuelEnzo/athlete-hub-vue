@@ -31,12 +31,19 @@
         "targetRPE": "Target RPE"
     },
     "measurements": {
+        "pageTitle": "Athletes' Health Status",
         "filterAthlete": "Select athlete to filter",
+        "filterAll": "All athletes",
+        "listTitle": "Latest Measurements",
         "newMeasurement": "New Measurement",
         "editMeasurement": "Edit Measurement",
+        "analysisTitle": "Progress Analysis",
+        "analysis": {
+            "description": "Parameters variation over time"
+        },
         "form": {
             "athlete": "Athlete",
-            "selectAthlete": "Select athlete",
+            "selectAthlete": "Select...",
             "weight": "Weight (kg)",
             "height": "Height (cm)",
             "chest": "Chest",
@@ -50,7 +57,7 @@
             "notes": "Notes",
             "notesPlaceholder": "Optional notes",
             "cancel": "Cancel",
-            "create": "Create",
+            "create": "Save",
             "update": "Update"
         },
         "validation": {
@@ -65,23 +72,26 @@
             "loadAthletesError": "Error loading athletes",
             "loadMeasurementsError": "Error loading measurements",
             "communicationError": "Communication error",
-            "created": "Measurement created",
-            "updated": "Measurement updated",
-            "deleted": "Measurement deleted",
+            "created": "New measurement saved!",
+            "updated": "Measurement updated!",
+            "deleted": "Deleted",
             "saveError": "Error saving measurement",
             "deleteError": "Error deleting measurement"
         },
         "card": {
             "weight": "Weight",
-            "height": "Height"
+            "height": "Height",
+            "chest": "Chest",
+            "waist": "Waist",
+            "hip": "Hip"
         },
         "dialog": {
             "deleteTitle": "Confirm deletion",
-            "deleteText": "Delete?"
+            "deleteText": "Delete measurement?"
         },
         "actions": {
             "edit": "Edit Measurement",
-            "delete": "Delete Measurement",
+            "delete": "Delete",
             "create": "Create",
             "update": "Update",
             "cancel": "Cancel"
@@ -98,13 +108,39 @@
         "age": "Age",
         "athlete": "Athlete",
         "status": "Status",
-        "readiness": "Readiness"
+        "readiness": "Readiness",
+        "gender": "Gender",
+        "genderPlaceholder": "Select gender",
+        "weightShort": "Weight",
+        "heightShort": "Height",
+        "sportCategory": "Sport Category"
     },
     "athlete": {
+        "pageTitle": "Athletes' Personal Data",
+        "visualizer": "Athlete Visualizer",
         "new": "New Athlete",
         "edit": "Edit Athlete",
         "deleteConfirm": "Confirm Deletion",
         "deleteQuestion": "Delete?",
+        "unknown": "Unknown Athlete",
+        "details": {
+            "readinessTitle": "Readiness Status",
+            "acwrTitle": "📈 Acute:Chronic Workload Ratio (ACWR)",
+            "acwrDescription": "Trend of Acute (7d) vs Chronic (28d) workload. Goal: 0.8 - 1.3",
+            "benchmarkTitle": "Performance Benchmark (vs Team)",
+            "benchmarkDescription": "Latest test results ({date}) compared to team average.",
+            "table": {
+                "metric": "Metric",
+                "athlete": "Athlete",
+                "team": "Team Average",
+                "diff": "Diff (%)"
+            },
+            "status": {
+                "high": "High Risk (Overload)",
+                "medium": "Medium Risk (Attention)",
+                "low": "Low Risk"
+            }
+        },
         "success": {
             "created": "Athlete created successfully",
             "updated": "Athlete updated successfully",
@@ -112,15 +148,10 @@
         },
         "errors": {
             "load": "Error loading athletes",
-            "required": "Please fill all required fields"
-        },
-        "unknown": "Unknown Athlete"
-    },
-    "errors": {
-        "server": "Server communication error",
-        "save": "Error saving data",
-        "delete": "Error deleting data",
-        "generic": "Unexpected error"
+            "required": "Please fill all required fields",
+            "server": "Server error occurred",
+            "emailInUse": "Email already in use"
+        }
     },
     "risk": {
         "optimal": "✅ Optimal",
@@ -147,7 +178,12 @@
     },
     "readiness": {
         "title": "Readiness Status",
-        "score": "Recovery Score"
+        "score": "Recovery Score",
+        "statuses": {
+            "good": "Good readiness",
+            "slowRecover": "Slow recovery",
+            "injured": "Injured/Sick"
+        }
     },
     "acwr": {
         "current": "Current ACWR (Week: {week})"
@@ -167,6 +203,21 @@
         "sprint30m": "Sprint 30m (s)"
     },
     "calendar": {
+        "title": "Sessions and Appointments",
+        "months": {
+            "0": "January",
+            "1": "February",
+            "2": "March",
+            "3": "April",
+            "4": "May",
+            "5": "June",
+            "6": "July",
+            "7": "August",
+            "8": "September",
+            "9": "October",
+            "10": "November",
+            "11": "December"
+        },
         "days": [
             "Mon",
             "Tue",
@@ -178,24 +229,93 @@
         ],
         "addEvent": "Add Event",
         "noEvents": "No events scheduled.",
+        "scheduledCount": "{count} scheduled events",
         "addNow": "Add now!",
         "eventDetails": "Details for {date}",
-        "scheduledEvents": "{count} scheduled events",
-        "newEventTitle": "Add New Session/Appointment",
-        "planEventFor": "Plan an event for {date}.",
-        "title": "Title",
-        "athlete": "Athlete/Group",
-        "date": "Date",
-        "time": "Time",
-        "type": "Event Type",
+        "saveError": "Error saving event",
+        "createEvent": "Create Event",
+        "form": {
+            "title": "Title",
+            "date": "Date",
+            "time": "Time",
+            "type": "Event Type",
+            "description": "Description",
+            "cancel": "Cancel",
+            "create": "Create",
+            "update": "Update",
+            "titlePlaceholder": "Event title",
+            "descriptionPlaceholder": "Event details...",
+            "selectAthlete":"Select an athlete"
+        }
+    },
+    "common": {
         "cancel": "Cancel",
-        "createEvent": "Create Event"
+        "confirm": "Confirm",
+        "create": "Create",
+        "update": "Update",
+        "save": "Save",
+        "delete": "Delete",
+        "details": "Details",
+        "optional": "Optional"
+    },
+    "kanban": {
+        "title": "Kanban Board",
+        "description": "Here's a list of your tasks for this month!",
+        "addColumn": "Add Column",
+        "newColumnPlaceholder": "Column title",
+        "dialog": {
+            "title": "Add New Column",
+            "description": "Add a new column to the board"
+        }
+    },
+    "auth": {
+        "signup": {
+            "success": "Account created",
+            "networkError": "Network error during signup",
+            "validation": {
+                "fillAll": "Please fill all fields",
+                "passwordMismatch": "Passwords do not match"
+            },
+            "errors": {
+                "general": "Error during signup"
+            },
+            "email": "Email",
+            "password": "Password",
+            "confirmPassword": "Confirm Password",
+            "createAccount": "Create Account",
+            "placeholders": {
+                "email": "name@example.com"
+            },
+            "orContinue": "Or continue with"
+        }
+    },
+    "tasks": {
+        "title": "Tasks",
+        "description": "Here's a list of your tasks for this month!"
     },
     "eventTypes": {
-        "Forza": "Strength",
-        "Resistenza": "Endurance",
+        "Strength": "Strength",
+        "Endurance": "Endurance",
         "Test": "Test",
-        "Recupero": "Recovery",
-        "Visita": "Visit"
+        "Recovery": "Recovery",
+        "Visit": "Visit",
+        "Running": "Running",
+        "Team Sport": "Team Sport",
+        "checkUp"   : "Check-Up"
+    },
+    "genders": {
+        "genderPlaceholder": "Select gender",
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+    },
+    "refreshFailed": "Token refresh failed",
+    "logoutInProgress": "Logout in progress...",
+    "operationFailed": "Operation failed",
+    "errors": {
+        "load": "Error loading athletes",
+        "required": "Please fill all required fields",
+        "server": "Server error occurred",
+        "emailInUse": "Email already in use"
     }
 }

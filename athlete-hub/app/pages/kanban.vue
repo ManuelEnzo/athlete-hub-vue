@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import KanbanBoard from '~/components/kanban/KanbanBoard.vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const { addColumn } = useKanban()
 
 const showNewColumn = ref(false)
@@ -21,16 +23,16 @@ function createColumn() {
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 class="text-2xl font-bold tracking-tight">
-            Kanban Board
+            {{ t('kanban.title') }}
           </h2>
           <p class="text-muted-foreground">
-            Here&apos;s a list of your tasks for this month!
+            {{ t('kanban.description') }}
           </p>
         </div>
         <Button size="sm" @click="showNewColumn = true">
           <Icon name="lucide:plus" />
-          Add Column
-        </Button>
+          {{ t('kanban.addColumn') }}
+        </Button> 
       </div>
       <KanbanBoard />
     </div>
@@ -39,22 +41,22 @@ function createColumn() {
     <Dialog v-model:open="showNewColumn">
       <DialogContent class="sm:max-w-[420px]">
         <DialogHeader>
-          <DialogTitle>Add New Column</DialogTitle>
+          <DialogTitle>{{ t('kanban.dialog.title') }}</DialogTitle>
           <DialogDescription class="sr-only">
-            Add a new column to the board
+            {{ t('kanban.dialog.description') }}
           </DialogDescription>
         </DialogHeader>
         <form name="newColumnForm" class="flex flex-col gap-3" @submit.prevent="createColumn">
-          <Input v-model="newColumnTitle" placeholder="Column title" />
+          <Input v-model="newColumnTitle" :placeholder="t('kanban.newColumnPlaceholder')" />
         </form>
         <DialogFooter>
           <Button variant="secondary" @click="showNewColumn = false">
-            Cancel
+            {{ t('common.cancel') }}
           </Button>
           <Button type="submit" form="newColumnForm" @click="createColumn">
-            Create
+            {{ t('common.create') }}
           </Button>
-        </DialogFooter>
+        </DialogFooter> 
       </DialogContent>
     </Dialog>
   </div>

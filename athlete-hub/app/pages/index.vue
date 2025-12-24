@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import NumberFlow from '@number-flow/vue'
-import { TrendingDown, TrendingUp, AlertTriangle, UserCheck } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+import { TrendingDown, TrendingUp, AlertTriangle, UserCheck } from 'lucide-vue-next' 
 
 // 1. Dati per le Metriche Principali (Riflettendo la terminologia del Preparatore)
 const dataCard = ref({
@@ -16,6 +17,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 watch(isDesktop, () => {
   timeRange.value = isDesktop.value ? '30d' : '7d'
 }, { immediate: true })
+const { t } = useI18n()
 
 // 2. Dati per i Grafici e Widget Aggiornati
 
@@ -37,17 +39,18 @@ const physiologicalMonitor = [
 
 // Distribuzione per Disciplina/Categoria (sostituisce "Posizione")
 const athleteDiscipline = [
-  { discipline: 'Corsa', count: 10 },
-  { discipline: 'Sport di Squadra', count: 8 },
-  { discipline: 'Forza', count: 5 },
+  { discipline: t('eventTypes.Corsa'), count: 10 },
+  { discipline: t('eventTypes.Sport di Squadra'), count: 8 },
+  { discipline: t('eventTypes.Forza'), count: 5 },
 ]
 
 // Stato di Prontezza (Readiness Status) - Più generale e proattivo
 const readinessStatus = [
-  { status: 'Ottima Prontezza', value: 14 },
-  { status: 'Recupero Lento', value: 5 },
-  { status: 'Infortunato/Malato', value: 4 },
+  { status: t('readiness.statuses.good'), value: 14 },
+  { status: t('readiness.statuses.slowRecover'), value: 5 },
+  { status: t('readiness.statuses.injured'), value: 4 },
 ]
+
 
 // Allerte basate sui Dati (Simula atleti con ACWR troppo alto > 1.3)
 const highLoadAlerts = workloadData
@@ -68,38 +71,38 @@ const upcomingSessions = [
 <template>
   <div class="w-full flex flex-col gap-8">
     <div class="flex flex-wrap items-center justify-between gap-2">
-      <h2 class="text-2xl font-bold tracking-tight">Athlete Hub Dashboard</h2>
+      <h2 class="text-2xl font-bold tracking-tight">{{ t('dashboard.title') }}</h2>
       <div class="flex items-center space-x-2">
         <BaseDateRangePicker />
-        <Button>Export Dati</Button>
-      </div>
+        <Button>{{ t('dashboard.export') }}</Button>
+      </div> 
     </div>
 
     <div class="grid grid-cols-1 gap-4 @xl:grid-cols-2 @5xl:grid-cols-4">
       <Card>
         <CardHeader>
-          <CardDescription>Carico Totale Settimanale</CardDescription>
+          <CardDescription>{{ t('metrics.totalLoad') }}</CardDescription>
           <CardTitle><NumberFlow :value="dataCard.totalLoad" /></CardTitle>
           <CardAction><TrendingUp /></CardAction>
         </CardHeader>
       </Card>
       <Card>
         <CardHeader>
-          <CardDescription>RPE Medio (Percezione Sforzo)</CardDescription>
+          <CardDescription>{{ t('metrics.avgRPE') }}</CardDescription>
           <CardTitle><NumberFlow :value="dataCard.avgRPE" /></CardTitle>
           <CardAction><TrendingDown /></CardAction>
-        </CardHeader>
+        </CardHeader> 
       </Card>
       <Card>
         <CardHeader>
-          <CardDescription>Atleti Monitorati</CardDescription>
+          <CardDescription>{{ t('metrics.monitoredAthletes') }}</CardDescription>
           <CardTitle><NumberFlow :value="dataCard.monitoredAthletes" /></CardTitle>
           <CardAction><UserCheck /></CardAction>
         </CardHeader>
       </Card>
       <Card>
         <CardHeader>
-          <CardDescription>Tasso di Indisponibilità</CardDescription>
+          <CardDescription>{{ t('metrics.unavailabilityRate') }}</CardDescription>
           <CardTitle><NumberFlow :value="dataCard.unavailabilityRate" suffix="%" /></CardTitle>
           <CardAction><TrendingDown /></CardAction>
         </CardHeader>
@@ -108,14 +111,14 @@ const upcomingSessions = [
 
     <div class="grid grid-cols-1 gap-6 @xl:grid-cols-2">
       <Card>
-        <CardHeader><CardTitle>📈 Andamento Carico Settimanale & ACWR</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{{ t('charts.weeklyLoad') }}</CardTitle></CardHeader>
         <CardContent>
           <AreaChart :data="workloadData" :categories="['load', 'acwr']" index="week" />
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>❤️ Monitoraggio Fisiologico (HR & RPE)</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{{ t('charts.physiological') }}</CardTitle></CardHeader>
         <CardContent>
           <LineChart :data="physiologicalMonitor" :categories="['avgHR', 'RPE']" index="session" />
         </CardContent>
@@ -126,9 +129,9 @@ const upcomingSessions = [
       <Card class="col-span-1 @xl:col-span-2">
         <CardHeader>
           <CardTitle class="flex items-center gap-2 text-orange-600">
-            <AlertTriangle class="h-5 w-5" /> Allerte Carico Alto (ACWR > 1.3)
+            <AlertTriangle class="h-5 w-5" /> {{ t('alerts.highLoadTitle') }}
           </CardTitle>
-          <CardDescription>Atleti a rischio infortunio o affaticamento eccessivo.</CardDescription>
+          <CardDescription>{{ t('alerts.highLoadDescription') }}</CardDescription>
         </CardHeader>
         <CardContent>
           <div v-if="highLoadAlerts.length > 0" class="space-y-2">
@@ -137,19 +140,19 @@ const upcomingSessions = [
               <p class="text-sm text-gray-500">ACWR: **{{ alert.acwr }}** - Settimana: {{ alert.week }}</p>
             </div>
           </div>
-          <p v-else class="text-green-600 font-medium">Nessuna allerta ACWR. Carico ben gestito.</p>
+          <p v-else class="text-green-600 font-medium">{{ t('alerts.noAlerts') }}</p> 
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Sessioni in Programma</CardTitle>
-          <CardDescription>Prossimi impegni con focus e intensità target.</CardDescription>
+          <CardTitle>{{ t('sessions.title') }}</CardTitle>
+          <CardDescription>{{ t('sessions.description') }}</CardDescription>
         </CardHeader>
         <CardContent class="space-y-3">
           <div v-for="session in upcomingSessions" :key="session.session" class="border-l-4 border-blue-500 pl-3">
-            <p class="font-medium">{{ session.session }} - {{ session.type }}</p>
-            <p class="text-sm text-gray-500">Focus: {{ session.focus }} | Target RPE: **{{ session.targetRPE }}**</p>
+            <p class="font-medium">{{ session.session }} - {{ t(`eventTypes.${session.type}`) }}</p>
+            <p class="text-sm text-gray-500">{{ t('sessions.focus') }}: {{ session.focus }} | {{ t('sessions.targetRPE') }}: **{{ session.targetRPE }}**</p> 
           </div>
         </CardContent>
       </Card>
@@ -157,14 +160,14 @@ const upcomingSessions = [
 
     <div class="grid grid-cols-1 gap-6 @xl:grid-cols-2">
       <Card>
-        <CardHeader><CardTitle>🧑‍🤝‍🧑 Distribuzione Atleti per Disciplina</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{{ t('charts.athleteDistribution') }}</CardTitle></CardHeader>
         <CardContent>
           <BarChart :data="athleteDiscipline" :categories="['count']" index="discipline" />
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>✅ Stato di Prontezza (Readiness)</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{{ t('charts.readiness') }}</CardTitle></CardHeader>
         <CardContent>
           <DonutChart :data="readinessStatus" :categories="['value']" index="status" category="value" />
         </CardContent>

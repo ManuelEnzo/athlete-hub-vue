@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { BadgeVariants } from '../ui/badge';
 import Stat from '../ui/stat/Stat.vue'
 // ⚠️ Assicurati di avere Badge, Button, Card, CardHeader, CardTitle, CardContent, Stat
@@ -19,11 +20,13 @@ const mockTeamHealth: AthleteHealth[] = [
     { id: 5, name: 'Luca Gialli', position: 'Portiere', readinessScore: 5.1, avgWellness: 4.0, acuteLoad: 4800, chronicLoad: 2800, acwr: 1.71 },
 ]
 
+const { t } = useI18n()
+
 // 🔧 Restituisce variant coerente con Badge
 const getStatusColor = (acwr: number): { variant: BadgeVariants['variant']; label: string } => {
-    if (acwr > 1.5) return { variant: 'destructive', label: '⚠️ Alto Rischio' }
-    if (acwr >= 1.2) return { variant: 'default', label: '⚡ Moderato' }
-    return { variant: 'secondary', label: '✅ Ottimale' }
+    if (acwr > 1.5) return { variant: 'destructive', label: t('risk.high') }
+    if (acwr >= 1.2) return { variant: 'default', label: t('risk.moderate') }
+    return { variant: 'secondary', label: t('risk.optimal') }
 }
 
 const sortBy = ref<'acwr' | 'readiness'>('acwr')
@@ -47,17 +50,17 @@ const sortedTeamHealth = computed(() => {
             <!-- Tabella -->
             <Card class="col-span-2">
                 <CardHeader class="flex flex-row items-center justify-between">
-                    <CardTitle>Stato Individuale Atleti</CardTitle>
-                    <span class="text-sm text-muted-foreground">Ordina per ACWR</span>
+                    <CardTitle>{{ t('team.individualStatus') }}</CardTitle>
+                    <span class="text-sm text-muted-foreground">{{ t('team.sortByAcwr') }}</span>
                 </CardHeader>
                 <CardContent class="p-0">
                     <table class="w-full">
                         <thead class="bg-muted text-xs font-medium text-muted-foreground uppercase">
                             <tr>
-                                <th class="py-3 px-4">Atleta</th>
-                                <th class="py-3 px-4 text-center">ACWR</th>
-                                <th class="py-3 px-4 text-center">Stato</th>
-                                <th class="py-3 px-4 text-right">Readiness</th>
+                                <th class="py-3 px-4">{{ t('fields.athlete') }}</th>
+                                <th class="py-3 px-4 text-center">{{ t('alerts.acwr') }}</th>
+                                <th class="py-3 px-4 text-center">{{ t('fields.status') }}</th>
+                                <th class="py-3 px-4 text-right">{{ t('fields.readiness') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -88,11 +91,11 @@ const sortedTeamHealth = computed(() => {
             <div class="flex flex-col gap-6">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Medie Squadra</CardTitle>
+                        <CardTitle>{{ t('team.averages') }}</CardTitle>
                     </CardHeader>
                     <CardContent class="space-y-4">
-                        <Stat label="ACWR Medio" value="1.15" color="primary" />
-                        <Stat label="Readiness" value="7.8 / 10" color="success" />
+                        <Stat :label="t('stats.avgAcwr')" value="1.15" color="primary" />
+                        <Stat :label="t('stats.readiness')" value="7.8 / 10" color="success" />
                         <Stat label="Fatica Hooper" value="2.4 / 5" color="warning" />
                         <Stat label="Sonno Medio" value="7h" color="secondary" />
                         <Stat label="Stress Medio" value="2.1 / 5" color="default" />
@@ -105,7 +108,7 @@ const sortedTeamHealth = computed(() => {
                     </CardHeader>
                     <CardContent class="space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-muted-foreground">Ottimale</span>
+                            <span class="text-sm text-muted-foreground">{{ t('risk.optimal') }}</span>
                             <div class="flex items-center gap-2">
                                 <div class="h-2 w-32 bg-muted rounded-full overflow-hidden">
                                     <div class="h-2 bg-green-500" style="width: 40%"></div>
@@ -114,7 +117,7 @@ const sortedTeamHealth = computed(() => {
                             </div>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-muted-foreground">Moderato</span>
+                            <span class="text-sm text-muted-foreground">{{ t('risk.moderate') }}</span>
                             <div class="flex items-center gap-2">
                                 <div class="h-2 w-32 bg-muted rounded-full overflow-hidden">
                                     <div class="h-2 bg-yellow-500" style="width: 35%"></div>
@@ -123,7 +126,7 @@ const sortedTeamHealth = computed(() => {
                             </div>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-muted-foreground">Alto Rischio</span>
+                            <span class="text-sm text-muted-foreground">{{ t('risk.high') }}</span>
                             <div class="flex items-center gap-2">
                                 <div class="h-2 w-32 bg-muted rounded-full overflow-hidden">
                                     <div class="h-2 bg-red-600" style="width: 25%"></div>
@@ -136,25 +139,25 @@ const sortedTeamHealth = computed(() => {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle class="text-sm">Alert Squadra</CardTitle>
+                        <CardTitle class="text-sm">{{ t('team.alerts') }}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div v-if="sortedTeamHealth.some(a => a.acwr > 1.5)"
                             class="bg-red-100 text-red-800 px-3 py-2 rounded-md text-sm font-semibold">
-                            ⚠️ Alcuni atleti sono in alto rischio! Controlla carichi e recupero.
+                            {{ t('alerts.highRisk') }}
                         </div>
                         <div v-else class="bg-green-100 text-green-800 px-3 py-2 rounded-md text-sm font-semibold">
-                            ✅ Nessun atleta in alto rischio.
+                            {{ t('alerts.noRisk') }}
                         </div>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle class="text-sm">Ultimo Aggiornamento</CardTitle>
+                        <CardTitle class="text-sm">{{ t('team.lastUpdate') }}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p class="text-xs text-muted-foreground">Aggiornato alle 21:30 del 17 Dicembre 2025</p>
+                        <p class="text-xs text-muted-foreground">{{ t('team.updatedAt', { time: '21:30', date: '17 Dicembre 2025' }) }}</p>
                     </CardContent>
                 </Card>
             </div>

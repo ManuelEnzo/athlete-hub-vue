@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Trash2, Edit3, User, Plus, Loader2 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
@@ -14,6 +15,7 @@ import type { AthleteResponse, AthleteCreateRequest } from '../../types/api'
 
 const props = defineProps<{ showForm: boolean }>()
 const emit = defineEmits(['update:showForm'])
+const { t } = useI18n()
 
 const athletes = ref<AthleteResponse[]>([])
 const loading = ref(false)
@@ -39,9 +41,9 @@ async function fetchAthletes() {
   try {
     const res = await athleteApi.getAll()
     if (res.data.isSuccess) athletes.value = res.data.value ?? []
-    else toast.error('Errore nel caricamento atleti')
+    else toast.error(t('athlete.errors.load'))
   } catch {
-    toast.error('Errore di comunicazione con il server')
+    toast.error(t('errors.server'))
   } finally {
     loading.value = false
   }
@@ -49,7 +51,7 @@ async function fetchAthletes() {
 
 async function saveAthlete() {
   if (!form.firstName || !form.lastName || !form.email) {
-    toast.error('Compila tutti i campi obbligatori')
+    toast.error(t('athlete.errors.required'))
     return
   }
 
@@ -58,22 +60,22 @@ async function saveAthlete() {
     if (editingId.value !== null) {
       const res = await athleteApi.update(editingId.value, form)
       if (res.status === 204) {
-        toast.success('Atleta aggiornato con successo')
+        toast.success(t('athlete.success.updated'))
         await fetchAthletes()
         resetForm()
       }
     } else {
       const res = await athleteApi.create(form as AthleteCreateRequest)
       if (res.data.isSuccess) {
-        toast.success('Atleta creato con successo')
+        toast.success(t('athlete.success.created'))
         await fetchAthletes()
         resetForm()
       } else {
-        toast.error(res.data.error ?? 'Errore durante la creazione')
+        toast.error(res.data.error ?? t('errors.save'))
       }
     }
   } catch {
-    toast.error('Errore durante il salvataggio')
+    toast.error(t('errors.save'))
   } finally {
     loading.value = false
   }
@@ -86,10 +88,10 @@ async function confirmDelete() {
     const res = await athleteApi.delete(athleteToDelete.value.id)
     if (res.status === 204) {
       athletes.value = athletes.value.filter(a => a.id !== athleteToDelete.value!.id)
-      toast.success('Atleta eliminato')
-    } else toast.error(res.data.error ?? 'Errore eliminazione')
+      toast.success(t('athlete.success.deleted'))
+    } else toast.error(res.data.error ?? t('errors.delete'))
   } catch {
-    toast.error('Errore durante eliminazione')
+    toast.error(t('errors.delete'))
   } finally {
     isDeleteDialogOpen.value = false
     athleteToDelete.value = null
@@ -140,59 +142,59 @@ onMounted(fetchAthletes)
           <CardTitle class="flex items-center gap-2">
             <Edit3 v-if="editingId" />
             <Plus v-else />
-            {{ editingId ? 'Modifica Atleta' : 'Nuovo Atleta' }}
+            {{ editingId ? t('athlete.edit') : t('athlete.new') }}
           </CardTitle>
         </CardHeader>
 
         <CardContent class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">Nome</label>
-            <Input v-model="form.firstName" placeholder="Nome" />
+            <label class="text-xs font-semibold ml-1">{{ t('fields.firstName') }}</label>
+            <Input v-model="form.firstName" :placeholder="t('fields.firstName')" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">Cognome</label>
-            <Input v-model="form.lastName" placeholder="Cognome" />
+            <label class="text-xs font-semibold ml-1">{{ t('fields.lastName') }}</label>
+            <Input v-model="form.lastName" :placeholder="t('fields.lastName')" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">Email</label>
-            <Input v-model="form.email" placeholder="Email" />
+            <label class="text-xs font-semibold ml-1">{{ t('fields.email') }}</label>
+            <Input v-model="form.email" :placeholder="t('fields.email')" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">Disciplina</label>
-            <Input v-model="form.sportCategory" placeholder="Disciplina" />
+            <label class="text-xs font-semibold ml-1">{{ t('fields.sportCategory') }}</label>
+            <Input v-model="form.sportCategory" :placeholder="t('fields.sportCategoryPlaceholder')" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">Data di nascita</label>
+            <label class="text-xs font-semibold ml-1">{{ t('fields.birthDate') }}</label>
             <Input v-model="form.birthDate" type="date" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">Peso (kg)</label>
-            <Input v-model.number="form.weight" type="number" placeholder="Peso" />
+            <label class="text-xs font-semibold ml-1">{{ t('fields.weight') }} (kg)</label>
+            <Input v-model.number="form.weight" type="number" :placeholder="t('fields.weight')" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">Altezza (cm)</label>
-            <Input v-model.number="form.height" type="number" placeholder="Altezza" />
+            <label class="text-xs font-semibold ml-1">{{ t('fields.height') }} (cm)</label>
+            <Input v-model.number="form.height" type="number" :placeholder="t('fields.height')" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">Sesso</label>
+            <label class="text-xs font-semibold ml-1">{{ t('fields.gender') }}</label>
             <Select v-model="form.gender">
               <SelectTrigger class="w-full">
-                <SelectValue placeholder="Seleziona sesso" />
+                <SelectValue :placeholder="t('fields.genderPlaceholder')" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="M">M</SelectItem>
-                <SelectItem value="F">F</SelectItem>
-                <SelectItem value=" ">Non Specifico</SelectItem>
+                <SelectItem value="M">{{ t('genders.male') }}</SelectItem>
+                <SelectItem value="F">{{ t('genders.female') }}</SelectItem>
+                <SelectItem value=" ">{{ t('genders.other') }}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardContent>
 
         <CardFooter class="flex justify-end gap-2">
-          <Button variant="ghost" @click="resetForm">Annulla</Button>
+          <Button variant="ghost" @click="resetForm">{{ t('common.cancel') }}</Button>
           <Button @click="saveAthlete" :disabled="loading">
             <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
-            {{ editingId ? 'Aggiorna' : 'Crea' }}
+            {{ editingId ? t('common.update') : t('common.create') }}
           </Button>
         </CardFooter>
       </Card>
@@ -233,15 +235,15 @@ onMounted(fetchAthletes)
           <!-- STATS -->
           <div class="grid grid-cols-3 border-t border-muted/30 bg-muted/5 py-2 text-center">
             <div>
-              <p class="text-[10px] text-muted-foreground uppercase">Età</p>
+              <p class="text-[10px] text-muted-foreground uppercase">{{ t('fields.age') }}</p>
               <p class="text-sm font-semibold">{{ athlete.age }}</p>
             </div>
             <div class="border-x border-muted/30">
-              <p class="text-[10px] text-muted-foreground uppercase">Peso</p>
+              <p class="text-[10px] text-muted-foreground uppercase">{{ t('fields.weightShort') }}</p>
               <p class="text-sm font-semibold">{{ athlete.weight }} kg</p>
             </div>
             <div>
-              <p class="text-[10px] text-muted-foreground uppercase">Altezza</p>
+              <p class="text-[10px] text-muted-foreground uppercase">{{ t('fields.heightShort') }}</p>
               <p class="text-sm font-semibold">{{ athlete.height }} cm</p>
             </div>
           </div>
@@ -252,11 +254,13 @@ onMounted(fetchAthletes)
              group-hover:opacity-100 transition-all duration-200
              translate-y-1 group-hover:translate-y-0">
           <button @click="editAthlete(athlete)" class="h-8 w-8 rounded-full flex items-center justify-center
-               bg-primary/10 text-primary hover:bg-primary hover:text-white transition shadow-md" title="Modifica atleta">
+               bg-primary/10 text-primary hover:bg-primary hover:text-white transition shadow-md"
+            title="Modifica atleta">
             <Edit3 class="h-4 w-4" />
           </button>
           <button @click="athleteToDelete = athlete; isDeleteDialogOpen = true" class="h-8 w-8 rounded-full flex items-center justify-center
-               bg-red-500/10 text-red-600 hover:bg-red-600 hover:text-white transition shadow-md" title="Elimina atleta">
+               bg-red-500/10 text-red-600 hover:bg-red-600 hover:text-white transition shadow-md"
+            title="Elimina atleta">
             <Trash2 class="h-4 w-4" />
           </button>
         </div>
@@ -269,15 +273,15 @@ onMounted(fetchAthletes)
   <Dialog v-model:open="isDeleteDialogOpen">
     <DialogContent class="max-w-md">
       <DialogHeader>
-        <DialogTitle>Conferma eliminazione</DialogTitle>
+        <DialogTitle>{{ t('athlete.deleteConfirm') }}</DialogTitle>
       </DialogHeader>
       <p class="text-sm">
-        Eliminare
-        <strong>{{ athleteToDelete?.firstName }} {{ athleteToDelete?.lastName }}</strong>?
+        {{ t('athlete.deleteQuestion') }}
+        <strong>{{ athleteToDelete?.firstName }} {{ athleteToDelete?.lastName }}</strong>
       </p>
       <div class="flex justify-end gap-2 mt-4">
-        <Button variant="ghost" @click="isDeleteDialogOpen = false">Annulla</Button>
-        <Button variant="destructive" @click="confirmDelete">Elimina</Button>
+        <Button variant="ghost" @click="isDeleteDialogOpen = false">{{ t('common.cancel') }}</Button>
+        <Button variant="destructive" @click="confirmDelete">{{ t('common.delete') }}</Button>
       </div>
     </DialogContent>
   </Dialog>

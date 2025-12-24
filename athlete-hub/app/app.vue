@@ -2,7 +2,8 @@
 import { ConfigProvider } from 'reka-ui'
 import 'vue-sonner/style.css'
 import { Toaster } from 'vue-sonner'
-
+import { useI18n } from 'vue-i18n'
+const { locale } = useI18n()
 const colorMode = useColorMode()
 const color = computed(() => colorMode.value === 'dark' ? '#09090b' : '#ffffff')
 const { theme } = useAppSettings()
@@ -17,10 +18,10 @@ useHead({
     { rel: 'icon', href: '/favicon.ico' },
   ],
   htmlAttrs: {
-    lang: 'en',
+    lang: () => locale.value,
   },
   bodyAttrs: {
-    class: computed(() => `color-${theme.value?.color || 'default'} theme-${theme.value?.type || 'default'}`),
+    class: () => `color-${theme.value?.color || 'default'} theme-${theme.value?.type || 'default'}`,
   },
 })
 

@@ -1,7 +1,12 @@
+// api/axios.ts
+import { i18n } from '../plugins/i18n' // Assicurati che il percorso sia corretto
 import axios, { type InternalAxiosRequestConfig, AxiosError } from 'axios'
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '../stores/auth'
 import type { Result, UserSignInResponse } from '../types/api'
+
+// Helper per la traduzione fuori dai componenti Vue
+const t = (key: string) => i18n.global.t(key)
 
 const api = axios.create({
   baseURL: 'http://localhost:5051/api/v1',
@@ -9,9 +14,8 @@ const api = axios.create({
   withCredentials: true 
 })
 
-// --- STATO GLOBALE DELL'INTERCEPTOR ---
 let isRefreshing = false
-let isLoggingOut = false // <--- NUOVO: Impedisce chiamate multiple di logout
+let isLoggingOut = false 
 let failedQueue: any[] = []
 
 const processQueue = (error: any, token: string | null = null) => {
@@ -24,11 +28,9 @@ const processQueue = (error: any, token: string | null = null) => {
 
 const PUBLIC_ROUTES = ['/Auth/sign-in', '/Auth/sign-up', '/Auth/refresh']
 
-
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  // Se stiamo già uscendo, annulliamo ogni nuova richiesta in partenza
   if (isLoggingOut && !config.url?.includes('/Auth/logout')) {
-    return Promise.reject(new axios.Cancel('Logout in corso...'))
+    return Promise.reject(new axios.Cancel(t('logoutInProgress')))
   }
 
   const authStore = useAuthStore()
@@ -41,32 +43,28 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 api.interceptors.response.use(
   (response) => {
     const result = response.data as Result<any>
+    // Controllo successo logico della business logic
     if (result && Object.prototype.hasOwnProperty.call(result, 'isSuccess') && !result.isSuccess) {
-      toast.error(result.error?.message || 'Operazione fallita')
+      toast.error(result.error?.message || t('operationFailed'))
     }
     return response
   },
   async (error: AxiosError) => {
-    // Se la richiesta è stata annullata manualmente, non fare nulla
     if (axios.isCancel(error)) return Promise.reject(error)
 
     const authStore = useAuthStore()
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
     
-    // --- 1. IL "CIRCUIT BREAKER" (INTERRUTTORE DI EMERGENZA) ---
-    // Se siamo già in fase di logout, ignoriamo qualsiasi altro errore
     if (isLoggingOut) return Promise.reject(error)
 
     const isAuthRoute = originalRequest.url?.includes('/Auth/refresh') || 
                         originalRequest.url?.includes('/Auth/logout')
 
-    // Se fallisce il refresh o il logout, attiviamo il blocco totale
     if (isAuthRoute) {
       await forceLogout(authStore)
       return Promise.reject(error)
     }
 
-    // --- 2. GESTIONE 401 ---
     if (error.response?.status === 401) {
       const isPublicRoute = PUBLIC_ROUTES.some(route => originalRequest.url?.includes(route))
       if (isPublicRoute) return Promise.reject(error)
@@ -96,10 +94,11 @@ api.interceptors.response.use(
             originalRequest.headers.Authorization = `Bearer ${data.value.accessToken}`
             return api(originalRequest)
           }
-          throw new Error("Refresh failed")
+          throw new Error('Refresh failed')
         } catch (refreshError) {
           isRefreshing = false
           processQueue(refreshError, null)
+          toast.error(t('refreshFailed'))
           await forceLogout(authStore)
           return Promise.reject(refreshError)
         }
@@ -111,20 +110,17 @@ api.interceptors.response.use(
 )
 
 async function forceLogout(authStore: any) {
-  if (isLoggingOut) return // Evita esecuzioni multiple
+  if (isLoggingOut) return
   isLoggingOut = true 
   
-  // Svuotiamo subito i dati in memoria per fermare i componenti Vue
   authStore.token = null
   authStore.user = null
 
-  // Pulizia Cookie e Storage
-  document.cookie.split(";").forEach((c) => {
-    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/")
-  })
+  // Pulizia rapida
   localStorage.clear()
-
-  // Reindirizzamento atomico
+  // Nota: I cookie HttpOnly non possono essere cancellati da JS, 
+  // ci deve pensare il backend nella rotta /logout
+  
   window.location.replace('/login?reason=expired') 
 }
 

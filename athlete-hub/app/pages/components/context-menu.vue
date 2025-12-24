@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 </script>
 
 <template>
@@ -68,7 +70,7 @@
                       Save Page As...
                       <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
                     </ContextMenuItem>
-                    <ContextMenuItem>Create Shortcut...</ContextMenuItem>
+                    <ContextMenuItem>{{ t('shortcuts.create') }}</ContextMenuItem> 
                     <ContextMenuItem>Name Window...</ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem>Developer Tools</ContextMenuItem>

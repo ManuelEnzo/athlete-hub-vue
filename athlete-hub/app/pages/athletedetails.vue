@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { User, ChevronDown } from 'lucide-vue-next'
 import AthleteDetail from '@/components/athelete/AthleteDetail.vue'
+
+const { t } = useI18n()
 
 // Stato che tiene traccia dell'ID dell'atleta selezionato
 const selectedAthleteId = ref(1)
@@ -19,7 +22,7 @@ const athleteOptions = [
     
     <div class="flex flex-wrap items-center justify-between gap-4 ">
       <h2 class="text-2xl font-bold tracking-tight flex items-center gap-2">
-        Athlete Visualizer
+        {{ t('athlete.visualizer') }}
       </h2>
 
       <div class="flex items-center space-x-3">
@@ -35,7 +38,7 @@ const athleteOptions = [
                    transition-all cursor-pointer text-sm font-semibold text-slate-700 shadow-sm 
                    hover:border-slate-300 hover:bg-slate-50/50"
           >
-            <option value="" disabled>Seleziona un atleta...</option>
+            <option value="" disabled>{{ t('measurements.validation.selectAthlete') }}</option>
             <option v-for="athlete in athleteOptions" :key="athlete.id" :value="athlete.id">
               {{ athlete.name }}
             </option>

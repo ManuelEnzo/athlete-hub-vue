@@ -31,12 +31,19 @@
         "targetRPE": "RPE Target"
     },
     "measurements": {
+        "pageTitle": "Stato Salute Atleti",
         "filterAthlete": "Seleziona atleta per filtrare",
-        "newMeasurement": "Nuova Misurazione",
-        "editMeasurement": "Modifica Misurazione",
+        "filterAll": "Tutti gli atleti",
+        "listTitle": "Ultime Misurazioni",
+        "newMeasurement": "Inserisci Nuove Misure",
+        "editMeasurement": "Modifica Rilevazione",
+        "analysisTitle": "Analisi Progressi",
+        "analysis": {
+            "description": "Variazione dei parametri nel tempo"
+        },
         "form": {
             "athlete": "Atleta",
-            "selectAthlete": "Seleziona atleta",
+            "selectAthlete": "Seleziona...",
             "weight": "Peso (kg)",
             "height": "Altezza (cm)",
             "chest": "Torace",
@@ -48,9 +55,9 @@
             "forearm": "Avambraccio",
             "neck": "Collo",
             "notes": "Note",
-            "notesPlaceholder": "Eventuali note",
+            "notesPlaceholder": "Annotazioni opzionali...",
             "cancel": "Annulla",
-            "create": "Crea",
+            "create": "Salva",
             "update": "Aggiorna"
         },
         "validation": {
@@ -65,23 +72,26 @@
             "loadAthletesError": "Errore caricamento atleti",
             "loadMeasurementsError": "Errore caricamento misurazioni",
             "communicationError": "Errore di comunicazione",
-            "created": "Misurazione creata",
-            "updated": "Misurazione aggiornata",
-            "deleted": "Misurazione eliminata",
+            "created": "Nuova rilevazione salvata!",
+            "updated": "Rilevazione aggiornata!",
+            "deleted": "Eliminato",
             "saveError": "Errore durante il salvataggio",
             "deleteError": "Errore durante eliminazione"
         },
         "card": {
             "weight": "Peso",
-            "height": "Altezza"
+            "height": "Altezza",
+            "chest": "Torace",
+            "waist": "Vita",
+            "hip": "Fianchi"
         },
         "dialog": {
             "deleteTitle": "Conferma eliminazione",
-            "deleteText": "Eliminare?"
+            "deleteText": "Eliminare la misurazione?"
         },
         "actions": {
             "edit": "Modifica misurazione",
-            "delete": "Elimina misurazione",
+            "delete": "Elimina",
             "create": "Crea",
             "update": "Aggiorna",
             "cancel": "Annulla"
@@ -98,13 +108,39 @@
         "age": "Età",
         "athlete": "Atleta",
         "status": "Stato",
-        "readiness": "Readiness"
+        "readiness": "Readiness",
+        "gender": "Sesso",
+        "genderPlaceholder": "Seleziona sesso",
+        "weightShort": "Peso",
+        "heightShort": "Altezza",
+        "sportCategory": "Categoria Sportiva"
     },
     "athlete": {
+        "pageTitle": "Dati Atleti",
+        "visualizer": "Visualizzatore Atleta",
         "new": "Nuovo Atleta",
         "edit": "Modifica Atleta",
         "deleteConfirm": "Conferma eliminazione",
         "deleteQuestion": "Eliminare?",
+        "unknown": "Atleta sconosciuto",
+        "details": {
+            "readinessTitle": "Stato di Prontezza (Readiness)",
+            "acwrTitle": "📈 Acute:Chronic Workload Ratio (ACWR)",
+            "acwrDescription": "Andamento del rapporto Carico Acuto (7 giorni) vs Carico Cronico (28 giorni). Obiettivo: 0.8 - 1.3",
+            "benchmarkTitle": "Benchmark Prestazioni (vs Team)",
+            "benchmarkDescription": "Risultati ultimi test ({date}) a confronto con la media del Team.",
+            "table": {
+                "metric": "Metrica",
+                "athlete": "Atleta",
+                "team": "Media Team",
+                "diff": "Diff (%)"
+            },
+            "status": {
+                "high": "Alto Rischio (Overload)",
+                "medium": "Rischio Medio (Attenzione)",
+                "low": "Basso Rischio"
+            }
+        },
         "success": {
             "created": "Atleta creato con successo",
             "updated": "Atleta aggiornato con successo",
@@ -112,15 +148,9 @@
         },
         "errors": {
             "load": "Errore nel caricamento atleti",
-            "required": "Compila tutti i campi obbligatori"
-        },
-        "unknown": "Atleta sconosciuto"
-    },
-    "errors": {
-        "server": "Errore di comunicazione con il server",
-        "save": "Errore durante il salvataggio",
-        "delete": "Errore durante eliminazione",
-        "generic": "Errore imprevisto"
+            "required": "Compila tutti i campi obbligatori",
+            "server": "Si è verificato un errore del server"
+        }
     },
     "risk": {
         "optimal": "✅ Ottimale",
@@ -147,7 +177,12 @@
     },
     "readiness": {
         "title": "Stato di Prontezza",
-        "score": "Punteggio di Recupero"
+        "score": "Punteggio di Recupero",
+        "statuses": {
+            "good": "Ottima Prontezza",
+            "slowRecover": "Recupero Lento",
+            "injured": "Infortunato/Malato"
+        }
     },
     "acwr": {
         "current": "ACWR corrente (Settimana: {week})"
@@ -167,6 +202,21 @@
         "sprint30m": "Sprint 30m (s)"
     },
     "calendar": {
+        "title": "Sessioni e Appuntamenti",
+        "months": {
+            "0": "Gennaio",
+            "1": "Febbraio",
+            "2": "Marzo",
+            "3": "Aprile",
+            "4": "Maggio",
+            "5": "Giugno",
+            "6": "Luglio",
+            "7": "Agosto",
+            "8": "Settembre",
+            "9": "Ottobre",
+            "10": "Novembre",
+            "11": "Dicembre"
+        },
         "days": [
             "Lun",
             "Mar",
@@ -178,24 +228,92 @@
         ],
         "addEvent": "Aggiungi Evento",
         "noEvents": "Nessun evento pianificato.",
+        "scheduledCount": "{count} attività pianificate",
         "addNow": "Aggiungi ora!",
-        "eventDetails": "Dettagli per il {date}",
-        "scheduledEvents": "{count} eventi in programma",
-        "newEventTitle": "Aggiungi Nuova Sessione/Appuntamento",
-        "planEventFor": "Pianifica un evento per il {date}.",
-        "title": "Titolo",
-        "athlete": "Atleta/Gruppo",
-        "date": "Data",
-        "time": "Orario",
-        "type": "Tipo Evento",
+        "eventDetails": "Dettagli per {date}",
+        "saveError": "Errore salvataggio",
+        "createEvent": "Crea Evento",
+        "form": {
+            "title": "Titolo",
+            "date": "Data",
+            "time": "Ora",
+            "type": "Tipo Evento",
+            "description": "Descrizione",
+            "cancel": "Annulla",
+            "create": "Crea",
+            "update": "Aggiorna",
+            "titlePlaceholder": "Titolo evento",    
+            "descriptionPlaceholder": "Dettagli evento...",
+            "selectAthlete":"Seleziona un atleta"
+        }
+    },
+    "common": {
         "cancel": "Annulla",
-        "createEvent": "Crea Evento"
+        "confirm": "Conferma",
+        "create": "Crea",
+        "update": "Aggiorna",
+        "save": "Salva",
+        "delete": "Elimina",
+        "details": "Dettagli",
+        "optional": "Opzionale"
+    },
+    "kanban": {
+        "title": "Kanban Board",
+        "description": "Ecco l'elenco delle tue attività per questo mese!",
+        "addColumn": "Aggiungi Colonna",
+        "newColumnPlaceholder": "Titolo colonna",
+        "dialog": {
+            "title": "Aggiungi Nuova Colonna",
+            "description": "Aggiungi una nuova colonna alla board"
+        }
+    },
+    "auth": {
+        "signup": {
+            "success": "Registrazione avvenuta con successo",
+            "networkError": "Errore di rete durante la registrazione",
+            "validation": {
+                "fillAll": "Compila tutti i campi",
+                "passwordMismatch": "Le password non coincidono"
+            },
+            "errors": {
+                "general": "Errore durante la registrazione"
+            },
+            "email": "Email",
+            "password": "Password",
+            "confirmPassword": "Conferma Password",
+            "createAccount": "Crea Account",
+            "placeholders": {
+                "email": "name@example.com"
+            },
+            "orContinue": "O continua con"
+        }
+    },
+    "tasks": {
+        "title": "Attività",
+        "description": "Ecco l'elenco delle tue attività per questo mese!"
     },
     "eventTypes": {
-        "Forza": "Forza",
-        "Resistenza": "Resistenza",
+        "Strength": "Forza",
+        "Endurance": "Resistenza",
         "Test": "Test",
-        "Recupero": "Recupero",
-        "Visita": "Visita"
+        "Recovery": "Recupero",
+        "Visit": "Visita",
+        "Running": "Corsa",
+        "Team Sport": "Sport di Squadra",
+        "checkUp"   : "Controllo"
+    },
+    "genders": {
+        "genderPlaceholder": "Seleziona sesso",
+        "male": "Maschio",
+        "female": "Femmina",
+        "other": "Altro"
+    },
+    "refreshFailed": "Aggiornamento token non riuscito",
+    "logoutInProgress": "Logout in corso...",
+    "operationFailed": "Operazione fallita",
+    "errors": {
+        "load": "Errore nel caricamento atleti",
+        "required": "Compila tutti i campi obbligatori",
+        "server": "Si è verificato un errore del server"
     }
 }

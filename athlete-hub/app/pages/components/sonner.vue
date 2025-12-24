@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 </script>
 
 <template>
@@ -45,7 +47,7 @@ import { toast } from 'vue-sonner'
           <div class="min-h-100px w-full flex items-center justify-center gap-4 md:min-h-200px">
             <Button
               variant="outline" @click="() => {
-                toast('Event has been created', {
+                toast(t('notifications.eventCreated'), {
                   description: 'Sunday, December 03, 2023 at 9:00 AM',
                   action: {
                     label: 'Undo',
