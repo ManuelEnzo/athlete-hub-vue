@@ -144,12 +144,12 @@ export interface CalendarEventResponse {
  */
 export interface CalendarEventCreateRequest {
   title: string;
-  athleteId: number | null; // null se l'evento è per tutto il gruppo
-  date: string; // Formato ISO string
-  type: string; // Deve corrispondere ai nomi dell'Enum EventType in C#
-  color?: string | null;
-  focus?: string | null;
-  targetRPE?: number | null;
+  athleteIds: number[]; // Cambiato da athleteId: number
+  date: string;
+  type: string;
+  focus?: string;
+  targetRPE?: number;
+  testDefinitionId?: number | null; // Aggiunto per i test
 }
 
 /**
@@ -174,4 +174,44 @@ export interface CalendarSessionResponse {
   focus?: string | null;
   targetRPE?: number | null;
   athleteName?: string | null;
+}
+
+// --- INTERFACCE DTO (Allineate al Backend) ---
+export interface MetricDto {
+  id: number
+  name: string
+  unit: string
+}
+
+export interface AthleteEntryDto {
+  id: number
+  fullName: string
+  // Corrisponde al Dictionary<long, string> di C#
+  tempResults?: Record<number, string> 
+}
+
+export interface TestEntryGridDto {
+  eventId: number
+  testName: string
+  metrics: MetricDto[]
+  athletes: AthleteEntryDto[]
+}
+
+export interface TestResultSaveDto {
+  athleteId: number;
+  testMetricId: number;
+  value: number;
+  note?: string;
+}
+export interface TestDefinitionDto {
+  id: number;
+  name: string;
+  description?: string;
+  metrics: TestMetricDto[];
+}
+
+export interface TestMetricDto {
+  id: number;
+  name: string;
+  unit: string;
 }

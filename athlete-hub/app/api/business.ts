@@ -7,11 +7,13 @@ import type {
   AthleteMeasurementsCreateRequest,
   AthleteMeasurementsUpdateRequest,
   AthleteMeasurementsResponse,
-  // Assicurati di aggiungere questi tipi nel tuo file ../types/api
   CalendarEventResponse,
   CalendarEventCreateRequest,
   CalendarSessionResponse,
-  CalendarEventUpdateRequest
+  CalendarEventUpdateRequest,
+  // NUOVI TIPI DA AGGIUNGERE NEL TUO FILE types/api.ts
+  TestResultSaveDto,
+  TestEntryGridDto
 } from '../types/api'
 
 export const athleteApi = {
@@ -35,30 +37,36 @@ export const athleteApi = {
   deleteMeasurement: (id: number) => api.delete<Result<boolean>>(`/AthleteMeasurements/${id}`),
 
   // --- Calendario / Agenda ---
-  // --- Calendario / Agenda ---
-
-  // 1. Recupera tutti gli eventi (con filtri opzionali month/year)
   getAllEvents: (month?: number, year?: number) => {
     const params = month || year ? { params: { month, year } } : {}
     return api.get<Result<CalendarEventResponse[]>>('/Calendar', params)
   },
-  // 2. Recupera le sessioni imminenti (per il widget della Dashboard)
   getUpcomingSessions: () =>
     api.get<Result<CalendarSessionResponse[]>>('/Calendar/sessions'),
 
-  // 3. Recupera eventi di un singolo atleta
   getEventsByAthlete: (athleteId: number) =>
     api.get<Result<CalendarEventResponse[]>>(`/Calendar/athlete/${athleteId}`),
 
-  // 4. Crea un nuovo evento
   createEvent: (data: CalendarEventCreateRequest) =>
     api.post<Result<CalendarEventResponse>>('/Calendar', data),
 
-  // 5. Aggiorna un evento esistente (Metodo che mancava)
   updateEvent: (id: number, data: CalendarEventUpdateRequest) =>
     api.put<Result<boolean>>(`/Calendar/${id}`, data),
 
-  // 6. Elimina un evento
   deleteEvent: (id: number) =>
     api.delete<Result<boolean>>(`/Calendar/${id}`),
+
+  // --- NUOVA SEZIONE: TEST E PERFORMANCE ---
+
+  // 1. Recupera i protocolli di test disponibili (es. Salto CMJ, Sprint 30m)
+  getTestDefinitions: () => 
+    api.get<Result<any[]>>('/Calendar/test-definitions'), // Assicurati di avere questo controller o endpoint
+
+  // 2. Recupera la griglia di inserimento per un evento specifico
+  getTestGrid: (eventId: number) => 
+    api.get<Result<TestEntryGridDto>>(`/Calendar/${eventId}/test-grid`),
+
+  // 3. Salva i risultati del test in modo massivo
+  saveTestResults: (eventId: number, results: TestResultSaveDto[]) => 
+    api.post<Result<boolean>>(`/Calendar/${eventId}/results`, results),
 }

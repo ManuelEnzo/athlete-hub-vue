@@ -4,16 +4,13 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Nuxt: Debug",
+      "name": "Debug Nuxt: Client",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}",
       "sourceMaps": true,
-      "pathMapping": {
-        "/_nuxt": "${workspaceFolder}"
-      },
       "sourceMapPathOverrides": {
         "webpack:///./*": "${webRoot}/*",
-        "node_modules/*": "${webRoot}/node_modules/*"
+        "node_modules/*": "${workspaceFolder}/node_modules/*"
       }
     }
   ]

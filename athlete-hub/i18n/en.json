@@ -205,28 +205,12 @@
     "calendar": {
         "title": "Sessions and Appointments",
         "months": {
-            "0": "January",
-            "1": "February",
-            "2": "March",
-            "3": "April",
-            "4": "May",
-            "5": "June",
-            "6": "July",
-            "7": "August",
-            "8": "September",
-            "9": "October",
-            "10": "November",
-            "11": "December"
+            "0": "January", "1": "February", "2": "March", "3": "April",
+            "4": "May", "5": "June", "6": "July", "7": "August",
+            "8": "September", "9": "October", "10": "November", "11": "December"
         },
-        "days": [
-            "Mon",
-            "Tue",
-            "Wed",
-            "Thu",
-            "Fri",
-            "Sat",
-            "Sun"
-        ],
+        "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        "agendaTitle": "Agenda",
         "addEvent": "Add Event",
         "noEvents": "No events scheduled.",
         "scheduledCount": "{count} scheduled events",
@@ -234,8 +218,12 @@
         "eventDetails": "Details for {date}",
         "saveError": "Error saving event",
         "createEvent": "Create Event",
+        "newSession": "New Session",
+        "deleteTitle": "Cancel Appointment",
+        "deleteConfirmation": "Are you sure you want to remove this session? The athlete will not receive automatic notifications.",
         "form": {
             "title": "Title",
+            "athletes": "Athletes",
             "date": "Date",
             "time": "Time",
             "type": "Event Type",
@@ -245,7 +233,31 @@
             "update": "Update",
             "titlePlaceholder": "Event title",
             "descriptionPlaceholder": "Event details...",
-            "selectAthlete":"Select an athlete"
+            "selectAthlete": "Select an athlete",
+            "validationError": "Please fill all required fields",
+            "titleLabel": "Session Title",
+            "participants": "Participants",
+            "dateLabel": "Date",
+            "timeLabel": "Start Time",
+            "categoryLabel": "Category",
+            "protocolLabel": "Performance Protocol",
+            "protocolSelect": "Select protocol..."
+        },
+        "delete": {
+            "title": "Delete Session",
+            "description": "Are you sure? This action cannot be undone."
+        },
+        "test": {
+            "gridDescription": "Massive data entry for test session",
+            "athleteHeader": "Athlete",
+            "quickEntryActive": "Quick entry mode active",
+            "exitWithoutSave": "Exit without saving",
+            "saveResults": "Save Session"
+        },
+        "toast": {
+            "created": "Event created successfully",
+            "updated": "Event updated successfully",
+            "deleted": "Event deleted successfully"
         }
     },
     "common": {
@@ -293,15 +305,22 @@
         "title": "Tasks",
         "description": "Here's a list of your tasks for this month!"
     },
-    "eventTypes": {
+   "eventTypes": {
         "Strength": "Strength",
+        "Forza": "Strength",
         "Endurance": "Endurance",
+        "Resistenza": "Endurance",
         "Test": "Test",
         "Recovery": "Recovery",
+        "Recupero": "Recovery",
         "Visit": "Visit",
+        "Visita": "Visit",
         "Running": "Running",
+        "Corsa": "Running",
         "Team Sport": "Team Sport",
-        "checkUp"   : "Check-Up"
+        "Sport di Squadra": "Team Sport",
+        "Checkup": "Check-Up",
+        "Controllo": "Check-Up"
     },
     "genders": {
         "genderPlaceholder": "Select gender",

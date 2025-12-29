@@ -226,6 +226,7 @@
             "Sab",
             "Dom"
         ],
+        "agendaTitle": "Agenda",
         "addEvent": "Aggiungi Evento",
         "noEvents": "Nessun evento pianificato.",
         "scheduledCount": "{count} attività pianificate",
@@ -235,6 +236,7 @@
         "createEvent": "Crea Evento",
         "form": {
             "title": "Titolo",
+            "athletes": "Atleti",
             "date": "Data",
             "time": "Ora",
             "type": "Tipo Evento",
@@ -242,9 +244,36 @@
             "cancel": "Annulla",
             "create": "Crea",
             "update": "Aggiorna",
-            "titlePlaceholder": "Titolo evento",    
+            "titlePlaceholder": "Titolo evento",
             "descriptionPlaceholder": "Dettagli evento...",
-            "selectAthlete":"Seleziona un atleta"
+            "selectAthlete": "Seleziona un atleta",
+            "validationError": "Per favore compila tutti i campi obbligatori",
+            "titleLabel": "Titolo Sessione",
+            "participants": "Partecipanti",
+            "dateLabel": "Data",
+            "timeLabel": "Ora Inizio",
+            "categoryLabel": "Categoria",
+            "protocolLabel": "Protocollo Performance",
+            "protocolSelect": "Seleziona protocollo..."
+        },
+        "deleteConfirmation": "Sei sicuro di voler rimuovere questa sessione? L'atleta non riceverà notifiche automatiche.",
+        "deleteTitle": "Cancellare Appuntamento",
+        "newSession": "Nuova Sessione",
+        "toast": {
+            "created": "Evento creato con successo",
+            "updated": "Evento aggiornato con successo",
+            "deleted": "Evento eliminato con successo"
+        },
+        "delete": {
+            "title": "Elimina Sessione",
+            "description": "Sei sicuro? Questa azione non può essere annullata."
+        },
+        "test": {
+            "gridDescription": "Inserimento dati massivo per la sessione di test",
+            "athleteHeader": "Atleta",
+            "quickEntryActive": "Modalità inserimento rapido attiva",
+            "exitWithoutSave": "Esci senza salvare",
+            "saveResults": "Salva Sessione"
         }
     },
     "common": {
@@ -294,13 +323,18 @@
     },
     "eventTypes": {
         "Strength": "Forza",
+        "Forza": "Forza",
         "Endurance": "Resistenza",
+        "Resistenza": "Resistenza",
         "Test": "Test",
         "Recovery": "Recupero",
+        "Recupero": "Recupero",
         "Visit": "Visita",
         "Running": "Corsa",
+        "Corsa": "Corsa",
         "Team Sport": "Sport di Squadra",
-        "checkUp"   : "Controllo"
+        "Sport di Squadra": "Sport di Squadra",
+        "Checkup": "Controllo"
     },
     "genders": {
         "genderPlaceholder": "Seleziona sesso",
