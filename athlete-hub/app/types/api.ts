@@ -52,7 +52,8 @@ export interface AthleteResponse {
   weight: number
   height: number
   sportCategory?: string
-  createdAt: string // Arriva come stringa ISO dal JSON
+  createdAt: string // Arriva come stringa ISO dal JSON,
+  dateOfBirth: string // Arriva come stringa ISO dal JSON
 }
 
 export interface AthleteCreateRequest {
@@ -180,7 +181,8 @@ export interface CalendarSessionResponse {
 export interface MetricDto {
   id: number
   name: string
-  unit: string
+  unit: string,
+  dataType: number, // (0: Numeric, 1: Time, 2: LevelStep)
 }
 
 export interface AthleteEntryDto {

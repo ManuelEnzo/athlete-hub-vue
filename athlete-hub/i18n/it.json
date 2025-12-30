@@ -31,6 +31,7 @@
         "targetRPE": "RPE Target"
     },
     "measurements": {
+        "noData": "Nessuna misurazione disponibile. Per favore aggiungi nuove misurazioni.",
         "pageTitle": "Stato Salute Atleti",
         "filterAthlete": "Seleziona atleta per filtrare",
         "filterAll": "Tutti gli atleti",
@@ -113,9 +114,12 @@
         "genderPlaceholder": "Seleziona sesso",
         "weightShort": "Peso",
         "heightShort": "Altezza",
-        "sportCategory": "Categoria Sportiva"
+        "sportCategory": "Categoria Sportiva",
+        "sportCategoryPlaceholder": "Seleziona categoria sportiva"
     },
     "athlete": {
+        "deleteWarning": "Questa azione eliminerà in modo permanente l'atleta e tutti i suoi dati associati. Sei sicuro di voler procedere?",
+        "noData": "Nessun atleta disponibile. Per favore aggiungi nuovi atleti.",
         "pageTitle": "Dati Atleti",
         "visualizer": "Visualizzatore Atleta",
         "new": "Nuovo Atleta",
@@ -149,7 +153,9 @@
         "errors": {
             "load": "Errore nel caricamento atleti",
             "required": "Compila tutti i campi obbligatori",
-            "server": "Si è verificato un errore del server"
+            "server": "Si è verificato un errore del server",
+            "save": "Errore durante il salvataggio dei dati",
+            "emailInUse": "Email già in uso"
         }
     },
     "risk": {
@@ -202,6 +208,20 @@
         "sprint30m": "Sprint 30m (s)"
     },
     "calendar": {
+        "grid": {
+            "athlete": "Atleta",
+            "helpTime": "Formato: MM:SS.cc",
+            "helpLevel": "Livello.Navetta (es: 16.3)"
+        },
+        "editSession": "Modifica Sessione",
+        "testGridSub": "Inserimento dati protocollo test",
+        "errors": {
+            "fetchEvents": "Impossibile caricare il calendario",
+            "saveEvent": "Errore durante il salvataggio dell'evento",
+            "deleteEvent": "Errore durante l'eliminazione",
+            "loadGrid": "Errore nel caricamento della griglia test",
+            "saveResults": "Errore nel salvataggio dei risultati"
+        },
         "title": "Sessioni e Appuntamenti",
         "months": {
             "0": "Gennaio",
@@ -226,6 +246,8 @@
             "Sab",
             "Dom"
         ],
+        "lockedTitle": "Modifiche limitate",
+        "lockedMessage": "Non è possibile cambiare tipologia o protocollo perché sono già presenti risultati salvati per questa sessione.",
         "agendaTitle": "Agenda",
         "addEvent": "Aggiungi Evento",
         "noEvents": "Nessun evento pianificato.",
@@ -234,6 +256,7 @@
         "eventDetails": "Dettagli per {date}",
         "saveError": "Errore salvataggio",
         "createEvent": "Crea Evento",
+        "gridDescription": "Inserimento dati massivo per la sessione di test",
         "form": {
             "title": "Titolo",
             "athletes": "Atleti",
@@ -262,7 +285,8 @@
         "toast": {
             "created": "Evento creato con successo",
             "updated": "Evento aggiornato con successo",
-            "deleted": "Evento eliminato con successo"
+            "deleted": "Evento eliminato con successo",
+            "resultsSaved": "Risultati salvati con successo"
         },
         "delete": {
             "title": "Elimina Sessione",
@@ -274,6 +298,9 @@
             "quickEntryActive": "Modalità inserimento rapido attiva",
             "exitWithoutSave": "Esci senza salvare",
             "saveResults": "Salva Sessione"
+        },
+        "validation": {
+            "noResults": "Inserisci almeno un risultato prima di salvare"
         }
     },
     "common": {
@@ -314,7 +341,25 @@
             "placeholders": {
                 "email": "name@example.com"
             },
-            "orContinue": "O continua con"
+            "orContinue": "O continua con",
+            "submit": "Registrati"
+        },
+        "errors": {
+            "requiredFields": "Campi obbligatorio",
+            "passwordMismatch": "Le password non coincidono"
+        },
+        "fields": {
+            "email": "Email",
+            "password": "Password",
+            "confirmPassword": "Conferma Password"
+        },
+        "login": {
+            "withApple": "Login with Apple",
+            "withGoogle": "Login with Google",
+            "submit": "Accedi",
+            "noAccount": "Non hai un account?",
+            "signUpLink": "Registrati qui",
+            "success": "Login avvenuto con successo"
         }
     },
     "tasks": {
@@ -348,6 +393,7 @@
     "errors": {
         "load": "Errore nel caricamento atleti",
         "required": "Compila tutti i campi obbligatori",
-        "server": "Si è verificato un errore del server"
+        "server": "Si è verificato un errore del server",
+        "save": "Errore durante il salvataggio dei dati"
     }
 }

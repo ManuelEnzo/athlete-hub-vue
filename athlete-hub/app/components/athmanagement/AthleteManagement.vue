@@ -9,6 +9,8 @@ import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { Separator } from '../ui/separator'
 
 import { athleteApi } from '../../api/business'
 import type { AthleteResponse, AthleteCreateRequest } from '../../types/api'
@@ -40,10 +42,11 @@ async function fetchAthletes() {
   loading.value = true
   try {
     const res = await athleteApi.getAll()
-    if (res.data.isSuccess) athletes.value = res.data.value ?? []
-    else toast.error(t('athlete.errors.load'))
-  } catch {
-    toast.error(t('errors.server'))
+    // Se l'interceptor non lancia errore, il successo è garantito
+    athletes.value = res.data.value ?? []
+  } catch (err: any) {
+    const msg = err.error?.message || t('athlete.errors.load')
+    toast.error(msg)
   } finally {
     loading.value = false
   }
@@ -58,24 +61,21 @@ async function saveAthlete() {
   loading.value = true
   try {
     if (editingId.value !== null) {
-      const res = await athleteApi.update(editingId.value, form)
-      if (res.status === 204) {
-        toast.success(t('athlete.success.updated'))
-        await fetchAthletes()
-        resetForm()
-      }
+      // Update: ci fidiamo dello status 204/200 gestito dall'interceptor
+      await athleteApi.update(editingId.value, form)
+      toast.success(t('athlete.success.updated'))
     } else {
-      const res = await athleteApi.create(form as AthleteCreateRequest)
-      if (res.data.isSuccess) {
-        toast.success(t('athlete.success.created'))
-        await fetchAthletes()
-        resetForm()
-      } else {
-        toast.error(res.data.error ?? t('errors.save'))
-      }
+      // Create
+      await athleteApi.create(form as AthleteCreateRequest)
+      toast.success(t('athlete.success.created'))
     }
-  } catch {
-    toast.error(t('errors.save'))
+    
+    await fetchAthletes()
+    resetForm()
+  } catch (err: any) {
+    // Cattura il messaggio specifico del Result Pattern (es. "Email già esistente")
+    const msg = err.error?.message || t('errors.save')
+    toast.error(msg)
   } finally {
     loading.value = false
   }
@@ -85,13 +85,14 @@ async function confirmDelete() {
   if (!athleteToDelete.value) return
   loading.value = true
   try {
-    const res = await athleteApi.delete(athleteToDelete.value.id)
-    if (res.status === 204) {
-      athletes.value = athletes.value.filter(a => a.id !== athleteToDelete.value!.id)
-      toast.success(t('athlete.success.deleted'))
-    } else toast.error(res.data.error ?? t('errors.delete'))
-  } catch {
-    toast.error(t('errors.delete'))
+    await athleteApi.delete(athleteToDelete.value.id)
+    
+    // Aggiornamento locale della lista
+    athletes.value = athletes.value.filter(a => a.id !== athleteToDelete.value!.id)
+    toast.success(t('athlete.success.deleted'))
+  } catch (err: any) {
+    const msg = err.error?.message || t('errors.delete')
+    toast.error(msg)
   } finally {
     isDeleteDialogOpen.value = false
     athleteToDelete.value = null
@@ -103,14 +104,19 @@ async function confirmDelete() {
 
 function editAthlete(a: AthleteResponse) {
   editingId.value = a.id
+  // Formattazione data per input type="date" (YYYY-MM-DD)
+  const formattedDate = a.dateOfBirth ? a.dateOfBirth.split('T')[0] : ''
+  
   Object.assign(form, {
     firstName: a.firstName,
     lastName: a.lastName,
     email: a.email,
     sportCategory: a.sportCategory,
-    birthDate: a.createdAt?.split('T')[0] ?? '',
+    birthDate: formattedDate,
     weight: a.weight,
-    height: a.height
+    height: a.height,
+    gender: a.gender || 'F',
+    dateOfBirth : a.dateOfBirth
   })
   emit('update:showForm', true)
 }
@@ -124,7 +130,8 @@ function resetForm() {
     sportCategory: '',
     birthDate: '',
     weight: 0,
-    height: 0
+    height: 0,
+    gender: 'F'
   })
   emit('update:showForm', false)
 }
@@ -135,62 +142,61 @@ onMounted(fetchAthletes)
 <template>
   <div class="w-full flex flex-col gap-8 mx-auto p-4 relative">
 
-    <!-- FORM -->
     <Transition name="expand">
-      <Card v-if="props.showForm">
+      <Card v-if="props.showForm" class="border-primary/20 shadow-lg">
         <CardHeader>
-          <CardTitle class="flex items-center gap-2">
-            <Edit3 v-if="editingId" />
-            <Plus v-else />
+          <CardTitle class="flex items-center gap-2 text-primary">
+            <Edit3 v-if="editingId" class="h-5 w-5" />
+            <Plus v-else class="h-5 w-5" />
             {{ editingId ? t('athlete.edit') : t('athlete.new') }}
           </CardTitle>
         </CardHeader>
 
         <CardContent class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">{{ t('fields.firstName') }}</label>
+            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.firstName') }}</label>
             <Input v-model="form.firstName" :placeholder="t('fields.firstName')" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">{{ t('fields.lastName') }}</label>
+            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.lastName') }}</label>
             <Input v-model="form.lastName" :placeholder="t('fields.lastName')" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">{{ t('fields.email') }}</label>
-            <Input v-model="form.email" :placeholder="t('fields.email')" />
+            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.email') }}</label>
+            <Input v-model="form.email" type="email" :placeholder="t('fields.email')" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">{{ t('fields.sportCategory') }}</label>
+            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.sportCategory') }}</label>
             <Input v-model="form.sportCategory" :placeholder="t('fields.sportCategoryPlaceholder')" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">{{ t('fields.birthDate') }}</label>
+            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.birthDate') }}</label>
             <Input v-model="form.birthDate" type="date" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">{{ t('fields.weight') }} (kg)</label>
-            <Input v-model.number="form.weight" type="number" :placeholder="t('fields.weight')" />
+            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.weight') }} (kg)</label>
+            <Input v-model.number="form.weight" type="number" step="0.1" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">{{ t('fields.height') }} (cm)</label>
-            <Input v-model.number="form.height" type="number" :placeholder="t('fields.height')" />
+            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.height') }} (cm)</label>
+            <Input v-model.number="form.height" type="number" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1">{{ t('fields.gender') }}</label>
+            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.gender') }}</label>
             <Select v-model="form.gender">
-              <SelectTrigger class="w-full">
+              <SelectTrigger>
                 <SelectValue :placeholder="t('fields.genderPlaceholder')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="M">{{ t('genders.male') }}</SelectItem>
                 <SelectItem value="F">{{ t('genders.female') }}</SelectItem>
-                <SelectItem value=" ">{{ t('genders.other') }}</SelectItem>
+                <SelectItem value="O">{{ t('genders.other') }}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardContent>
 
-        <CardFooter class="flex justify-end gap-2">
+        <CardFooter class="flex justify-end gap-2 bg-muted/50 p-4">
           <Button variant="ghost" @click="resetForm">{{ t('common.cancel') }}</Button>
           <Button @click="saveAthlete" :disabled="loading">
             <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
@@ -200,22 +206,23 @@ onMounted(fetchAthletes)
       </Card>
     </Transition>
 
-    <!-- LOADER CENTRALE LISTA -->
     <div v-if="loading && athletes.length === 0" class="flex justify-center items-center py-20">
       <Loader2 class="h-12 w-12 animate-spin text-primary" />
     </div>
 
-    <!-- LISTA ATLETI -->
-    <TransitionGroup tag="div" name="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <Card v-for="athlete in athletes" :key="athlete.id" class="group relative overflow-hidden border-muted/40
-           hover:border-primary/40 transition-all duration-300">
+    <TransitionGroup 
+      tag="div" 
+      name="grid" 
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    >
+      <Card 
+        v-for="athlete in athletes" 
+        :key="athlete.id" 
+        class="group relative overflow-hidden border-muted/40 hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-md"
+      >
         <CardContent class="p-0">
-          <!-- HEADER -->
           <div class="flex items-center gap-4 p-5">
-            <div class="h-14 w-14 rounded-full
-                 bg-gradient-to-br from-primary/20 to-primary/5
-                 border border-primary/10 flex items-center justify-center
-                 text-primary shadow-inner">
+            <div class="h-14 w-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/10 flex items-center justify-center text-primary shadow-inner">
               <User class="h-7 w-7" />
             </div>
             <div class="flex-1 min-w-0">
@@ -232,11 +239,11 @@ onMounted(fetchAthletes)
               </div>
             </div>
           </div>
-          <!-- STATS -->
-          <div class="grid grid-cols-3 border-t border-muted/30 bg-muted/5 py-2 text-center">
+          
+          <div class="grid grid-cols-3 border-t border-muted/30 bg-muted/5 py-3 text-center">
             <div>
               <p class="text-[10px] text-muted-foreground uppercase">{{ t('fields.age') }}</p>
-              <p class="text-sm font-semibold">{{ athlete.age }}</p>
+              <p class="text-sm font-semibold">{{ athlete.age || '-' }}</p>
             </div>
             <div class="border-x border-muted/30">
               <p class="text-[10px] text-muted-foreground uppercase">{{ t('fields.weightShort') }}</p>
@@ -249,40 +256,70 @@ onMounted(fetchAthletes)
           </div>
         </CardContent>
 
-        <!-- AZIONI -->
-        <div class="absolute top-3 right-3 flex gap-2 opacity-0
-             group-hover:opacity-100 transition-all duration-200
-             translate-y-1 group-hover:translate-y-0">
-          <button @click="editAthlete(athlete)" class="h-8 w-8 rounded-full flex items-center justify-center
-               bg-primary/10 text-primary hover:bg-primary hover:text-white transition shadow-md"
-            title="Modifica atleta">
+        <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0">
+          <button 
+            @click="editAthlete(athlete)" 
+            class="h-8 w-8 rounded-full flex items-center justify-center bg-background/80 backdrop-blur text-primary hover:bg-primary hover:text-white transition shadow-sm border border-border"
+          >
             <Edit3 class="h-4 w-4" />
           </button>
-          <button @click="athleteToDelete = athlete; isDeleteDialogOpen = true" class="h-8 w-8 rounded-full flex items-center justify-center
-               bg-red-500/10 text-red-600 hover:bg-red-600 hover:text-white transition shadow-md"
-            title="Elimina atleta">
+          <button 
+            @click="athleteToDelete = athlete; isDeleteDialogOpen = true" 
+            class="h-8 w-8 rounded-full flex items-center justify-center bg-background/80 backdrop-blur text-destructive hover:bg-destructive hover:text-white transition shadow-sm border border-border"
+          >
             <Trash2 class="h-4 w-4" />
           </button>
         </div>
       </Card>
     </TransitionGroup>
 
+    <div v-if="!loading && athletes.length === 0" class="text-center py-20 bg-muted/20 rounded-xl border-2 border-dashed">
+        <User class="h-12 w-12 mx-auto text-muted-foreground opacity-50 mb-4" />
+        <p class="text-muted-foreground">{{ t('athlete.noData') }}</p>
+    </div>
+
   </div>
 
-  <!-- DIALOG CONFERMA -->
   <Dialog v-model:open="isDeleteDialogOpen">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>{{ t('athlete.deleteConfirm') }}</DialogTitle>
       </DialogHeader>
-      <p class="text-sm">
-        {{ t('athlete.deleteQuestion') }}
-        <strong>{{ athleteToDelete?.firstName }} {{ athleteToDelete?.lastName }}</strong>
-      </p>
-      <div class="flex justify-end gap-2 mt-4">
+      <div class="py-4">
+          <p class="text-sm">
+            {{ t('athlete.deleteQuestion') }}
+            <span class="font-bold text-foreground">{{ athleteToDelete?.firstName }} {{ athleteToDelete?.lastName }}</span>?
+          </p>
+          <p class="text-[12px] text-destructive mt-2">{{ t('athlete.deleteWarning') }}</p>
+      </div>
+      <div class="flex justify-end gap-2">
         <Button variant="ghost" @click="isDeleteDialogOpen = false">{{ t('common.cancel') }}</Button>
-        <Button variant="destructive" @click="confirmDelete">{{ t('common.delete') }}</Button>
+        <Button variant="destructive" @click="confirmDelete" :disabled="loading">
+          <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
+          {{ t('common.delete') }}
+        </Button>
       </div>
     </DialogContent>
   </Dialog>
 </template>
+
+<style scoped>
+.expand-enter-active, .expand-leave-active {
+  transition: all 0.3s ease-in-out;
+  max-height: 500px;
+  overflow: hidden;
+}
+.expand-enter-from, .expand-leave-to {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.grid-enter-active, .grid-leave-active {
+  transition: all 0.4s ease;
+}
+.grid-enter-from, .grid-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+</style>

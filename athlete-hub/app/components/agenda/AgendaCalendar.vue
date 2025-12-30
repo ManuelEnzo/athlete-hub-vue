@@ -1,308 +1,329 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   ChevronLeft, ChevronRight, Plus, X,
-  Calendar as CalendarIcon, AlertTriangle, Pencil,
-  ClipboardList, Save, Loader2
+  Calendar as CalendarIcon, Pencil,
+  ClipboardList, Save, Loader2, AlertCircle
 } from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
+
 import { athleteApi } from '../../api/business'
 import type {
   CalendarEventResponse,
   CalendarEventCreateRequest,
   AthleteResponse,
-  TestResultSaveDto
+  TestResultSaveDto,
+  TestEntryGridDto
 } from '@/types/api'
+
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { toast } from 'vue-sonner'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
-// --- INTERFACCE OGGETTI DTO ---
-interface MetricDto {
-  id: number
-  name: string
-  unit: string
-}
-
-interface AthleteEntryDto {
-  id: number
-  fullName: string
-  tempResults?: Record<number, string> // Corrisponde al Dictionary<long, string> C#
-}
-
-interface TestEntryGridDto {
-  eventId: number
-  testName: string
-  metrics: MetricDto[]
-  athletes: AthleteEntryDto[]
-}
-
-interface SimplifiedEvent {
-  id: number
-  title: string
-  time: string
-  athleteFullName: string
-  type: string
-  testDefinitionId?: number | null
-  borderClass: string
-}
-
-interface CalendarDay {
-  day: number | null
-  date: string | null
-  isCurrentMonth: boolean
-  isToday?: boolean
-}
-
-// --- STATO ---
+// --- STATE ---
 const { t, tm } = useI18n()
 const events = ref<CalendarEventResponse[]>([])
 const athletes = ref<AthleteResponse[]>([])
 const testDefinitions = ref<any[]>([])
 const isLoading = ref(false)
 
-// Stati Modali
+// Modals
 const isAddDialogOpen = ref(false)
 const isDeleteDialogOpen = ref(false)
 const isTestGridOpen = ref(false)
 const isDeleting = ref(false)
 const eventToDeleteId = ref<number | null>(null)
-
 const isEditing = ref(false)
 const editingEventId = ref<number | null>(null)
 
-// Tipizzazione forte dell'oggetto griglia
+// Test Grid Data
 const selectedGridData = ref<TestEntryGridDto | null>(null)
+const resultsMap = reactive<Record<number, Record<number, string>>>({})
 
+// Date Management
 const dateNow = new Date()
 const currentMonth = ref(dateNow.getMonth())
 const currentYear = ref(dateNow.getFullYear())
 const todayStr = new Date().toISOString().split('T')[0] ?? ''
 const selectedDate = ref<string>(todayStr)
 
-// Mappa reattiva per gli input della griglia [AthleteId][MetricId] = Valore
-const resultsMap = ref<Record<number, Record<number, string>>>({})
-
-const newEvent = ref({
+const newEvent = reactive({
   athleteIds: [] as number[],
   title: '',
   date: todayStr,
   time: '09:00',
   type: 'Strength',
-  focus: '',
-  targetRPE: 5,
-  testDefinitionId: null as number | null
+  testDefinitionId: null as number | null,
+  hasResults: false // Questo flag ora è reattivo e collegato al backend
 })
 
-// --- LOGICA DATI ---
-const eventsForSelectedDay = computed<SimplifiedEvent[]>(() => {
-  return events.value
-    .filter(e => (e.date ?? '').startsWith(selectedDate.value))
-    .map(e => ({
-      id: e.id,
-      title: e.title ?? 'Senza Titolo',
-      time: e.date ? new Date(e.date).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '--:--',
-      athleteFullName: e.athleteFullName ?? 'N/A',
-      type: e.type ?? 'Strength',
-      testDefinitionId: (e as any).testDefinitionId,
-      borderClass: `relative border-l-4 p-4 rounded-r-xl bg-card shadow-sm border ${getBorderColor(e.type ?? '')}`
-    }))
-})
+// --- CALENDAR LOGIC ---
+function changeMonth(delta: number) {
+  currentMonth.value += delta
+  if (currentMonth.value > 11) {
+    currentMonth.value = 0
+    currentYear.value++
+  } else if (currentMonth.value < 0) {
+    currentMonth.value = 11
+    currentYear.value--
+  }
+}
 
 const getMonthDetails = computed(() => {
-  const date = new Date(currentYear.value, currentMonth.value, 1)
-  const firstDay = (date.getDay() + 6) % 7
+  const firstDayOfMonth = new Date(currentYear.value, currentMonth.value, 1).getDay()
+  const paddingDays = (firstDayOfMonth + 6) % 7
   const daysInMonth = new Date(currentYear.value, currentMonth.value + 1, 0).getDate()
-  const days: CalendarDay[] = []
-  for (let i = 0; i < firstDay; i++) days.push({ day: null, date: null, isCurrentMonth: false })
+  const days = []
+  for (let i = 0; i < paddingDays; i++) days.push({ day: null, date: null, isCurrentMonth: false })
   for (let i = 1; i <= daysInMonth; i++) {
     const fullDate = `${currentYear.value}-${String(currentMonth.value + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`
-    days.push({ day: i, date: fullDate, isCurrentMonth: true, isToday: fullDate === todayStr })
+    days.push({
+      day: i,
+      date: fullDate,
+      isCurrentMonth: true,
+      isToday: fullDate === todayStr
+    })
   }
   return { days, monthName: `${t(`calendar.months.${currentMonth.value}`)} ${currentYear.value}` }
 })
 
-// --- HELPER UI ---
-const getBorderColor = (type: string): string => {
-  const map: Record<string, string> = {
-    'Strength': 'border-red-500', 'Endurance': 'border-green-500',
-    'Test': 'border-purple-500', 'Recovery': 'border-yellow-500', 'Checkup': 'border-blue-500'
+// --- HELPERS UI ---
+const getBorderColor = (type: string) => {
+  const colors: Record<string, string> = {
+    Strength: 'border-red-500',
+    Endurance: 'border-green-500',
+    Test: 'border-purple-500',
+    Recovery: 'border-yellow-500',
+    Checkup: 'border-blue-500'
   }
-  return map[type] || 'border-gray-500'
+  return colors[type] || 'border-gray-500'
 }
 
-const getDotColor = (type: string): string => {
-  const map: Record<string, string> = {
-    'Strength': 'bg-red-500', 'Endurance': 'bg-green-500',
-    'Test': 'bg-purple-500', 'Recovery': 'bg-yellow-500', 'Checkup': 'bg-blue-500'
+const getDotColor = (type: string) => {
+  const colors: Record<string, string> = {
+    Strength: 'bg-red-500',
+    Endurance: 'bg-green-500',
+    Test: 'bg-purple-500',
+    Recovery: 'bg-yellow-500',
+    Checkup: 'bg-blue-500'
   }
-  return map[type] || 'bg-gray-400'
+  return colors[type] || 'bg-gray-400'
 }
 
-// --- AZIONI ---
-const updateValue = (athleteId: number, metricId: number, val: string | number) => {
-  if (!resultsMap.value[athleteId]) resultsMap.value[athleteId] = {}
-  resultsMap.value[athleteId][metricId] = String(val)
+function getPlaceholder(type: number) {
+  if (type === 1) return '00:00.00'
+  if (type === 2) return 'LV.SH'
+  return '--'
 }
 
-const fetchEvents = async () => {
-  isLoading.value = true
-  try {
-    const res = await athleteApi.getAllEvents(currentMonth.value + 1, currentYear.value)
-    if (res.data.isSuccess) events.value = res.data.value || []
-  } finally { isLoading.value = false }
+function getMetricHelp(type: number) {
+  if (type === 1) return t('calendar.grid.helpTime')
+  if (type === 2) return t('calendar.grid.helpLevel')
+  return ''
 }
 
-const closeAddDialog = () => {
-  isAddDialogOpen.value = false
+watch([currentMonth, currentYear], () => fetchEvents())
+
+// --- UI HANDLERS ---
+function openAddDialog() {
   isEditing.value = false
   editingEventId.value = null
-  newEvent.value = { athleteIds: [], title: '', date: selectedDate.value, time: '09:00', type: 'Strength', focus: '', targetRPE: 5, testDefinitionId: null }
+  Object.assign(newEvent, {
+    athleteIds: [],
+    title: '',
+    date: selectedDate.value,
+    time: '09:00',
+    type: 'Strength',
+    testDefinitionId: null,
+    hasResults: false
+  })
+  isAddDialogOpen.value = true
 }
 
-const openEditDialog = (id: number) => {
+function closeAddDialog() {
+  isAddDialogOpen.value = false
+  isEditing.value = false
+}
+
+function openEditDialog(id: number) {
   const event = events.value.find(e => e.id === id)
   if (!event) return
-
+  
   isEditing.value = true
   editingEventId.value = event.id
   const [d, t_raw] = (event.date || "").split('T')
 
-  newEvent.value = {
-    athleteIds: (event as any).participantIds ? (event as any).participantIds.map((v: any) => Number(v)) : [],
-    title: event.title ?? "",
+  // Mappatura esatta dal backend
+  Object.assign(newEvent, {
+    athleteIds: (event as any).participantIds?.map(Number) || [],
+    title: event.title,
     date: d || todayStr,
-    time: t_raw ? t_raw.substring(0, 5) : '09:00',
-    type: event.type ?? 'Strength',
-    focus: (event as any).focus || '',
-    targetRPE: (event as any).targetRPE || 5,
-    testDefinitionId: (event as any).testDefinitionId || null
-  }
+    time: t_raw?.substring(0, 5) || '09:00',
+    type: event.type,
+    testDefinitionId: (event as any).testDefinitionId,
+    hasResults: (event as any).hasResults === true // IMPORTANTE: Sincronizziamo il blocco
+  })
+  
   isAddDialogOpen.value = true
 }
 
-const handleSaveEvent = async () => {
-  if (newEvent.value.athleteIds.length === 0) return toast.error(t('calendar.form.selectAthlete'))
-
-  const payload: CalendarEventCreateRequest = {
-    ...newEvent.value,
-    date: `${newEvent.value.date}T${newEvent.value.time}:00`,
-    testDefinitionId: newEvent.value.type === 'Test' ? newEvent.value.testDefinitionId : null
+function openDeleteDialog(id: number) {
+  const event = events.value.find(e => e.id === id)
+  if (event && (event as any).hasResults) {
+    toast.error("Non puoi eliminare un evento che ha già dei risultati salvati.")
+    return
   }
+  eventToDeleteId.value = id
+  isDeleteDialogOpen.value = true
+}
 
-  const res = isEditing.value && editingEventId.value
-    ? await athleteApi.updateEvent(editingEventId.value, payload)
-    : await athleteApi.createEvent(payload)
-
-  if (res.data.isSuccess) {
-    toast.success(t(`calendar.toast.${isEditing.value ? 'updated' : 'created'}`))
-    await fetchEvents()
-    closeAddDialog()
+// --- API ACTIONS ---
+async function fetchEvents() {
+  isLoading.value = true
+  try {
+    const res = await athleteApi.getAllEvents(currentMonth.value + 1, currentYear.value)
+    events.value = res.data.value ?? []
+  } catch (err: any) {
+    toast.error(err.error?.message || t('calendar.errors.fetchEvents'))
+  } finally {
+    isLoading.value = false
   }
 }
 
-const confirmDelete = async () => {
+async function handleSaveEvent() {
+  if (newEvent.athleteIds.length === 0) {
+    toast.error(t('calendar.validation.selectAthlete'))
+    return
+  }
+
+  // CONTROLLO DI SICUREZZA LATO CLIENT
+  if (isEditing.value && newEvent.hasResults) {
+    const originalEvent = events.value.find(e => e.id === editingEventId.value)
+    if (originalEvent) {
+      const typeChanged = originalEvent.type !== newEvent.type
+      const protocolChanged = (originalEvent as any).testDefinitionId !== newEvent.testDefinitionId
+      
+      if (typeChanged || protocolChanged) {
+        toast.error("Salvataggio bloccato: non puoi modificare il protocollo se esistono risultati salvati.")
+        return
+      }
+    }
+  }
+
+  isLoading.value = true
+  try {
+    const payload: CalendarEventCreateRequest = {
+      ...newEvent,
+      date: `${newEvent.date}T${newEvent.time}:00`,
+      testDefinitionId: newEvent.type === 'Test' ? newEvent.testDefinitionId : null
+    }
+    
+    if (isEditing.value && editingEventId.value) {
+      await athleteApi.updateEvent(editingEventId.value, payload)
+      toast.success(t('calendar.toast.updated'))
+    } else {
+      await athleteApi.createEvent(payload)
+      toast.success(t('calendar.toast.created'))
+    }
+    
+    await fetchEvents() // Ricarica subito per aggiornare i flag hasResults
+    closeAddDialog()
+  } catch (err: any) {
+    toast.error(err.error?.message || t('calendar.errors.saveEvent'))
+  } finally {
+    isLoading.value = false
+  }
+}
+
+async function confirmDelete() {
   if (!eventToDeleteId.value) return
   isDeleting.value = true
   try {
-    const res = await athleteApi.deleteEvent(eventToDeleteId.value)
-    if (res.data.isSuccess) {
-      toast.success(t('calendar.toast.deleted'))
-      await fetchEvents()
-      isDeleteDialogOpen.value = false
-    }
-  } finally { isDeleting.value = false }
+    await athleteApi.deleteEvent(eventToDeleteId.value)
+    toast.success(t('calendar.toast.deleted'))
+    await fetchEvents()
+    isDeleteDialogOpen.value = false
+  } catch (err) {
+    toast.error(t('calendar.errors.deleteEvent'))
+  } finally {
+    isDeleting.value = false
+    eventToDeleteId.value = null
+  }
 }
 
-const openTestGrid = async (eventId: number) => {
+async function openTestGrid(eventId: number) {
   try {
-    const res = await athleteApi.getTestGrid(eventId);
+    const res = await athleteApi.getTestGrid(eventId)
+    const grid = res.data.value
+    if (!grid) return
+    selectedGridData.value = grid
     
-    // Verifichiamo che la risposta e il valore esistano
-    if (res.data.isSuccess && res.data.value) {
-      const grid: TestEntryGridDto = res.data.value;
-      selectedGridData.value = grid;
-      
-      const tempMap: Record<number, Record<number, string>> = {};
+    for (const key in resultsMap) { delete resultsMap[Number(key)] }
 
-      // USIAMO IL FOR...OF: Questo garantisce che 'athlete' sia definito
-      for (const athlete of grid.athletes) {
-        // Se per qualche motivo assurdo l'atleta fosse nullo, saltiamo
-        if (!athlete) continue;
+    grid.athletes.forEach(athlete => {
+      resultsMap[athlete.id] = {}
+      if (athlete.tempResults) {
+        Object.entries(athlete.tempResults).forEach(([mId, val]) => {
+          const athleteMap = resultsMap[athlete.id]
+          if (athleteMap) athleteMap[Number(mId)] = String(val).replace('.', ',')
+        })
+      }
+    })
+    isTestGridOpen.value = true
+  } catch (err) {
+    toast.error(t('calendar.errors.loadGrid'))
+  }
+}
 
-        const athleteId = athlete.id;
-        const athleteResults: Record<number, string> = {};
-        
-        // Estraiamo tempResults in una costante per sicurezza
-        const results = athlete.tempResults;
-        
-        if (results) {
-          // Object.keys ci permette di iterare sulle chiavi del Dictionary C#
-          for (const mId of Object.keys(results)) {
-            const metricId = Number(mId);
-            const rawValue = results[metricId];
-            
-            // TypeScript ora sa che rawValue viene da un oggetto esistente
-            if (rawValue !== undefined && rawValue !== null) {
-              athleteResults[metricId] = String(rawValue).replace('.', ',');
-            }
+async function saveTestResults() {
+  if (!selectedGridData.value) return
+  isLoading.value = true
+  try {
+    const resultsToSave: TestResultSaveDto[] = []
+    Object.entries(resultsMap).forEach(([athId, metrics]) => {
+      Object.entries(metrics).forEach(([mId, val]) => {
+        if (val !== null && val !== '') {
+          const sanitizedVal = String(val).replace(',', '.')
+          const parsedVal = parseFloat(sanitizedVal)
+          if (!isNaN(parsedVal)) {
+            resultsToSave.push({ athleteId: Number(athId), testMetricId: Number(mId), value: parsedVal })
           }
         }
-        
-        // Inseriamo i risultati nella mappa principale
-        tempMap[athleteId] = athleteResults;
-      }
-      
-      resultsMap.value = tempMap;
-      isTestGridOpen.value = true;
+      })
+    })
+
+    if (resultsToSave.length === 0) {
+      toast.error(t('calendar.validation.noResults'))
+      isLoading.value = false
+      return
     }
-  } catch (err) { 
-    toast.error("Errore nel caricamento della griglia");
-    console.error(err);
-  }
-};
 
-const saveTestResults = async () => {
-  // Riferimento locale per garantire che non sia undefined durante l'esecuzione
-  const grid = selectedGridData.value;
-  if (!grid) return;
-
-  isLoading.value = true;
-  const resultsToSave: TestResultSaveDto[] = [];
-
-  Object.entries(resultsMap.value).forEach(([athId, metrics]) => {
-    Object.entries(metrics).forEach(([mId, val]) => {
-      if (val !== null && val !== '') {
-        resultsToSave.push({
-          athleteId: Number(athId),
-          testMetricId: Number(mId),
-          // Convertiamo la virgola in punto per il backend C#
-          value: parseFloat(String(val).replace(',', '.'))
-        });
-      }
-    });
-  });
-
-  try {
-    const res = await athleteApi.saveTestResults(grid.eventId, resultsToSave);
+    await athleteApi.saveTestResults(selectedGridData.value.eventId, resultsToSave)
+    toast.success(t('calendar.toast.resultsSaved'))
     
-    if (res.data.isSuccess) {
-      toast.success("Risultati salvati con successo");
-      // Ricarichiamo la griglia per sincronizzare i dati (conferma visiva)
-      await openTestGrid(grid.eventId);
-    }
-  } catch (err) {
-    toast.error("Errore durante il salvataggio");
+    // AZIONE FONDAMENTALE: Ricarichiamo gli eventi. 
+    // Ora il backend restituirà 'hasResults: true' per questo evento nell'agenda.
+    await fetchEvents() 
+    
+    isTestGridOpen.value = false
+  } catch (err: any) {
+    toast.error(err.response?.data?.message || t('calendar.errors.saveResults'))
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
+
+function updateValue(athleteId: number, metricId: number, val: string) {
+  if (!resultsMap[athleteId]) resultsMap[athleteId] = {}
+  resultsMap[athleteId][metricId] = val
+}
 
 onMounted(() => {
   fetchEvents()
-  athleteApi.getAll().then(res => athletes.value = res.data.value || [])
-  athleteApi.getTestDefinitions().then(res => testDefinitions.value = res.data.value || [])
+  athleteApi.getAll().then(res => athletes.value = res.data.value ?? [])
+  athleteApi.getTestDefinitions().then(res => testDefinitions.value = res.data.value ?? [])
 })
 </script>
 
@@ -315,9 +336,9 @@ onMounted(() => {
             <CalendarIcon class="h-5 w-5 text-primary" /> {{ getMonthDetails.monthName }}
           </CardTitle>
           <div class="flex gap-2">
-            <Button variant="outline" size="icon" @click="currentMonth--"><ChevronLeft /></Button>
-            <Button variant="outline" size="icon" @click="currentMonth++"><ChevronRight /></Button>
-            <Button @click="isAddDialogOpen = true"><Plus class="mr-1 h-4 w-4" /> {{ t('calendar.addEvent') }}</Button>
+            <Button variant="outline" size="icon" @click="changeMonth(-1)"><ChevronLeft /></Button>
+            <Button variant="outline" size="icon" @click="changeMonth(1)"><ChevronRight /></Button>
+            <Button @click="openAddDialog"><Plus class="mr-1 h-4 w-4" /> {{ t('calendar.addEvent') }}</Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -327,15 +348,15 @@ onMounted(() => {
           <div class="grid grid-cols-7 gap-2">
             <div v-for="(day, i) in getMonthDetails.days" :key="i"
               class="h-24 p-2 border rounded-xl cursor-pointer transition-all hover:bg-accent/50 group" 
-              :class="{ 
-                'opacity-20 pointer-events-none bg-muted': !day.isCurrentMonth, 
+              :class="{
+                'opacity-20 pointer-events-none bg-muted': !day.isCurrentMonth,
                 'border-primary ring-2 ring-primary/20 bg-primary/5': day.date === selectedDate,
                 'border-primary/50': day.isToday
               }" @click="day.date && (selectedDate = day.date)">
-              <span v-if="day.day" class="text-xs font-bold" :class="{'text-primary': day.isToday}">{{ day.day }}</span>
+              <span v-if="day.day" class="text-xs font-bold" :class="{ 'text-primary': day.isToday }">{{ day.day }}</span>
               <div class="flex flex-wrap gap-1 mt-1">
                 <div v-for="e in events.filter(ev => (ev.date ?? '').startsWith(day.date || ''))" :key="e.id"
-                  :class="getDotColor(e.type ?? '')" class="w-2 h-2 rounded-full shadow-sm"></div>
+                  class="w-2 h-2 rounded-full shadow-sm" :class="getDotColor(e.type ?? '')"></div>
               </div>
             </div>
           </div>
@@ -348,27 +369,27 @@ onMounted(() => {
           <CardDescription>{{ selectedDate }}</CardDescription>
         </CardHeader>
         <CardContent class="space-y-4 overflow-y-auto max-h-[600px] px-4">
-          <div v-if="eventsForSelectedDay.length === 0" class="py-20 text-center text-muted-foreground italic text-sm">
-            {{ t('calendar.noEvents') }}
-          </div>
-
-          <div v-for="event in eventsForSelectedDay" :key="event.id" :class="event.borderClass" class="group transition-all hover:translate-x-1">
+          <div v-if="events.filter(e => (e.date ?? '').startsWith(selectedDate)).length === 0"
+            class="py-20 text-center text-muted-foreground italic text-sm">{{ t('calendar.noEvents') }}</div>
+          <div v-for="event in events.filter(e => (e.date ?? '').startsWith(selectedDate))" :key="event.id"
+            class="relative border-l-4 p-4 rounded-r-xl bg-card shadow-sm border group transition-all hover:translate-x-1"
+            :class="getBorderColor(event.type ?? '')">
             <div class="flex justify-between items-start">
-              <div>
+              <div class="flex-1">
                 <span class="font-black text-[10px] uppercase text-primary/80 block mb-1">{{ event.type }}</span>
                 <span class="font-bold text-sm leading-tight">{{ event.title }}</span>
-                <div class="mt-2 text-[11px] font-medium text-muted-foreground">🕒 {{ event.time }} | 👤 {{ event.athleteFullName }}</div>
+                <div class="mt-2 text-[11px] font-medium text-muted-foreground">
+                  🕒 {{ event.date ? new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--' }}
+                  | 👤 {{ event.athleteFullName }}
+                </div>
               </div>
               <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button v-if="event.type === 'Test'" variant="outline" size="icon" class="h-8 w-8 rounded-full border-purple-500 text-purple-600" @click="openTestGrid(event.id)">
+                <Button v-if="event.type === 'Test'" variant="outline" size="icon"
+                  class="h-8 w-8 rounded-full border-purple-500 text-purple-600 shadow-sm" @click="openTestGrid(event.id)">
                   <ClipboardList class="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full" @click="openEditDialog(event.id)">
-                  <Pencil class="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full text-destructive" @click="eventToDeleteId = event.id; isDeleteDialogOpen = true">
-                  <X class="h-4 w-4" />
-                </Button>
+                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full" @click="openEditDialog(event.id)"><Pencil class="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full text-destructive" @click="openDeleteDialog(event.id)"><X class="h-4 w-4" /></Button>
               </div>
             </div>
           </div>
@@ -378,35 +399,47 @@ onMounted(() => {
 
     <div v-if="isAddDialogOpen" class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card class="w-full max-w-md shadow-2xl border-none">
-        <CardHeader><CardTitle class="text-xl font-black uppercase">{{ isEditing ? t('calendar.form.update') : t('calendar.newSession') }}</CardTitle></CardHeader>
+        <CardHeader><CardTitle class="text-xl font-black uppercase">{{ isEditing ? t('calendar.editSession') : t('calendar.newSession') }}</CardTitle></CardHeader>
         <CardContent class="space-y-4">
+          
+          <div v-if="isEditing && newEvent.hasResults" class="bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-start gap-3">
+            <AlertCircle class="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+            <p class="text-[11px] text-amber-800 leading-tight">
+              <b>PROPRIETÀ BLOCCATE</b><br>
+              Sono presenti risultati per questo test. Non è possibile cambiare il tipo o il protocollo.
+            </p>
+          </div>
+
           <div>
             <label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.titleLabel') }}</label>
-            <Input v-model="newEvent.title" :placeholder="t('calendar.form.titlePlaceholder')" />
+            <Input v-model="newEvent.title" />
           </div>
-          <div>
-            <label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.participants') }} ({{ newEvent.athleteIds.length }})</label>
-            <div class="border rounded-xl p-3 max-h-40 overflow-y-auto bg-muted/30">
-              <div v-for="a in athletes" :key="a.id" class="flex items-center space-x-3 p-2 hover:bg-accent rounded-lg cursor-pointer">
-                <input type="checkbox" :id="'ath-'+a.id" :value="Number(a.id)" v-model="newEvent.athleteIds" class="h-4 w-4 rounded border-primary text-primary" />
-                <label :for="'ath-'+a.id" class="text-sm font-medium cursor-pointer w-full">{{ a.firstName }} {{ a.lastName }}</label>
-              </div>
+          
+          <div class="flex gap-4">
+            <div class="flex-1">
+              <label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.dateLabel') }}</label>
+              <Input type="date" v-model="newEvent.date" />
+            </div>
+            <div class="w-28">
+              <label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.timeLabel') }}</label>
+              <Input type="time" v-model="newEvent.time" />
             </div>
           </div>
-          <div class="flex gap-4">
-            <div class="flex-1"><label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.dateLabel') }}</label><Input type="date" v-model="newEvent.date" /></div>
-            <div class="w-28"><label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.timeLabel') }}</label><Input type="time" v-model="newEvent.time" /></div>
-          </div>
+
           <div>
             <label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.categoryLabel') }}</label>
-            <select v-model="newEvent.type" class="w-full border rounded-md p-2 text-sm bg-background h-10">
-              <option value="Strength">Strength</option><option value="Endurance">Endurance</option>
-              <option value="Test">Test</option><option value="Recovery">Recovery</option><option value="Checkup">Checkup</option>
+            <select v-model="newEvent.type" 
+                    :disabled="isEditing && newEvent.hasResults"
+                    class="w-full border rounded-md p-2 text-sm bg-background h-10 disabled:bg-muted disabled:opacity-70">
+              <option v-for="type in ['Strength', 'Endurance', 'Test', 'Recovery', 'Checkup']" :key="type" :value="type">{{ type }}</option>
             </select>
           </div>
+
           <div v-if="newEvent.type === 'Test'" class="p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl">
             <label class="text-[10px] font-black uppercase text-purple-600 mb-2 block">{{ t('calendar.form.protocolLabel') }}</label>
-            <select v-model="newEvent.testDefinitionId" class="w-full border rounded-md p-2 text-sm bg-background h-10 border-purple-200">
+            <select v-model="newEvent.testDefinitionId" 
+                    :disabled="isEditing && newEvent.hasResults"
+                    class="w-full border rounded-md p-2 text-sm bg-background h-10 border-purple-200 disabled:bg-purple-100/50">
               <option :value="null">{{ t('calendar.form.protocolSelect') }}</option>
               <option v-for="td in testDefinitions" :key="td.id" :value="td.id">{{ td.name }}</option>
             </select>
@@ -414,67 +447,72 @@ onMounted(() => {
         </CardContent>
         <CardFooter class="flex justify-end gap-2 border-t p-6">
           <Button variant="ghost" @click="closeAddDialog">{{ t('common.cancel') }}</Button>
-          <Button @click="handleSaveEvent" class="px-8 shadow-lg shadow-primary/20">{{ isEditing ? t('common.update') : t('common.create') }}</Button>
-        </CardFooter>
-      </Card>
-    </div>
-
-    <div v-if="isDeleteDialogOpen" class="fixed inset-0 bg-background/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-      <Card class="w-full max-w-sm border-none shadow-2xl">
-        <CardHeader class="text-center">
-          <div class="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4"><AlertTriangle class="h-6 w-6 text-destructive" /></div>
-          <CardTitle>{{ t('calendar.delete.title') }}</CardTitle>
-          <CardDescription>{{ t('calendar.delete.description') }}</CardDescription>
-        </CardHeader>
-        <CardFooter class="flex gap-2">
-          <Button variant="ghost" class="flex-1" @click="isDeleteDialogOpen = false">{{ t('common.cancel') }}</Button>
-          <Button variant="destructive" class="flex-1" @click="confirmDelete" :disabled="isDeleting">
-            <Loader2 v-if="isDeleting" class="mr-2 h-4 w-4 animate-spin" />{{ t('common.delete') }}
+          <Button @click="handleSaveEvent" :disabled="isLoading">
+            <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
+            {{ isEditing ? t('common.update') : t('common.create') }}
           </Button>
         </CardFooter>
       </Card>
     </div>
 
-    <div v-if="isTestGridOpen && selectedGridData" class="fixed inset-0 bg-background/95 backdrop-blur-xl z-[60] flex items-center justify-center p-4">
-      <Card class="w-full max-w-6xl max-h-[90vh] flex flex-col shadow-3xl border-none">
-        <CardHeader class="border-b bg-muted/30 flex flex-row justify-between items-center">
-          <div><CardTitle class="text-2xl font-black uppercase">{{ selectedGridData.testName }}</CardTitle></div>
-          <Button variant="ghost" size="icon" class="rounded-full" @click="isTestGridOpen = false"><X /></Button>
+    <div v-if="isTestGridOpen" class="fixed inset-0 bg-background/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+      <Card class="w-full max-w-5xl shadow-2xl border-none max-h-[90vh] flex flex-col">
+        <CardHeader class="flex flex-row items-center justify-between border-b pb-4">
+          <CardTitle class="text-xl font-black uppercase flex items-center gap-2">
+            <ClipboardList class="text-purple-500" /> {{ selectedGridData?.testName }}
+          </CardTitle>
+          <Button variant="ghost" size="icon" @click="isTestGridOpen = false"><X class="h-5 w-5" /></Button>
         </CardHeader>
-        <CardContent class="overflow-auto p-0">
+        <CardContent class="p-0 overflow-auto flex-1">
           <table class="w-full border-collapse">
-            <thead class="bg-muted/50 sticky top-0 z-20 backdrop-blur">
+            <thead class="bg-muted/50 sticky top-0 z-10">
               <tr>
-                <th class="p-4 text-left border-b font-black text-[10px] uppercase w-64">Atleta</th>
-                <th v-for="m in selectedGridData.metrics" :key="m.id" class="p-4 text-center border-b font-black text-[10px] uppercase text-purple-600">
-                  {{ m.name }} ({{ m.unit }})
+                <th class="p-4 text-left text-[10px] font-black uppercase text-muted-foreground border-b w-64">{{ t('calendar.grid.athlete') }}</th>
+                <th v-for="metric in selectedGridData?.metrics" :key="metric.id" class="p-4 text-center text-[10px] font-black uppercase text-muted-foreground border-b min-w-[140px]">
+                  {{ metric.name }}
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="athlete in selectedGridData.athletes" :key="athlete.id" class="hover:bg-primary/5 border-b">
+              <tr v-for="athlete in selectedGridData?.athletes" :key="athlete.id" class="border-b hover:bg-accent/5">
                 <td class="p-4 font-bold text-sm">{{ athlete.fullName }}</td>
-                <td v-for="m in selectedGridData.metrics" :key="m.id" class="p-2 text-center">
-                  <Input 
-                    type="text" inputmode="decimal" placeholder="--" 
-                    class="text-center font-bold h-10 border-none bg-muted/20"
-                    :class="{ 'border-b-2 border-b-blue-400': athlete.tempResults?.[m.id] }"
-                    :model-value="resultsMap[athlete.id]?.[m.id] || ''"
-                    @update:model-value="(val) => updateValue(athlete.id, m.id, val)"
+                <td v-for="metric in selectedGridData?.metrics" :key="metric.id" class="p-2 text-center">
+                  <input 
+                    class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-none text-center font-mono focus-visible:ring-1 focus-visible:ring-purple-500"
+                    :class="{ 'border-blue-400 bg-blue-50/30': metric.dataType === 1, 'border-purple-400 bg-purple-50/30': metric.dataType === 2 }" 
+                    :value="resultsMap[athlete.id]?.[metric.id] || ''"
+                    @change="(e: any) => updateValue(athlete.id, metric.id, e.target.value)"
+                    :placeholder="getPlaceholder(metric.dataType)" 
                   />
                 </td>
               </tr>
             </tbody>
           </table>
         </CardContent>
-        <CardFooter class="border-t p-6 flex justify-end gap-3 bg-muted/10">
-          <Button variant="outline" @click="isTestGridOpen = false">{{ t('common.cancel') }}</Button>
-          <Button @click="saveTestResults" :disabled="isLoading" class="bg-purple-600 hover:bg-purple-700 px-10">
-             <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-             <Save v-else class="mr-2 h-4 w-4" /> Salva
+        <CardFooter class="flex justify-end gap-2 border-t p-6 bg-muted/20">
+          <Button variant="ghost" @click="isTestGridOpen = false">{{ t('common.cancel') }}</Button>
+          <Button class="bg-purple-600 hover:bg-purple-700" @click="saveTestResults" :disabled="isLoading">
+            <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
+            <Save class="mr-2 h-4 w-4" /> {{ t('common.save') }}
           </Button>
         </CardFooter>
       </Card>
     </div>
+
+    <Dialog v-model:open="isDeleteDialogOpen">
+      <DialogContent class="max-w-md">
+        <DialogHeader><DialogTitle>{{ t('calendar.delete.title') }}</DialogTitle></DialogHeader>
+        <div class="py-4">
+          <p class="text-sm text-muted-foreground">{{ t('calendar.delete.description') }}</p>
+        </div>
+        <div class="flex justify-end gap-2">
+          <Button variant="ghost" @click="isDeleteDialogOpen = false">{{ t('common.cancel') }}</Button>
+          <Button variant="destructive" @click="confirmDelete" :disabled="isDeleting">
+            <Loader2 v-if="isDeleting" class="mr-2 h-4 w-4 animate-spin" />
+            {{ t('common.delete') }}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

@@ -31,6 +31,7 @@
         "targetRPE": "Target RPE"
     },
     "measurements": {
+        "noData": "No measurements available. Please add new measurements.",
         "pageTitle": "Athletes' Health Status",
         "filterAthlete": "Select athlete to filter",
         "filterAll": "All athletes",
@@ -113,9 +114,12 @@
         "genderPlaceholder": "Select gender",
         "weightShort": "Weight",
         "heightShort": "Height",
-        "sportCategory": "Sport Category"
+        "sportCategory": "Sport Category",
+        "sportCategoryPlaceholder": "Select sport category"
     },
     "athlete": {
+        "deleteWarning": "This action will permanently delete the athlete and all associated data. Are you sure you want to proceed?",
+        "noData": "No athletes available. Please add new athletes.",
         "pageTitle": "Athletes' Personal Data",
         "visualizer": "Athlete Visualizer",
         "new": "New Athlete",
@@ -150,7 +154,8 @@
             "load": "Error loading athletes",
             "required": "Please fill all required fields",
             "server": "Server error occurred",
-            "emailInUse": "Email already in use"
+            "emailInUse": "Email already in use",
+            "save": "Error saving datas"
         }
     },
     "risk": {
@@ -203,13 +208,46 @@
         "sprint30m": "Sprint 30m (s)"
     },
     "calendar": {
+        "grid": {
+            "athlete": "Athlete",
+            "helpTime": "Format: MM:SS.cc",
+            "helpLevel": "Level.Navetta (e.g., 16.3)"
+        },
+        "editSession": "Edit Session",
+        "testGridSub": "Test protocol data entry",
+        "errors": {
+            "fetchEvents": "Impossible to charge events",
+            "saveEvent": "Error during saving",
+            "deleteEvent": "Error during deletion",
+            "loadGrid": "Error loading test grid",
+            "saveResults": "Error saving results"
+        },
         "title": "Sessions and Appointments",
         "months": {
-            "0": "January", "1": "February", "2": "March", "3": "April",
-            "4": "May", "5": "June", "6": "July", "7": "August",
-            "8": "September", "9": "October", "10": "November", "11": "December"
+            "0": "January",
+            "1": "February",
+            "2": "March",
+            "3": "April",
+            "4": "May",
+            "5": "June",
+            "6": "July",
+            "7": "August",
+            "8": "September",
+            "9": "October",
+            "10": "November",
+            "11": "December"
         },
-        "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        "days": [
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thu",
+            "Fri",
+            "Sat",
+            "Sun"
+        ],
+        "lockedMessage": "Changes to type or protocol are restricted because there are already saved results for this session.",
+        "lockedTitle": "Limited Changes",
         "agendaTitle": "Agenda",
         "addEvent": "Add Event",
         "noEvents": "No events scheduled.",
@@ -221,6 +259,7 @@
         "newSession": "New Session",
         "deleteTitle": "Cancel Appointment",
         "deleteConfirmation": "Are you sure you want to remove this session? The athlete will not receive automatic notifications.",
+        "gridDescription": "Massive data entry for test session",
         "form": {
             "title": "Title",
             "athletes": "Athletes",
@@ -257,7 +296,11 @@
         "toast": {
             "created": "Event created successfully",
             "updated": "Event updated successfully",
-            "deleted": "Event deleted successfully"
+            "deleted": "Event deleted successfully",
+            "resultsSaved": "Results saved successfully"
+        },
+        "validation": {
+            "noResults": "No results found"
         }
     },
     "common": {
@@ -298,14 +341,33 @@
             "placeholders": {
                 "email": "name@example.com"
             },
-            "orContinue": "Or continue with"
+            "orContinue": "Or continue with",
+            "submit": "Sign Up"
+        },
+        "errors": {
+            "requiredFields": "Campi obbligatorio",
+            "passwordMismatch": "Le password non coincidono"
+        },
+        "fields": {
+            "email": "Email",
+            "password": "Password",
+            "confirmPassword": "Confirm Password"
+        },
+        "login": {
+            "withApple": "Login with Apple",
+            "withGoogle": "Login with Google",
+            "submit": "Login",
+            "forgotPassword": "Forgot Password?",
+            "noAccount": "Don't have an account?",
+            "signUpLink": "Sign Up",
+            "success": "Login successful"
         }
     },
     "tasks": {
         "title": "Tasks",
         "description": "Here's a list of your tasks for this month!"
     },
-   "eventTypes": {
+    "eventTypes": {
         "Strength": "Strength",
         "Forza": "Strength",
         "Endurance": "Endurance",
@@ -335,6 +397,7 @@
         "load": "Error loading athletes",
         "required": "Please fill all required fields",
         "server": "Server error occurred",
-        "emailInUse": "Email already in use"
+        "emailInUse": "Email already in use",
+        "save": "Error saving datas"
     }
 }

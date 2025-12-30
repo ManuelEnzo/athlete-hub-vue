@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { LineChart } from '@/components/ui/chart-line'
+import { Separator } from '@/components/ui/separator'
 
 import { athleteApi } from '@/api/business'
 import type {
@@ -62,10 +63,10 @@ const chartData = computed(() => {
     .sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime())
     .map(m => ({
       date: m.createdAt ? new Date(m.createdAt).toLocaleDateString() : 'N/D',
-      [t('measurements.card.weight')]: m.weight,
-      [t('measurements.form.waist')]: m.waist,
-      [t('measurements.form.chest')]: m.chest,
-      [t('measurements.form.hip')]: m.hip
+      [t('fields.weight')]: m.weight,
+      [t('fields.waist')]: m.waist,
+      [t('fields.chest')]: m.chest,
+      [t('fields.hip')]: m.hip
     }))
 })
 
@@ -101,6 +102,9 @@ function editMeasurement(m: AthleteMeasurementsResponse) {
   })
   emit('update:showForm', true)
 }
+
+// ---------------- API ACTIONS ----------------
+
 async function saveMeasurement() {
   if (!form.athleteId) {
     toast.error(t('measurements.validation.selectAthlete'))
@@ -109,24 +113,21 @@ async function saveMeasurement() {
 
   saving.value = true
   try {
-    const response = editingId.value
-      ? await athleteApi.updateMeasurement(editingId.value, form as AthleteMeasurementsUpdateRequest)
-      : await athleteApi.createMeasurement(form)
-
-    if (response.data.isSuccess) {
-      toast.success(editingId.value ? t('measurements.toast.updated') : t('measurements.toast.created'))
-
-      // 1. Rilancia la query nel padre
-      emit('refresh')
-
-      // 2. Chiude il form e resetta i campi
-      resetForm()
+    // L'interceptor gestisce il reject se isSuccess è false
+    if (editingId.value) {
+      await athleteApi.updateMeasurement(editingId.value, form as AthleteMeasurementsUpdateRequest)
+      toast.success(t('measurements.toast.updated'))
     } else {
-      toast.error(response.data.error?.description || t('measurements.toast.saveError'))
+      await athleteApi.createMeasurement(form)
+      toast.success(t('measurements.toast.created'))
     }
-  } catch (err) {
-    console.error(err)
-    toast.error(t('measurements.toast.communicationError'))
+
+    emit('refresh')
+    resetForm()
+  } catch (err: any) {
+    // Estraiamo il messaggio dal Result Pattern o usiamo il fallback i18n
+    const errorMessage = err.error?.message || t('measurements.toast.saveError')
+    toast.error(errorMessage)
   } finally {
     saving.value = false
   }
@@ -136,14 +137,16 @@ async function confirmDelete() {
   if (!measurementToDelete.value) return
   deleting.value = true
   try {
-    const res = await athleteApi.deleteMeasurement(measurementToDelete.value.id)
-    if (res.data.isSuccess) {
-      toast.success(t('measurements.toast.deleted'))
-      emit('refresh')
-      isDeleteDialogOpen.value = false
-    }
+    await athleteApi.deleteMeasurement(measurementToDelete.value.id)
+    toast.success(t('measurements.toast.deleted'))
+    emit('refresh')
+    isDeleteDialogOpen.value = false
+  } catch (err: any) {
+    const errorMessage = err.error?.message || t('measurements.toast.deleteError')
+    toast.error(errorMessage)
   } finally {
     deleting.value = false
+    measurementToDelete.value = null
   }
 }
 </script>
@@ -167,93 +170,99 @@ async function confirmDelete() {
                 <SelectValue :placeholder="t('measurements.form.selectAthlete')" />
               </SelectTrigger> 
               <SelectContent>
-                <SelectItem v-for="a in props.athletes" :key="a.id" :value="a.id">{{ a.firstName }} {{ a.lastName }}
+                <SelectItem v-for="a in props.athletes" :key="a.id" :value="a.id">
+                  {{ a.firstName }} {{ a.lastName }}
                 </SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div><label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.weight') }}</label><Input
-              v-model.number="form.weight" type="number" step="0.1" /></div>
-          <div><label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.height') }}</label><Input
-              v-model.number="form.height" type="number" /></div> 
+          <div>
+            <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.weight') }} (kg)</label>
+            <Input v-model.number="form.weight" type="number" step="0.1" />
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.height') }} (cm)</label>
+            <Input v-model.number="form.height" type="number" />
+          </div> 
 
           <div class="md:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t mt-2">
-            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.chest') }}</label><Input v-model.number="form.chest"
-                type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.waist') }}</label><Input v-model.number="form.waist"
-                type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.hip') }}</label><Input v-model.number="form.hip"
-                type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.thigh') }}</label><Input v-model.number="form.thigh"
-                type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.arm') }}</label><Input v-model.number="form.arm"
-                type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.neck') }}</label><Input v-model.number="form.neck"
-                type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.calf') }}</label><Input v-model.number="form.calf"
-                type="number" step="0.1" /></div>
-            <div><label class="text-[10px] font-bold uppercase">{{ t('measurements.form.forearm') }}</label><Input v-model.number="form.forearm"
-                type="number" step="0.1" /></div>
+            <div v-for="field in ['chest', 'waist', 'hip', 'thigh', 'arm', 'neck', 'calf', 'forearm']" :key="field">
+              <label class="text-[10px] font-bold uppercase">{{ t(`measurements.form.${field}`) }}</label>
+              <Input v-model.number="form[field as keyof typeof form]" type="number" step="0.1" />
+            </div>
           </div>
-          <div class="md:col-span-4"><label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.notes') }}</label><Input
-              v-model="form.notes" :placeholder="t('measurements.form.notesPlaceholder')" /></div>
+          
+          <div class="md:col-span-4">
+            <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('fields.notes') }}</label>
+            <Input v-model="form.notes" :placeholder="t('measurements.form.notesPlaceholder')" />
+          </div>
         </CardContent>
         <CardFooter class="flex justify-end gap-3 bg-muted/5 py-4 border-t">
-          <Button variant="ghost" @click="resetForm">{{ t('measurements.form.cancel') }}</Button>
+          <Button variant="ghost" @click="resetForm">{{ t('common.cancel') }}</Button>
           <Button @click="saveMeasurement" :disabled="saving">
             <Loader2 v-if="saving" class="mr-2 h-4 w-4 animate-spin" />
-            {{ editingId ? t('measurements.form.update') : t('measurements.form.create') }}
+            {{ editingId ? t('common.update') : t('common.create') }}
           </Button>
         </CardFooter>
       </Card>
     </Transition>
 
     <div class="space-y-4">
-      <h2 class="text-lg font-bold flex items-center gap-2 px-1">
+      <h2 class="text-lg font-bold flex items-center gap-2 px-1 text-foreground">
         <Activity class="h-5 w-5 text-primary" /> {{ t('measurements.listTitle') }}
       </h2>
+
+      <div v-if="filteredMeasurements.length === 0" class="text-center py-12 bg-muted/20 rounded-xl border-2 border-dashed">
+        <ClipboardList class="h-10 w-10 mx-auto text-muted-foreground/40 mb-2" />
+        <p class="text-sm text-muted-foreground">{{ t('measurements.noData') }}</p>
+      </div>
+
       <TransitionGroup tag="div" name="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card v-for="m in filteredMeasurements" :key="m.id"
-          class="group relative overflow-hidden transition-all hover:border-primary">
+          class="group relative overflow-hidden transition-all hover:border-primary/50 shadow-sm">
           <CardContent class="p-0">
-            <div class="p-4 bg-primary/5 border-b">
-              <div class="flex justify-between items-start">
-                <h3 class="font-extrabold text-primary uppercase text-sm leading-tight">
-                  {{ getAthleteFullName(m.athleteId) }}</h3>
-                <span
-                  class="text-[10px] font-mono text-muted-foreground">{{ m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '' }}</span>
-              </div>
+            <div class="p-4 bg-primary/5 border-b flex justify-between items-center">
+              <h3 class="font-extrabold text-primary uppercase text-xs truncate max-w-[150px]">
+                {{ getAthleteFullName(m.athleteId) }}
+              </h3>
+              <Badge variant="outline" class="text-[10px] font-mono font-normal">
+                {{ m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '' }}
+              </Badge>
             </div>
+            
             <div class="p-5 flex justify-around items-center border-b">
               <div class="text-center">
-                <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.card.weight') }}</p>
-                <p class="font-black text-xl">{{ m.weight }}<span class="text-xs font-normal ml-0.5">kg</span></p>
+                <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.form.weight') }}</p>
+                <p class="font-black text-xl text-foreground">{{ m.weight }}<span class="text-xs font-normal ml-0.5">kg</span></p>
               </div>
-              <div class="w-px h-8 bg-border"></div>
+              <Separator orientation="vertical" class="h-8" />
               <div class="text-center">
-                <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.card.height') }}</p>
-                <p class="font-black text-xl">{{ m.height }}<span class="text-xs font-normal ml-0.5">cm</span></p>
+                <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.form.height') }}</p>
+                <p class="font-black text-xl text-foreground">{{ m.height }}<span class="text-xs font-normal ml-0.5">cm</span></p>
               </div>
             </div>
-            <div class="grid grid-cols-3 divide-x bg-muted/10">
+
+            <div class="grid grid-cols-3 divide-x bg-muted/10 border-b">
               <div class="p-2 text-center text-xs">
-                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.chest') }}</p><b>{{ m.chest }}</b>
+                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.chest') }}</p>
+                <span class="font-bold">{{ m.chest || '-' }}</span>
               </div>
               <div class="p-2 text-center text-xs">
-                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.waist') }}</p><b>{{ m.waist }}</b>
+                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.waist') }}</p>
+                <span class="font-bold">{{ m.waist || '-' }}</span>
               </div>
               <div class="p-2 text-center text-xs">
-                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.hip') }}</p><b>{{ m.hip }}</b>
+                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.hip') }}</p>
+                <span class="font-bold">{{ m.hip || '-' }}</span>
               </div>
             </div>
           </CardContent>
+
           <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button variant="secondary" size="icon" class="h-8 w-8 rounded-full shadow-md bg-white"
-              @click="editMeasurement(m)">
+            <Button variant="secondary" size="icon" class="h-8 w-8 rounded-full shadow-md bg-background/90" @click="editMeasurement(m)">
               <Edit3 class="h-3.5 w-3.5" />
             </Button>
-            <Button variant="destructive" size="icon" class="h-8 w-8 rounded-full shadow-md"
-              @click="measurementToDelete = m; isDeleteDialogOpen = true">
+            <Button variant="destructive" size="icon" class="h-8 w-8 rounded-full shadow-md" @click="measurementToDelete = m; isDeleteDialogOpen = true">
               <Trash2 class="h-3.5 w-3.5" />
             </Button>
           </div>
@@ -265,22 +274,30 @@ async function confirmDelete() {
       <Card v-if="props.selectedAthleteId && chartData.length > 1"
         class="border-primary/20 shadow-lg overflow-hidden w-full">
         <CardHeader class="pb-2 bg-muted/5">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <TrendingUp class="h-5 w-5 text-primary" />
             <div>
-              <CardTitle class="text-sm font-bold flex items-center gap-2">
-                <TrendingUp class="h-4 w-4 text-primary" />
-                {{ t('measurements.analysisTitle') }}: {{ getAthleteFullName(props.selectedAthleteId) }}
+              <CardTitle class="text-sm font-bold">
+                {{ t('measurements.analysisTitle') }}
               </CardTitle>
-              <CardDescription class="text-[11px]">{{ t('measurements.analysis.description') }}</CardDescription> 
+              <CardDescription class="text-[11px]">{{ getAthleteFullName(props.selectedAthleteId) }}</CardDescription> 
             </div>
           </div>
         </CardHeader>
 
         <CardContent class="p-2 sm:p-4">
           <div class="h-[300px] w-full min-w-0">
-            <LineChart :data="chartData" index="date" :categories="[t('measurements.card.weight'), t('measurements.form.waist'), t('measurements.form.chest'), t('measurements.form.hip')]"
-              :colors="['#2563eb', '#10b981', '#f59e0b', '#8b5cf6']" :y-formatter="(tick) => `${tick}`"
-              :show-legend="true" :show-grid-line="true" :show-tooltip="true" class="w-full h-full" />
+            <LineChart 
+              :data="chartData" 
+              index="date" 
+              :categories="[t('fields.weight'), t('fields.waist'), t('fields.chest'), t('fields.hip')]"
+              :colors="['#2563eb', '#10b981', '#f59e0b', '#8b5cf6']" 
+              :y-formatter="(tick) => `${tick}`"
+              :show-legend="true" 
+              :show-grid-line="true" 
+              :show-tooltip="true" 
+              class="w-full h-full" 
+            />
           </div>
         </CardContent>
       </Card>
@@ -291,12 +308,13 @@ async function confirmDelete() {
         <DialogHeader>
           <DialogTitle>{{ t('measurements.dialog.deleteTitle') }}</DialogTitle>
         </DialogHeader>
-        <p class="text-sm py-2">{{ t('measurements.dialog.deleteText') }}</p>
+        <p class="text-sm py-2 text-muted-foreground">{{ t('measurements.dialog.deleteText') }}</p>
         <div class="flex flex-col gap-2">
           <Button variant="destructive" @click="confirmDelete" :disabled="deleting">
-            <Loader2 v-if="deleting" class="mr-2 h-4 w-4 animate-spin" /> {{ t('measurements.actions.delete') }}
+            <Loader2 v-if="deleting" class="mr-2 h-4 w-4 animate-spin" /> 
+            {{ t('common.delete') }}
           </Button>
-          <Button variant="ghost" @click="isDeleteDialogOpen = false">{{ t('measurements.actions.cancel') }}</Button>
+          <Button variant="ghost" @click="isDeleteDialogOpen = false">{{ t('common.cancel') }}</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -304,26 +322,19 @@ async function confirmDelete() {
 </template>
 
 <style scoped>
-.expand-enter-active,
-.expand-leave-active {
-  transition: all 0.4s ease;
+.expand-enter-active, .expand-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: 1200px;
   overflow: hidden;
 }
-
-.expand-enter-from,
-.expand-leave-to {
+.expand-enter-from, .expand-leave-to {
   max-height: 0;
   opacity: 0;
 }
-
-.grid-enter-active,
-.grid-leave-active {
+.grid-enter-active, .grid-leave-active {
   transition: all 0.3s ease;
 }
-
-.grid-enter-from,
-.grid-leave-to {
+.grid-enter-from, .grid-leave-to {
   opacity: 0;
   transform: translateY(10px);
 }

@@ -18,8 +18,6 @@ import type {
 
 export const athleteApi = {
   // Atleti
-  getDistribution: () => api.get<Result<any>>('/Athletes/distribution'),
-  getMetrics: () => api.get<Result<any>>('/Athletes/metrics'),
   getReadiness: () => api.get<Result<any>>('/Readiness'),
   getWorkloads: () => api.get<Result<any>>('/Workload/workloads'),
   getAll: () => api.get<Result<AthleteResponse[]>>('/Athletes'),
