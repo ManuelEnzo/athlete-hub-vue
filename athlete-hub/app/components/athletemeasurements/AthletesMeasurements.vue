@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription }
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { LineChart } from '@/components/ui/chart-line'
 import { Separator } from '@/components/ui/separator'
@@ -49,7 +49,7 @@ const form = reactive<AthleteMeasurementsCreateRequest>({
 // ---------------- Helpers & Computed ----------------
 function getAthleteFullName(athleteId: number) {
   const athlete = props.athletes.find(a => a.id === athleteId)
-  return athlete ? `${athlete.firstName} ${athlete.lastName}` : t('athlete.unknown')
+  return athlete ? `${athlete.firstName} ${athlete.lastName}` : '---'
 }
 
 const filteredMeasurements = computed(() => {
@@ -63,10 +63,10 @@ const chartData = computed(() => {
     .sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime())
     .map(m => ({
       date: m.createdAt ? new Date(m.createdAt).toLocaleDateString() : 'N/D',
-      [t('fields.weight')]: m.weight,
-      [t('fields.waist')]: m.waist,
-      [t('fields.chest')]: m.chest,
-      [t('fields.hip')]: m.hip
+      [t('measurements.card.weight')]: m.weight,
+      [t('measurements.card.waist')]: m.waist,
+      [t('measurements.card.chest')]: m.chest,
+      [t('measurements.card.hip')]: m.hip
     }))
 })
 
@@ -113,7 +113,6 @@ async function saveMeasurement() {
 
   saving.value = true
   try {
-    // L'interceptor gestisce il reject se isSuccess è false
     if (editingId.value) {
       await athleteApi.updateMeasurement(editingId.value, form as AthleteMeasurementsUpdateRequest)
       toast.success(t('measurements.toast.updated'))
@@ -121,11 +120,9 @@ async function saveMeasurement() {
       await athleteApi.createMeasurement(form)
       toast.success(t('measurements.toast.created'))
     }
-
     emit('refresh')
     resetForm()
   } catch (err: any) {
-    // Estraiamo il messaggio dal Result Pattern o usiamo il fallback i18n
     const errorMessage = err.error?.message || t('measurements.toast.saveError')
     toast.error(errorMessage)
   } finally {
@@ -177,11 +174,11 @@ async function confirmDelete() {
             </Select>
           </div>
           <div>
-            <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.weight') }} (kg)</label>
+            <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.weight') }}</label>
             <Input v-model.number="form.weight" type="number" step="0.1" />
           </div>
           <div>
-            <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.height') }} (cm)</label>
+            <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.height') }}</label>
             <Input v-model.number="form.height" type="number" />
           </div> 
 
@@ -193,7 +190,7 @@ async function confirmDelete() {
           </div>
           
           <div class="md:col-span-4">
-            <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('fields.notes') }}</label>
+            <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.notes') }}</label>
             <Input v-model="form.notes" :placeholder="t('measurements.form.notesPlaceholder')" />
           </div>
         </CardContent>
@@ -201,7 +198,7 @@ async function confirmDelete() {
           <Button variant="ghost" @click="resetForm">{{ t('common.cancel') }}</Button>
           <Button @click="saveMeasurement" :disabled="saving">
             <Loader2 v-if="saving" class="mr-2 h-4 w-4 animate-spin" />
-            {{ editingId ? t('common.update') : t('common.create') }}
+            {{ editingId ? t('measurements.form.update') : t('measurements.form.create') }}
           </Button>
         </CardFooter>
       </Card>
@@ -232,27 +229,27 @@ async function confirmDelete() {
             
             <div class="p-5 flex justify-around items-center border-b">
               <div class="text-center">
-                <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.form.weight') }}</p>
+                <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.card.weight') }}</p>
                 <p class="font-black text-xl text-foreground">{{ m.weight }}<span class="text-xs font-normal ml-0.5">kg</span></p>
               </div>
               <Separator orientation="vertical" class="h-8" />
               <div class="text-center">
-                <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.form.height') }}</p>
+                <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.card.height') }}</p>
                 <p class="font-black text-xl text-foreground">{{ m.height }}<span class="text-xs font-normal ml-0.5">cm</span></p>
               </div>
             </div>
 
             <div class="grid grid-cols-3 divide-x bg-muted/10 border-b">
               <div class="p-2 text-center text-xs">
-                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.chest') }}</p>
+                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.card.chest') }}</p>
                 <span class="font-bold">{{ m.chest || '-' }}</span>
               </div>
               <div class="p-2 text-center text-xs">
-                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.waist') }}</p>
+                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.card.waist') }}</p>
                 <span class="font-bold">{{ m.waist || '-' }}</span>
               </div>
               <div class="p-2 text-center text-xs">
-                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.form.hip') }}</p>
+                <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.card.hip') }}</p>
                 <span class="font-bold">{{ m.hip || '-' }}</span>
               </div>
             </div>
@@ -290,7 +287,12 @@ async function confirmDelete() {
             <LineChart 
               :data="chartData" 
               index="date" 
-              :categories="[t('fields.weight'), t('fields.waist'), t('fields.chest'), t('fields.hip')]"
+              :categories="[
+                t('measurements.card.weight'), 
+                t('measurements.card.waist'), 
+                t('measurements.card.chest'), 
+                t('measurements.card.hip')
+              ]"
               :colors="['#2563eb', '#10b981', '#f59e0b', '#8b5cf6']" 
               :y-formatter="(tick) => `${tick}`"
               :show-legend="true" 
@@ -306,9 +308,9 @@ async function confirmDelete() {
     <Dialog v-model:open="isDeleteDialogOpen">
       <DialogContent class="max-w-xs">
         <DialogHeader>
-          <DialogTitle>{{ t('measurements.dialog.deleteTitle') }}</DialogTitle>
+          <DialogTitle>{{ t('common.delete') }}</DialogTitle>
         </DialogHeader>
-        <p class="text-sm py-2 text-muted-foreground">{{ t('measurements.dialog.deleteText') }}</p>
+        <p class="text-sm py-2 text-muted-foreground">{{ t('measurements.toast.deleted') }}?</p>
         <div class="flex flex-col gap-2">
           <Button variant="destructive" @click="confirmDelete" :disabled="deleting">
             <Loader2 v-if="deleting" class="mr-2 h-4 w-4 animate-spin" /> 

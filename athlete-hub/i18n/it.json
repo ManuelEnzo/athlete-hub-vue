@@ -248,6 +248,7 @@
         ],
         "lockedTitle": "Modifiche limitate",
         "lockedMessage": "Non è possibile cambiare tipologia o protocollo perché sono già presenti risultati salvati per questa sessione.",
+        "deleteLocked":"Non è possibile eliminare la sessione perché sono già presenti risultati salvati per questa sessione.",
         "agendaTitle": "Agenda",
         "addEvent": "Aggiungi Evento",
         "noEvents": "Nessun evento pianificato.",
@@ -269,7 +270,6 @@
             "update": "Aggiorna",
             "titlePlaceholder": "Titolo evento",
             "descriptionPlaceholder": "Dettagli evento...",
-            "selectAthlete": "Seleziona un atleta",
             "validationError": "Per favore compila tutti i campi obbligatori",
             "titleLabel": "Titolo Sessione",
             "participants": "Partecipanti",
@@ -277,7 +277,10 @@
             "timeLabel": "Ora Inizio",
             "categoryLabel": "Categoria",
             "protocolLabel": "Protocollo Performance",
-            "protocolSelect": "Seleziona protocollo..."
+            "protocolSelect": "Seleziona protocollo...",
+            "targetRPE": "RPE Target",
+            "intensityPlaceholder": "Intensità prevista (1-10)",
+            "targetRPEInfo": "Intensità prevista"
         },
         "deleteConfirmation": "Sei sicuro di voler rimuovere questa sessione? L'atleta non riceverà notifiche automatiche.",
         "deleteTitle": "Cancellare Appuntamento",
@@ -300,8 +303,12 @@
             "saveResults": "Salva Sessione"
         },
         "validation": {
-            "noResults": "Inserisci almeno un risultato prima di salvare"
-        }
+            "noResults": "Inserisci almeno un risultato prima di salvare",
+            "selectAthlete": "Seleziona almeno un atleta",
+            "validationError":"Per favore compila tutti i campi visualizzati"
+        },
+        "blocked":"Proprietà bloccate",
+        "resultPresent":" Sono presenti risultati per questo test. Non è possibile cambiare il tipo o il protocollo."
     },
     "common": {
         "cancel": "Annulla",

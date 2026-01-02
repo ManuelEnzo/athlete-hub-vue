@@ -135,7 +135,6 @@ export interface CalendarEventResponse {
   title: string;
   date: string; // Formato ISO 8601 (es. 2023-12-22T10:30:00)
   type: string; // Forza, Cardio, Test, ecc.
-  color?: string | null;
   focus?: string | null;
   targetRPE?: number | null;
 }
@@ -149,7 +148,7 @@ export interface CalendarEventCreateRequest {
   date: string;
   type: string;
   focus?: string;
-  targetRPE?: number;
+  targetRPE?: number | null;
   testDefinitionId?: number | null; // Aggiunto per i test
 }
 

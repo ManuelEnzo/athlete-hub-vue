@@ -248,6 +248,7 @@
         ],
         "lockedMessage": "Changes to type or protocol are restricted because there are already saved results for this session.",
         "lockedTitle": "Limited Changes",
+        "deleteLocked":"It is not possible to delete the session because there are already saved results for this session.",
         "agendaTitle": "Agenda",
         "addEvent": "Add Event",
         "noEvents": "No events scheduled.",
@@ -272,7 +273,6 @@
             "update": "Update",
             "titlePlaceholder": "Event title",
             "descriptionPlaceholder": "Event details...",
-            "selectAthlete": "Select an athlete",
             "validationError": "Please fill all required fields",
             "titleLabel": "Session Title",
             "participants": "Participants",
@@ -280,7 +280,10 @@
             "timeLabel": "Start Time",
             "categoryLabel": "Category",
             "protocolLabel": "Performance Protocol",
-            "protocolSelect": "Select protocol..."
+            "protocolSelect": "Select protocol...",
+            "targetRPE": "RPE Target",
+            "intensityPlaceholder": "e.g., 7",
+            "targetRPEInfo": "Planned intensity for the session (1-10)"
         },
         "delete": {
             "title": "Delete Session",
@@ -300,8 +303,12 @@
             "resultsSaved": "Results saved successfully"
         },
         "validation": {
-            "noResults": "No results found"
-        }
+            "noResults": "No results found",
+             "selectAthlete": "Select at least one athlete",
+            "validationError":"Please fill all displayed fields"
+        },
+        "blocked":"Locked Properties",
+        "resultPresent":" There are results for this test. Type or protocol cannot be changed."
     },
     "common": {
         "cancel": "Cancel",
