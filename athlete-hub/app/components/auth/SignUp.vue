@@ -96,6 +96,5 @@ async function onSubmit(event: Event) {
       </div>
     </form>
 
-    <Separator :label="t('auth.orContinueWith')" />
   </div>
 </template>

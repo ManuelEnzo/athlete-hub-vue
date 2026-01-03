@@ -216,3 +216,9 @@ export interface TestMetricDto {
   name: string;
   unit: string;
 }
+
+export interface RpeLinkQueueSubmitRpeDto {
+  tokenId: string
+  rpeValue: number
+  notes?: string
+}

@@ -234,16 +234,23 @@ async function confirmDelete() {
   }
 }
 
-// RIPRISTINATA
 async function openTestGrid(eventId: number) {
   try {
     const res = await athleteApi.getTestGrid(eventId)
     const grid = res.data.value
     if (!grid) return
+
+    // RESET TOTALE: Rimuoviamo tutte le proprietà dall'oggetto reactive
+    // per evitare residui di sessioni precedenti
+    Object.keys(resultsMap).forEach(key => delete resultsMap[Number(key)])
+
     selectedGridData.value = grid
-    for (const key in resultsMap) { delete resultsMap[Number(key)] }
+
+    // Popolamento dei dati esistenti (tempResults)
     grid.athletes.forEach(athlete => {
+      // Inizializziamo l'oggetto per l'atleta specifico
       resultsMap[athlete.id] = {}
+
       if (athlete.tempResults) {
         Object.entries(athlete.tempResults).forEach(([mId, val]) => {
           const athleteMap = resultsMap[athlete.id]
@@ -251,6 +258,7 @@ async function openTestGrid(eventId: number) {
         })
       }
     })
+
     isTestGridOpen.value = true
   } catch (err) {
     toast.error(t('calendar.errors.loadGrid'))
@@ -260,21 +268,38 @@ async function openTestGrid(eventId: number) {
 async function saveTestResults() {
   if (!selectedGridData.value) return
   isLoading.value = true
+
   try {
     const resultsToSave: TestResultSaveDto[] = []
+
+    // Creiamo un set degli ID metriche validi per QUESTO test specifico
+    const validMetricIds = new Set(selectedGridData.value.metrics.map(m => m.id))
+
     Object.entries(resultsMap).forEach(([athId, metrics]) => {
       Object.entries(metrics).forEach(([mId, val]) => {
-        if (val !== null && val !== '') {
+        const metricIdNum = Number(mId)
+
+        // FILTRO DI SICUREZZA: Invia solo se la metrica appartiene al test attuale
+        // e se il valore non è vuoto
+        if (validMetricIds.has(metricIdNum) && val !== null && val !== '') {
           const parsedVal = parseFloat(String(val).replace(',', '.'))
-          if (!isNaN(parsedVal)) resultsToSave.push({ athleteId: Number(athId), testMetricId: Number(mId), value: parsedVal })
+          if (!isNaN(parsedVal)) {
+            resultsToSave.push({
+              athleteId: Number(athId),
+              testMetricId: metricIdNum,
+              value: parsedVal
+            })
+          }
         }
       })
     })
+
     if (resultsToSave.length === 0) {
       toast.error(t('calendar.validation.noResults'))
       isLoading.value = false
       return
     }
+
     await athleteApi.saveTestResults(selectedGridData.value.eventId, resultsToSave)
     toast.success(t('calendar.toast.resultsSaved'))
     await fetchEvents()
@@ -358,7 +383,8 @@ onMounted(() => {
                 <span class="font-bold text-sm leading-tight">{{ event.title }}</span>
                 <div class="mt-2 text-[11px] font-medium text-muted-foreground">🕒
                   {{ event.date ? new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--' }}
-                  | 👤 {{ event.athleteFullName }} | {{ event.targetRPE ? `🎯 RPE ${event.targetRPE}` : '' }}</div>
+                  | 👤 {{ event.athleteFullName }} | {{ event.targetRPE ? `🎯 RPE ${event.targetRPE}` : '' }}
+                </div>
               </div>
               <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button v-if="event.type === 'Test'" variant="outline" size="icon"
@@ -385,7 +411,8 @@ onMounted(() => {
       <Card class="w-full max-w-md shadow-2xl border-none">
         <CardHeader>
           <CardTitle class="text-xl font-black uppercase">
-            {{ isEditing ? t('calendar.editSession') : t('calendar.newSession') }}</CardTitle>
+            {{ isEditing ? t('calendar.editSession') : t('calendar.newSession') }}
+          </CardTitle>
         </CardHeader>
         <CardContent class="space-y-5 max-h-[70vh] overflow-y-auto pr-2">
 
@@ -393,7 +420,8 @@ onMounted(() => {
             class="bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-start gap-3">
             <AlertCircle class="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
             <p class="text-[11px] text-amber-800 leading-tight">
-              <b>{{ t('calendar.blocked') }}</b><br>{{ t('calendar.resultPresent') }}</p>
+              <b>{{ t('calendar.blocked') }}</b><br>{{ t('calendar.resultPresent') }}
+            </p>
           </div>
 
           <div>
@@ -450,7 +478,8 @@ onMounted(() => {
           </div>
 
           <div class="col-span-2 md:col-span-1">
-            <label class="text-[10px] font-black uppercase text-primary mb-1 block">{{ t('calendar.form.targetRPE') }}</label>
+            <label
+              class="text-[10px] font-black uppercase text-primary mb-1 block">{{ t('calendar.form.targetRPE') }}</label>
             <div class="flex items-center gap-2">
               <Input type="number" v-model.number="newEvent.targetRpe" min="1" max="10" placeholder="Es. 7"
                 class="font-bold text-primary" />
@@ -487,10 +516,12 @@ onMounted(() => {
             <thead class="bg-muted/50 sticky top-0 z-10">
               <tr>
                 <th class="p-4 text-left text-[10px] font-black uppercase text-muted-foreground border-b w-64">
-                  {{ t('calendar.grid.athlete') }}</th>
+                  {{ t('calendar.grid.athlete') }}
+                </th>
                 <th v-for="metric in selectedGridData?.metrics" :key="metric.id"
                   class="p-4 text-center text-[10px] font-black uppercase text-muted-foreground border-b min-w-[140px]">
-                  {{ metric.name }}</th>
+                  {{ metric.name }}
+                </th>
               </tr>
             </thead>
             <tbody>

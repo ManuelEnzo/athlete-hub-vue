@@ -364,10 +364,10 @@
             "withApple": "Login with Apple",
             "withGoogle": "Login with Google",
             "submit": "Login",
-            "forgotPassword": "Forgot Password?",
             "noAccount": "Don't have an account?",
             "signUpLink": "Sign Up",
-            "success": "Login successful"
+            "success": "Login successful",
+            "forgotPassword": "Forgot Password?"
         }
     },
     "tasks": {
@@ -406,5 +406,28 @@
         "server": "Server error occurred",
         "emailInUse": "Email already in use",
         "save": "Error saving datas"
+    },
+    "rpe": {
+    "title": "Submit Your RPE",
+    "description": "Enter your RPE for the session. Values from 0 (no effort) to 10 (maximum effort).",
+    "fields": {
+      "rpe": "RPE",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "Add any notes..."
+    },
+    "buttons": {
+      "submit": "Submit",
+      "sent": "Sent"
+    },
+    "validation": {
+      "range": "RPE must be between 0 and 10"
+    },
+    "success": {
+      "sent": "RPE submitted successfully!"
+    },
+    "error": {
+      "sending": "Error while sending RPE",
+      "invalidToken": "Invalid token"
     }
+  }
 }

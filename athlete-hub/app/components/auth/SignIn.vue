@@ -15,7 +15,7 @@ const loadingStore = useLoadingStore()
 
 async function onSubmit(event: Event) {
   event.preventDefault()
-  
+
   if (!email.value || !password.value) {
     toast.error(t('auth.errors.requiredFields'))
     return
@@ -39,7 +39,7 @@ async function onSubmit(event: Event) {
     // Gestione centralizzata del messaggio dal server (Result Pattern)
     // Se l'interceptor ha rigettato l'apiResult, lo troviamo qui
     const errorMessage = err.error?.message || t('auth.errors.genericLogin')
-    
+
     console.error('[Login Error]', err)
     toast.error(errorMessage)
   }
@@ -50,26 +50,19 @@ async function onSubmit(event: Event) {
   <form class="grid gap-6" @submit="onSubmit">
     <div class="flex flex-col gap-4">
       <Button variant="outline" class="w-full gap-2" type="button" :disabled="loadingStore.isLoading">
-        <IconApple class="size-4" /> {{ t('auth.login.withApple') }}
+        <Icon name="i-lucide-apple" class="size-4" />
+        {{ t('auth.login.withApple') }}
       </Button>
       <Button variant="outline" class="w-full gap-2" type="button" :disabled="loadingStore.isLoading">
-        <IconGoogle class="size-4" />
+        <Icon name="i-lucide-mail" class="size-4" />
         {{ t('auth.login.withGoogle') }}
       </Button>
     </div>
 
-    <Separator :label="t('auth.orContinueWith')" />
-
     <div class="grid gap-2">
       <Label for="email">{{ t('auth.fields.email') }}</Label>
-      <Input 
-        id="email" 
-        v-model="email" 
-        type="email" 
-        placeholder="name@example.com"
-        :disabled="loadingStore.isLoading" 
-        auto-complete="email" 
-      />
+      <Input id="email" v-model="email" type="email" placeholder="name@example.com" :disabled="loadingStore.isLoading"
+        auto-complete="email" />
     </div>
 
     <div class="grid gap-2">

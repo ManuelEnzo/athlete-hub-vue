@@ -57,14 +57,19 @@ export const athleteApi = {
   // --- NUOVA SEZIONE: TEST E PERFORMANCE ---
 
   // 1. Recupera i protocolli di test disponibili (es. Salto CMJ, Sprint 30m)
-  getTestDefinitions: () => 
+  getTestDefinitions: () =>
     api.get<Result<any[]>>('/Calendar/test-definitions'), // Assicurati di avere questo controller o endpoint
 
   // 2. Recupera la griglia di inserimento per un evento specifico
-  getTestGrid: (eventId: number) => 
+  getTestGrid: (eventId: number) =>
     api.get<Result<TestEntryGridDto>>(`/Calendar/${eventId}/test-grid`),
 
   // 3. Salva i risultati del test in modo massivo
-  saveTestResults: (eventId: number, results: TestResultSaveDto[]) => 
+  saveTestResults: (eventId: number, results: TestResultSaveDto[]) =>
     api.post<Result<boolean>>(`/Calendar/${eventId}/results`, results),
+  
+  // Invio RPE dall'atleta
+  submitRpe: (data: { tokenId: string; rpeValue: number; notes?: string }) =>
+    api.post<Result<boolean>>('/rpe/submit', data)
 }
+

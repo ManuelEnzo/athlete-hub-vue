@@ -248,7 +248,7 @@
         ],
         "lockedTitle": "Modifiche limitate",
         "lockedMessage": "Non è possibile cambiare tipologia o protocollo perché sono già presenti risultati salvati per questa sessione.",
-        "deleteLocked":"Non è possibile eliminare la sessione perché sono già presenti risultati salvati per questa sessione.",
+        "deleteLocked": "Non è possibile eliminare la sessione perché sono già presenti risultati salvati per questa sessione.",
         "agendaTitle": "Agenda",
         "addEvent": "Aggiungi Evento",
         "noEvents": "Nessun evento pianificato.",
@@ -305,10 +305,10 @@
         "validation": {
             "noResults": "Inserisci almeno un risultato prima di salvare",
             "selectAthlete": "Seleziona almeno un atleta",
-            "validationError":"Per favore compila tutti i campi visualizzati"
+            "validationError": "Per favore compila tutti i campi visualizzati"
         },
-        "blocked":"Proprietà bloccate",
-        "resultPresent":" Sono presenti risultati per questo test. Non è possibile cambiare il tipo o il protocollo."
+        "blocked": "Proprietà bloccate",
+        "resultPresent": " Sono presenti risultati per questo test. Non è possibile cambiare il tipo o il protocollo."
     },
     "common": {
         "cancel": "Annulla",
@@ -366,7 +366,8 @@
             "submit": "Accedi",
             "noAccount": "Non hai un account?",
             "signUpLink": "Registrati qui",
-            "success": "Login avvenuto con successo"
+            "success": "Login avvenuto con successo",
+            "forgotPassword": "Hai dimenticato la password?"
         }
     },
     "tasks": {
@@ -402,5 +403,28 @@
         "required": "Compila tutti i campi obbligatori",
         "server": "Si è verificato un errore del server",
         "save": "Errore durante il salvataggio dei dati"
+    },
+    "rpe": {
+        "title": "Invia il tuo RPE",
+        "description": "Inserisci il tuo RPE per la sessione. Valori da 0 (nessuna fatica) a 10 (massimo sforzo).",
+        "fields": {
+            "rpe": "RPE",
+            "notes": "Note (opzionale)",
+            "notesPlaceholder": "Aggiungi eventuali note..."
+        },
+        "buttons": {
+            "submit": "Invia",
+            "sent": "Inviato"
+        },
+        "validation": {
+            "range": "RPE deve essere compreso tra 0 e 10"
+        },
+        "success": {
+            "sent": "RPE inviato con successo!"
+        },
+        "error": {
+            "sending": "Errore durante l’invio",
+            "invalidToken": "Token non valido"
+        }
     }
 }
