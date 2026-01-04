@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'blank'
+  layout: 'blank',
+  auth: false
 })
 
 import { useRoute } from 'vue-router'

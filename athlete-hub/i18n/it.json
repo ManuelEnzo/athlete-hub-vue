@@ -318,7 +318,8 @@
         "save": "Salva",
         "delete": "Elimina",
         "details": "Dettagli",
-        "optional": "Opzionale"
+        "optional": "Opzionale",
+        "loading": "Caricamento..."
     },
     "kanban": {
         "title": "Kanban Board",
@@ -417,14 +418,25 @@
             "sent": "Inviato"
         },
         "validation": {
-            "range": "RPE deve essere compreso tra 0 e 10"
+            "range": "L'RPE deve essere compreso tra 1 e 10"
         },
         "success": {
-            "sent": "RPE inviato con successo!"
+            "sent": "RPE inviato con successo!",
+            "details": "Grazie! I tuoi dati sono stati registrati correttamente."
         },
         "error": {
             "sending": "Errore durante l’invio",
-            "invalidToken": "Token non valido"
+            "invalidToken": "Link non valido o scaduto",
+            "contactCoach": "Contatta il tuo allenatore per ricevere un nuovo link di inserimento."
+        },
+        "labels": {
+            "0": "Nessuno sforzo 😴",
+            "2": "Molto leggero 🙂",
+            "4": "Moderato 😐",
+            "6": "Impegnativo 😰",
+            "8": "Duro 🥵",
+            "9.5": "Estremo 💀",
+            "10": "Massimale 🔥"
         }
     }
 }

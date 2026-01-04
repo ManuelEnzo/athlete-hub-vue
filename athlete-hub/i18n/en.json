@@ -248,7 +248,7 @@
         ],
         "lockedMessage": "Changes to type or protocol are restricted because there are already saved results for this session.",
         "lockedTitle": "Limited Changes",
-        "deleteLocked":"It is not possible to delete the session because there are already saved results for this session.",
+        "deleteLocked": "It is not possible to delete the session because there are already saved results for this session.",
         "agendaTitle": "Agenda",
         "addEvent": "Add Event",
         "noEvents": "No events scheduled.",
@@ -304,11 +304,11 @@
         },
         "validation": {
             "noResults": "No results found",
-             "selectAthlete": "Select at least one athlete",
-            "validationError":"Please fill all displayed fields"
+            "selectAthlete": "Select at least one athlete",
+            "validationError": "Please fill all displayed fields"
         },
-        "blocked":"Locked Properties",
-        "resultPresent":" There are results for this test. Type or protocol cannot be changed."
+        "blocked": "Locked Properties",
+        "resultPresent": " There are results for this test. Type or protocol cannot be changed."
     },
     "common": {
         "cancel": "Cancel",
@@ -318,7 +318,8 @@
         "save": "Save",
         "delete": "Delete",
         "details": "Details",
-        "optional": "Optional"
+        "optional": "Optional",
+        "loading": "Loading..."
     },
     "kanban": {
         "title": "Kanban Board",
@@ -408,26 +409,37 @@
         "save": "Error saving datas"
     },
     "rpe": {
-    "title": "Submit Your RPE",
-    "description": "Enter your RPE for the session. Values from 0 (no effort) to 10 (maximum effort).",
-    "fields": {
-      "rpe": "RPE",
-      "notes": "Notes (optional)",
-      "notesPlaceholder": "Add any notes..."
-    },
-    "buttons": {
-      "submit": "Submit",
-      "sent": "Sent"
-    },
-    "validation": {
-      "range": "RPE must be between 0 and 10"
-    },
-    "success": {
-      "sent": "RPE submitted successfully!"
-    },
-    "error": {
-      "sending": "Error while sending RPE",
-      "invalidToken": "Invalid token"
+        "title": "Submit Your RPE",
+        "description": "Enter your RPE for the session. Values from 0 (no effort) to 10 (maximum effort).",
+        "fields": {
+            "rpe": "RPE",
+            "notes": "Notes (optional)",
+            "notesPlaceholder": "Add any notes..."
+        },
+        "buttons": {
+            "submit": "Submit",
+            "sent": "Sent"
+        },
+        "validation": {
+            "range": "RPE must be between 1 and 10"
+        },
+        "success": {
+            "sent": "RPE submitted successfully!",
+            "details": "Thank you! Your data has been recorded correctly."
+        },
+        "error": {
+            "sending": "Error while sending RPE",
+            "invalidToken": "Invalid or expired link",
+            "contactCoach": "Please contact your coach to receive a new submission link."
+        },
+        "labels": {
+            "0": "No effort 😴",
+            "2": "Very light 🙂",
+            "4": "Moderate 😐",
+            "6": "Challenging 😰",
+            "8": "Hard 🥵",
+            "9.5": "Extreme 💀",
+            "10": "Maximal 🔥"
+        }
     }
-  }
 }

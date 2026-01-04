@@ -11,9 +11,10 @@ import type {
   CalendarEventCreateRequest,
   CalendarSessionResponse,
   CalendarEventUpdateRequest,
-  // NUOVI TIPI DA AGGIUNGERE NEL TUO FILE types/api.ts
   TestResultSaveDto,
-  TestEntryGridDto
+  TestEntryGridDto,
+  RpeLinkQueueSubmitRpeDto,
+  RpeLinkQueueResponseDto
 } from '../types/api'
 
 export const athleteApi = {
@@ -54,8 +55,6 @@ export const athleteApi = {
   deleteEvent: (id: number) =>
     api.delete<Result<boolean>>(`/Calendar/${id}`),
 
-  // --- NUOVA SEZIONE: TEST E PERFORMANCE ---
-
   // 1. Recupera i protocolli di test disponibili (es. Salto CMJ, Sprint 30m)
   getTestDefinitions: () =>
     api.get<Result<any[]>>('/Calendar/test-definitions'), // Assicurati di avere questo controller o endpoint
@@ -67,9 +66,11 @@ export const athleteApi = {
   // 3. Salva i risultati del test in modo massivo
   saveTestResults: (eventId: number, results: TestResultSaveDto[]) =>
     api.post<Result<boolean>>(`/Calendar/${eventId}/results`, results),
-  
-  // Invio RPE dall'atleta
-  submitRpe: (data: { tokenId: string; rpeValue: number; notes?: string }) =>
-    api.post<Result<boolean>>('/rpe/submit', data)
+
+  submitRpe: (data: RpeLinkQueueSubmitRpeDto) =>
+    api.post<Result<boolean>>('/RpeLinkQueue/submit-rpe-value', data),
+
+  getAllInfoFromToken: (tokenId: string) =>
+    api.post<Result<RpeLinkQueueResponseDto>>(`/RpeLinkQueue/get-all-info-from-token`, { rpeTokenId: tokenId })
 }
 

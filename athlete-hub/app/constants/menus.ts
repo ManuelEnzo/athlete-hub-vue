@@ -41,6 +41,17 @@ export const navMenu: NavMenu[] = [
         ],
       },
       {
+        title: 'Monitoring',
+        icon: 'i-lucide-activity',
+        children: [
+          {
+            title: 'RPE Submissions',
+            icon: 'i-lucide-bar-chart-2',
+            link: '/rpedetails',
+          },
+        ]
+      },
+      {
         title: 'Email',
         icon: 'i-lucide-mail',
         link: '/email',

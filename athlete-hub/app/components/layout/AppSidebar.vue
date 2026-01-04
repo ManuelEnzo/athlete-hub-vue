@@ -10,6 +10,7 @@ const { sidebar } = useAppSettings()
 // 2. Carica il profilo quando il componente viene montato
 onMounted(async () => {
   if (authStore.token && !authStore.user) {
+    debugger;
     await authStore.fetchProfile()
   }
 })

@@ -217,8 +217,20 @@ export interface TestMetricDto {
   unit: string;
 }
 
+export interface RpeLinkQueueTokenRequestDto{
+  rpeTokenId: string
+}
+
+// DTO per ricevere le info della sessione (GET)
+export interface RpeLinkQueueResponseDto {
+    id: number;
+    athleteFullName: string;
+    eventName: string;
+}
+
+// DTO per inviare il voto RPE (POST)
 export interface RpeLinkQueueSubmitRpeDto {
-  tokenId: string
-  rpeValue: number
-  notes?: string
+    tokenId: string;
+    rpeValue: number;
+    notes?: string;
 }
