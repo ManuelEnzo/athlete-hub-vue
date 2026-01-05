@@ -138,6 +138,7 @@ export interface CalendarEventResponse {
   focus?: string | null;
   targetRPE?: number | null;
   duration: string | null;
+  isCompleted: boolean;
 }
 
 /**
@@ -152,6 +153,7 @@ export interface CalendarEventCreateRequest {
   targetRPE?: number | null;
   testDefinitionId?: number | null; // Aggiunto per i test
   duration: string | null;
+  isCompleted: boolean;
 }
 
 /**
@@ -165,6 +167,8 @@ export interface CalendarEventUpdateRequest {
   color?: string | null;
   focus?: string | null;
   targetRPE?: number | null;
+  duration: string | null;
+  isCompleted: boolean;
 }
 
 /**

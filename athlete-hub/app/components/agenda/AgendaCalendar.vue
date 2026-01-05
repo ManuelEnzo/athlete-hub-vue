@@ -58,7 +58,8 @@ const newEvent = reactive({
   testDefinitionId: null as number | null,
   targetRpe: null as number | null, // Aggiunto Target RPE
   hasResults: false,
-  duration: null as number | null
+  duration: null as number | null,
+  isCompleted: false
 })
 
 // --- CALENDAR LOGIC ---
@@ -136,7 +137,8 @@ function openAddDialog() {
     athleteIds: [], title: '', date: selectedDate.value,
     time: '09:00', type: 'Strength', testDefinitionId: null,
     targetRpe: null, // Reset Target RPE
-    hasResults: false
+    hasResults: false,
+    isCompleted: false
   })
   isAddDialogOpen.value = true
 }
@@ -175,7 +177,8 @@ function openEditDialog(id: number) {
     testDefinitionId: eventData.testDefinitionId,
     targetRpe: eventData.targetRPE || null,
     hasResults: eventData.hasResults === true,
-    duration: durationInMinutes // Assegniamo il valore calcolato (number | null)
+    duration: durationInMinutes, // Assegniamo il valore calcolato (number | null)
+    isCompleted: eventData.isCompleted === true
   })
 
   isAddDialogOpen.value = true
@@ -217,16 +220,12 @@ async function handleSaveEvent() {
 
   isLoading.value = true
   try {
-    // 1. Convertiamo i minuti in stringa HH:mm:ss per TimeOnly
     let formattedDuration: string | null = null
     if (newEvent.duration && newEvent.duration > 0) {
       const hours = Math.floor(newEvent.duration / 60)
       const minutes = newEvent.duration % 60
       formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`
     }
-
-    // 2. Costruiamo il payload esplicitamente per non inviare dati sporchi
-    // Nota: Usiamo "Duration" o "duration" in base a come il tuo backend mappa i nomi (solitamente camelCase in JSON)
     const payload = {
       title: newEvent.title,
       athleteIds: newEvent.athleteIds,
@@ -234,7 +233,8 @@ async function handleSaveEvent() {
       type: newEvent.type,
       targetRPE: newEvent.targetRpe,
       testDefinitionId: newEvent.type === 'Test' ? newEvent.testDefinitionId : null,
-      duration: formattedDuration // Qui passiamo la stringa, NON il numero dello slider
+      duration: formattedDuration,
+      isCompleted: newEvent.isCompleted
     }
 
     if (isEditing.value && editingEventId.value) {
@@ -422,6 +422,7 @@ onMounted(() => {
                     '--:--' }}
                   | 👤 {{ event.athleteFullName }} | {{ event.targetRPE ? `🎯 RPE ${event.targetRPE}` : '' }}
                 </div>
+
               </div>
               <div class="actions-overlay">
                 <Button v-if="event.type === 'Test'" variant="outline" size="icon"
@@ -447,17 +448,16 @@ onMounted(() => {
     </div>
 
     <div v-if="isAddDialogOpen"
-      class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-2">
       <Card class="w-full max-w-md shadow-2xl border-none">
-        <CardHeader>
+        <CardHeader class="py-3 px-5">
           <CardTitle class="text-xl font-black uppercase">
             {{ isEditing ? t('calendar.editSession') : t('calendar.newSession') }}
           </CardTitle>
         </CardHeader>
-        <CardContent class="space-y-5 max-h-[70vh] overflow-y-auto pr-2">
-
+        <CardContent class="space-y-3 max-h-[75vh] overflow-y-auto pr-2">
           <div v-if="isEditing && newEvent.hasResults"
-            class="bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-start gap-3">
+            class="bg-amber-50 border border-amber-200 p-2 rounded-lg flex items-start gap-3">
             <AlertCircle class="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
             <p class="text-[11px] text-amber-800 leading-tight">
               <b>{{ t('calendar.blocked') }}</b><br>{{ t('calendar.resultPresent') }}
@@ -465,24 +465,28 @@ onMounted(() => {
           </div>
 
           <div>
-            <label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{
+            <label class="text-[10px] font-black uppercase text-muted-foreground mb-0.5 block">{{
               t('calendar.form.titleLabel') }}</label>
-            <Input v-model="newEvent.title" />
+            <Input v-model="newEvent.title" class="h-9" />
           </div>
 
-          <div class="flex gap-4">
-            <div class="flex-1"><label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{
-              t('calendar.form.dateLabel') }}</label><Input type="date" v-model="newEvent.date" /></div>
-            <div class="w-28"><label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{
-              t('calendar.form.timeLabel') }}</label><Input type="time" v-model="newEvent.time" /></div>
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label class="text-[10px] font-black uppercase text-muted-foreground mb-0.5 block">{{
+                t('calendar.form.dateLabel') }}</label>
+              <Input type="date" v-model="newEvent.date" class="h-9" />
+            </div>
+            <div class="w-28">
+              <label class="text-[10px] font-black uppercase text-muted-foreground mb-0.5 block">{{
+                t('calendar.form.timeLabel') }}</label>
+              <Input type="time" v-model="newEvent.time" class="h-9" />
+            </div>
           </div>
 
           <div class="col-span-2 md:col-span-1">
-            <div class="flex items-center justify-between mb-1">
-              <label class="text-[10px] font-black uppercase text-muted-foreground block">
-                {{ t('calendar.form.duration') }}
-              </label>
-
+            <div class="flex items-center justify-between mb-0.5">
+              <label class="text-[10px] font-black uppercase text-muted-foreground block">{{ t('calendar.form.duration')
+                }}</label>
               <div class="flex items-center gap-1.5 transition-all duration-300">
                 <template v-if="newEvent.duration && newEvent.duration > 0">
                   <span class="relative flex h-1.5 w-1.5">
@@ -490,15 +494,13 @@ onMounted(() => {
                       class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
                   </span>
-                  <span class="text-[9px] font-black text-green-600 uppercase tracking-wider">
-                    {{ t('common.active') || 'Attiva' }}
-                  </span>
+                  <span class="text-[9px] font-black text-green-600 uppercase tracking-wider">{{ t('common.active') ||
+                    'Attiva' }}</span>
                 </template>
                 <template v-else>
                   <AlertCircle class="h-3 w-3 text-muted-foreground/40" />
-                  <span class="text-[9px] font-bold text-muted-foreground/50 uppercase italic">
-                    {{ t('calendar.form.notSpecified') || 'N/A' }}
-                  </span>
+                  <span class="text-[9px] font-bold text-muted-foreground/50 uppercase italic">{{
+                    t('calendar.form.notSpecified') || 'N/A' }}</span>
                 </template>
               </div>
             </div>
@@ -506,78 +508,93 @@ onMounted(() => {
             <input type="range" min="0" max="240" step="5" v-model.number="newEvent.duration"
               class="w-full accent-primary h-1.5 bg-muted rounded-lg appearance-none cursor-pointer" />
 
-            <div class="flex justify-between items-center mt-2">
+            <div class="flex justify-between items-center mt-1">
               <div class="text-sm font-bold transition-colors"
                 :class="newEvent.duration ? 'text-primary' : 'text-muted-foreground italic font-medium'">
-                <span v-if="newEvent.duration">
-                  {{ t('calendar.form.durationValue', { minutes: newEvent.duration }) }}
-                </span>
-                <span v-else>
-                  -- min
-                </span>
+                <span v-if="newEvent.duration">{{ t('calendar.form.durationValue', { minutes: newEvent.duration })
+                  }}</span>
+                <span v-else>-- min</span>
               </div>
-
               <button v-if="newEvent.duration" @click="newEvent.duration = null"
                 class="text-[10px] font-black uppercase text-destructive hover:opacity-70 flex items-center gap-1">
-                <X class="h-3 w-3" />
-                {{ t('common.remove') || 'Rimuovi' }}
+                <X class="h-3 w-3" /> {{ t('common.remove') || 'Rimuovi' }}
               </button>
             </div>
           </div>
 
-          <div class="space-y-3">
-            <label class="text-[10px] font-black uppercase text-muted-foreground block">{{
-              t('calendar.form.selectAthlete') }}</label>
-            <div class="grid grid-cols-1 gap-2 border rounded-lg p-3 bg-muted/20">
+          <div class="space-y-2"> <label class="text-[10px] font-black uppercase text-muted-foreground block">{{
+            t('calendar.form.selectAthlete') }}</label>
+            <div class="grid grid-cols-1 gap-1 border rounded-lg p-2 bg-muted/20 max-h-32 overflow-y-auto">
               <div v-for="ath in athletes" :key="ath.id"
                 @click="!(isEditing && newEvent.hasResults) && toggleAthlete(ath.id)"
-                class="flex items-center space-x-3 p-2 rounded-md hover:bg-background cursor-pointer transition-colors">
-                <div class="h-5 w-5 border-2 rounded flex items-center justify-center transition-colors"
+                class="flex items-center space-x-3 p-1.5 rounded-md hover:bg-background cursor-pointer transition-colors">
+                <div class="h-4 w-4 border-2 rounded flex items-center justify-center transition-colors"
                   :class="newEvent.athleteIds.includes(ath.id) ? 'bg-primary border-primary' : 'border-muted-foreground/30'">
-                  <Check v-if="newEvent.athleteIds.includes(ath.id)" class="h-3 w-3 text-primary-foreground" />
+                  <Check v-if="newEvent.athleteIds.includes(ath.id)" class="h-2.5 w-2.5 text-primary-foreground" />
                 </div>
-                <span class="text-sm font-medium">{{ ath.fullName }}</span>
+                <span class="text-xs font-medium">{{ ath.fullName }}</span>
               </div>
             </div>
           </div>
 
-          <div>
-            <label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{
-              t('calendar.form.categoryLabel') }}</label>
-            <select v-model="newEvent.type" :disabled="isEditing && newEvent.hasResults"
-              class="w-full border rounded-md p-2 text-sm bg-background h-10 disabled:bg-muted">
-              <option v-for="type in ['Strength', 'Endurance', 'Test', 'Recovery', 'Checkup']" :key="type"
-                :value="type">{{ type
-                }}</option>
-            </select>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[10px] font-black uppercase text-muted-foreground mb-0.5 block">{{
+                t('calendar.form.categoryLabel') }}</label>
+              <select v-model="newEvent.type" :disabled="isEditing && newEvent.hasResults"
+                class="w-full border rounded-md p-1.5 text-sm bg-background h-9 disabled:bg-muted">
+                <option v-for="type in ['Strength', 'Endurance', 'Test', 'Recovery', 'Checkup']" :key="type"
+                  :value="type">{{ type
+                  }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] font-black uppercase text-primary mb-0.5 block">{{ t('calendar.form.targetRPE')
+                }}</label>
+              <Input type="number" v-model.number="newEvent.targetRpe" min="1" max="10" placeholder="Es. 7"
+                class="h-9 font-bold text-primary" />
+            </div>
           </div>
 
-          <div v-if="newEvent.type === 'Test'" class="p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl">
-            <label class="text-[10px] font-black uppercase text-purple-600 mb-2 block">{{
-              t('calendar.form.protocolLabel') }}</label>
+          <div v-if="newEvent.type === 'Test'" class="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+            <label class="text-[10px] font-black uppercase text-purple-600 mb-1 block">{{
+              t('calendar.form.protocolLabel')
+              }}</label>
             <select v-model="newEvent.testDefinitionId" :disabled="isEditing && newEvent.hasResults"
-              class="w-full border rounded-md p-2 text-sm bg-background h-10 border-purple-200">
+              class="w-full border rounded-md p-1.5 text-sm bg-background h-9 border-purple-200">
               <option :value="null">{{ t('calendar.form.protocolSelect') }}</option>
               <option v-for="td in testDefinitions" :key="td.id" :value="td.id">{{ td.name }}</option>
             </select>
           </div>
 
-          <div class="col-span-2 md:col-span-1">
-            <label class="text-[10px] font-black uppercase text-primary mb-1 block">{{ t('calendar.form.targetRPE')
-            }}</label>
-            <div class="flex items-center gap-2">
-              <Input type="number" v-model.number="newEvent.targetRpe" min="1" max="10" placeholder="Es. 7"
-                class="font-bold text-primary" />
-              <span class="text-[10px] text-muted-foreground leading-tight italic">
-                {{ t('calendar.form.targetRPEInfo') }}
-              </span>
+          <div v-if="newEvent.type !== 'Test' && newEvent.type !== 'Recovery'"
+            class="p-3 rounded-xl border transition-all"
+            :class="newEvent.isCompleted ? 'bg-green-500/10 border-green-500/30' : 'bg-muted/30 border-transparent'">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="h-8 w-8 rounded-full flex items-center justify-center"
+                  :class="newEvent.isCompleted ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground'">
+                  <Check class="h-5 w-5" />
+                </div>
+                <div>
+                  <p class="text-xs font-bold uppercase tracking-tight">{{ t('calendar.form.completedTitle') }}</p>
+                  <p class="text-[9px] text-muted-foreground leading-tight">{{ t('calendar.form.completedInfo')}}</p>
+                </div>
+              </div>
+              <button @click="newEvent.isCompleted = !newEvent.isCompleted" type="button"
+                class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-muted"
+                :class="{ 'bg-green-600': newEvent.isCompleted }">
+                <span
+                  class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                  :class="{ 'translate-x-5': newEvent.isCompleted, 'translate-x-0': !newEvent.isCompleted }" />
+              </button>
             </div>
           </div>
 
         </CardContent>
-        <CardFooter class="flex justify-end gap-2 border-t p-6">
-          <Button variant="ghost" @click="isAddDialogOpen = false">{{ t('common.cancel') }}</Button>
-          <Button @click="handleSaveEvent" :disabled="isLoading">
+        <CardFooter class="flex justify-end gap-2 border-t p-4"> <Button variant="ghost" size="sm"
+            @click="isAddDialogOpen = false">{{ t('common.cancel') }}</Button>
+          <Button size="sm" @click="handleSaveEvent" :disabled="isLoading">
             <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
             {{ isEditing ? t('common.update') : t('common.create') }}
           </Button>

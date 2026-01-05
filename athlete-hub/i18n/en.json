@@ -287,7 +287,9 @@
             "duration": "Session duration (minutes)",
             "durationValue": "{minutes} minutes",
             "notSpecified" : "Not specified",
-            "selectAthlete" :"Select an athlete"
+            "selectAthlete" :"Select an athlete",
+            "completedTitle": "Session Completed",
+            "completedInfo": "Mark as completed to record the RPE"
         },
         "delete": {
             "title": "Delete Session",
