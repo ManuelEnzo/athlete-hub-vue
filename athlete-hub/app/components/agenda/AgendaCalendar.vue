@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
-  ChevronLeft, ChevronRight, Plus, X,
+  ChevronLeft, ChevronRight, Plus, Trash2,
   Calendar as CalendarIcon, Pencil,
   ClipboardList, Save, Loader2, AlertCircle, Check
 } from 'lucide-vue-next'
@@ -57,7 +57,8 @@ const newEvent = reactive({
   type: 'Strength',
   testDefinitionId: null as number | null,
   targetRpe: null as number | null, // Aggiunto Target RPE
-  hasResults: false
+  hasResults: false,
+  duration: null as number | null
 })
 
 // --- CALENDAR LOGIC ---
@@ -143,20 +144,40 @@ function openAddDialog() {
 function openEditDialog(id: number) {
   const event = events.value.find(e => e.id === id)
   if (!event) return
+
   isEditing.value = true
   editingEventId.value = event.id
+
   const [d, t_raw] = (event.date || "").split('T')
 
+  // --- SOLUZIONE ERRORE 2345 ---
+  let durationInMinutes: number | null = null
+
+  // Usiamo un alias tipizzato per accedere alle proprietà extra in sicurezza
+  const eventData = event as any
+
+  // Verifichiamo che duration esista e sia una stringa prima di lavorarci
+  if (typeof eventData.duration === 'string') {
+    const parts = eventData.duration.split(':')
+    if (parts.length >= 2) {
+      const hours = parseInt(parts[0], 10)
+      const minutes = parseInt(parts[1], 10)
+      durationInMinutes = (hours * 60) + minutes
+    }
+  }
+
   Object.assign(newEvent, {
-    athleteIds: (event as any).participantIds?.map(Number) || [],
-    title: event.title,
+    athleteIds: (eventData).participantIds?.map(Number) || [],
+    title: eventData.title,
     date: d || todayStr,
     time: t_raw?.substring(0, 5) || '09:00',
-    type: event.type,
-    testDefinitionId: (event as any).testDefinitionId,
-    targetRpe: (event as any).targetRpe || null, // Caricamento Target RPE
-    hasResults: (event as any).hasResults === true
+    type: eventData.type,
+    testDefinitionId: eventData.testDefinitionId,
+    targetRpe: eventData.targetRPE || null,
+    hasResults: eventData.hasResults === true,
+    duration: durationInMinutes // Assegniamo il valore calcolato (number | null)
   })
+
   isAddDialogOpen.value = true
 }
 
@@ -196,12 +217,26 @@ async function handleSaveEvent() {
 
   isLoading.value = true
   try {
-    const payload: CalendarEventCreateRequest = {
-      ...newEvent,
-      date: `${newEvent.date}T${newEvent.time}:00`,
-      testDefinitionId: newEvent.type === 'Test' ? newEvent.testDefinitionId : null,
-      targetRPE: newEvent.targetRpe
+    // 1. Convertiamo i minuti in stringa HH:mm:ss per TimeOnly
+    let formattedDuration: string | null = null
+    if (newEvent.duration && newEvent.duration > 0) {
+      const hours = Math.floor(newEvent.duration / 60)
+      const minutes = newEvent.duration % 60
+      formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`
     }
+
+    // 2. Costruiamo il payload esplicitamente per non inviare dati sporchi
+    // Nota: Usiamo "Duration" o "duration" in base a come il tuo backend mappa i nomi (solitamente camelCase in JSON)
+    const payload = {
+      title: newEvent.title,
+      athleteIds: newEvent.athleteIds,
+      date: `${newEvent.date}T${newEvent.time}:00`,
+      type: newEvent.type,
+      targetRPE: newEvent.targetRpe,
+      testDefinitionId: newEvent.type === 'Test' ? newEvent.testDefinitionId : null,
+      duration: formattedDuration // Qui passiamo la stringa, NON il numero dello slider
+    }
+
     if (isEditing.value && editingEventId.value) {
       await athleteApi.updateEvent(editingEventId.value, payload)
       toast.success(t('calendar.toast.updated'))
@@ -209,15 +244,16 @@ async function handleSaveEvent() {
       await athleteApi.createEvent(payload)
       toast.success(t('calendar.toast.created'))
     }
+
     await fetchEvents()
     isAddDialogOpen.value = false
   } catch (err) {
+    console.error("Errore salvataggio:", err)
     toast.error(t('calendar.errors.saveEvent'))
   } finally {
     isLoading.value = false
   }
 }
-
 async function confirmDelete() {
   if (!eventToDeleteId.value) return
   isDeleting.value = true
@@ -355,8 +391,8 @@ onMounted(() => {
                 'border-primary ring-2 ring-primary/20 bg-primary/5': day.date === selectedDate,
                 'border-primary/50': day.isToday
               }" @click="day.date && (selectedDate = day.date)">
-              <span v-if="day.day" class="text-xs font-bold"
-                :class="{ 'text-primary': day.isToday }">{{ day.day }}</span>
+              <span v-if="day.day" class="text-xs font-bold" :class="{ 'text-primary': day.isToday }">{{ day.day
+              }}</span>
               <div v-if="day.isCurrentMonth" class="flex flex-wrap gap-1 mt-1">
                 <div v-for="e in events.filter(ev => (ev.date ?? '').startsWith(day.date || ''))" :key="e.id"
                   class="w-2 h-2 rounded-full shadow-sm" :class="getDotColor(e.type ?? '')"></div>
@@ -382,23 +418,27 @@ onMounted(() => {
                 <span class="font-black text-[10px] uppercase text-primary/80 block mb-1">{{ event.type }}</span>
                 <span class="font-bold text-sm leading-tight">{{ event.title }}</span>
                 <div class="mt-2 text-[11px] font-medium text-muted-foreground">🕒
-                  {{ event.date ? new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--' }}
+                  {{ event.date ? new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) :
+                    '--:--' }}
                   | 👤 {{ event.athleteFullName }} | {{ event.targetRPE ? `🎯 RPE ${event.targetRPE}` : '' }}
                 </div>
               </div>
-              <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div class="actions-overlay">
                 <Button v-if="event.type === 'Test'" variant="outline" size="icon"
-                  class="h-8 w-8 rounded-full border-purple-500 text-purple-600 shadow-sm"
+                  class="h-9 w-9 rounded-full border-purple-500 text-purple-600 shadow-sm"
                   @click="openTestGrid(event.id)">
-                  <ClipboardList class="h-4 w-4" />
+                  <ClipboardList class="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full" @click="openEditDialog(event.id)">
-                  <Pencil class="h-4 w-4" />
+
+                <Button variant="ghost" size="icon" class="h-9 w-9 rounded-full" @click="openEditDialog(event.id)">
+                  <Pencil class="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full text-destructive"
+
+                <Button variant="ghost" size="icon" class="h-9 w-9 rounded-full text-destructive"
                   @click="openDeleteDialog(event.id)">
-                  <X class="h-4 w-4" />
+                  <Trash2 class="h-4 w-4" />
                 </Button>
+
               </div>
             </div>
           </div>
@@ -425,23 +465,69 @@ onMounted(() => {
           </div>
 
           <div>
-            <label
-              class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.titleLabel') }}</label>
+            <label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{
+              t('calendar.form.titleLabel') }}</label>
             <Input v-model="newEvent.title" />
           </div>
 
           <div class="flex gap-4">
-            <div class="flex-1"><label
-                class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.dateLabel') }}</label><Input
-                type="date" v-model="newEvent.date" /></div>
-            <div class="w-28"><label
-                class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.timeLabel') }}</label><Input
-                type="time" v-model="newEvent.time" /></div>
+            <div class="flex-1"><label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{
+              t('calendar.form.dateLabel') }}</label><Input type="date" v-model="newEvent.date" /></div>
+            <div class="w-28"><label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{
+              t('calendar.form.timeLabel') }}</label><Input type="time" v-model="newEvent.time" /></div>
+          </div>
+
+          <div class="col-span-2 md:col-span-1">
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[10px] font-black uppercase text-muted-foreground block">
+                {{ t('calendar.form.duration') }}
+              </label>
+
+              <div class="flex items-center gap-1.5 transition-all duration-300">
+                <template v-if="newEvent.duration && newEvent.duration > 0">
+                  <span class="relative flex h-1.5 w-1.5">
+                    <span
+                      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+                  </span>
+                  <span class="text-[9px] font-black text-green-600 uppercase tracking-wider">
+                    {{ t('common.active') || 'Attiva' }}
+                  </span>
+                </template>
+                <template v-else>
+                  <AlertCircle class="h-3 w-3 text-muted-foreground/40" />
+                  <span class="text-[9px] font-bold text-muted-foreground/50 uppercase italic">
+                    {{ t('calendar.form.notSpecified') || 'N/A' }}
+                  </span>
+                </template>
+              </div>
+            </div>
+
+            <input type="range" min="0" max="240" step="5" v-model.number="newEvent.duration"
+              class="w-full accent-primary h-1.5 bg-muted rounded-lg appearance-none cursor-pointer" />
+
+            <div class="flex justify-between items-center mt-2">
+              <div class="text-sm font-bold transition-colors"
+                :class="newEvent.duration ? 'text-primary' : 'text-muted-foreground italic font-medium'">
+                <span v-if="newEvent.duration">
+                  {{ t('calendar.form.durationValue', { minutes: newEvent.duration }) }}
+                </span>
+                <span v-else>
+                  -- min
+                </span>
+              </div>
+
+              <button v-if="newEvent.duration" @click="newEvent.duration = null"
+                class="text-[10px] font-black uppercase text-destructive hover:opacity-70 flex items-center gap-1">
+                <X class="h-3 w-3" />
+                {{ t('common.remove') || 'Rimuovi' }}
+              </button>
+            </div>
           </div>
 
           <div class="space-y-3">
-            <label
-              class="text-[10px] font-black uppercase text-muted-foreground block">{{ t('calendar.form.selectAthlete') }}</label>
+            <label class="text-[10px] font-black uppercase text-muted-foreground block">{{
+              t('calendar.form.selectAthlete') }}</label>
             <div class="grid grid-cols-1 gap-2 border rounded-lg p-3 bg-muted/20">
               <div v-for="ath in athletes" :key="ath.id"
                 @click="!(isEditing && newEvent.hasResults) && toggleAthlete(ath.id)"
@@ -456,20 +542,19 @@ onMounted(() => {
           </div>
 
           <div>
-            <label
-              class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{ t('calendar.form.categoryLabel') }}</label>
+            <label class="text-[10px] font-black uppercase text-muted-foreground mb-1 block">{{
+              t('calendar.form.categoryLabel') }}</label>
             <select v-model="newEvent.type" :disabled="isEditing && newEvent.hasResults"
               class="w-full border rounded-md p-2 text-sm bg-background h-10 disabled:bg-muted">
               <option v-for="type in ['Strength', 'Endurance', 'Test', 'Recovery', 'Checkup']" :key="type"
-                :value="type">{{ type }}</option>
+                :value="type">{{ type
+                }}</option>
             </select>
           </div>
 
-
-
           <div v-if="newEvent.type === 'Test'" class="p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl">
-            <label
-              class="text-[10px] font-black uppercase text-purple-600 mb-2 block">{{ t('calendar.form.protocolLabel') }}</label>
+            <label class="text-[10px] font-black uppercase text-purple-600 mb-2 block">{{
+              t('calendar.form.protocolLabel') }}</label>
             <select v-model="newEvent.testDefinitionId" :disabled="isEditing && newEvent.hasResults"
               class="w-full border rounded-md p-2 text-sm bg-background h-10 border-purple-200">
               <option :value="null">{{ t('calendar.form.protocolSelect') }}</option>
@@ -478,8 +563,8 @@ onMounted(() => {
           </div>
 
           <div class="col-span-2 md:col-span-1">
-            <label
-              class="text-[10px] font-black uppercase text-primary mb-1 block">{{ t('calendar.form.targetRPE') }}</label>
+            <label class="text-[10px] font-black uppercase text-primary mb-1 block">{{ t('calendar.form.targetRPE')
+            }}</label>
             <div class="flex items-center gap-2">
               <Input type="number" v-model.number="newEvent.targetRpe" min="1" max="10" placeholder="Es. 7"
                 class="font-bold text-primary" />

@@ -219,3 +219,37 @@ button,
 [type="button"] {
   @apply cursor-pointer;
 }
+
+/* Aggiungi questo alla fine del tuo file CSS o dopo il blocco @layer base */
+
+@layer components {
+  .actions-overlay {
+    /* Base: layout flessibile e transizione fluida */
+    @apply flex gap-1 transition-opacity duration-200;
+  }
+
+  /* Dispositivi TOUCH (iPad Pro, Smartphone, ecc.)
+     'pointer: coarse' indica che il sistema di puntamento primario è il dito.
+  */
+  @media (pointer: coarse) {
+    .actions-overlay {
+      @apply opacity-100;
+    }
+  }
+
+  /* Dispositivi con MOUSE (PC, Mac, ecc.)
+     'pointer: fine' indica un puntatore di precisione.
+  */
+  @media (pointer: fine) {
+    .actions-overlay {
+      @apply opacity-0;
+    }
+
+    /* Mostra i bottoni quando passi il mouse sopra l'elemento genitore.
+       Funziona se l'elemento padre ha la classe 'group'.
+    */
+    .group:hover .actions-overlay {
+      @apply opacity-100;
+    }
+  }
+}

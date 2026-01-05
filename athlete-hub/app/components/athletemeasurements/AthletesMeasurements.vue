@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Trash2, Edit3, User, Plus, Loader2, Scale, Ruler, ClipboardList, TrendingUp, Activity } from 'lucide-vue-next'
-import { toast } from 'vue-sonner' 
+import { Trash2, Edit3, Plus, Loader2, ClipboardList, TrendingUp, Activity } from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
 
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -104,13 +104,11 @@ function editMeasurement(m: AthleteMeasurementsResponse) {
 }
 
 // ---------------- API ACTIONS ----------------
-
 async function saveMeasurement() {
   if (!form.athleteId) {
     toast.error(t('measurements.validation.selectAthlete'))
     return
   }
-
   saving.value = true
   try {
     if (editingId.value) {
@@ -123,8 +121,7 @@ async function saveMeasurement() {
     emit('refresh')
     resetForm()
   } catch (err: any) {
-    const errorMessage = err.error?.message || t('measurements.toast.saveError')
-    toast.error(errorMessage)
+    toast.error(err.error?.message || t('measurements.toast.saveError'))
   } finally {
     saving.value = false
   }
@@ -139,8 +136,7 @@ async function confirmDelete() {
     emit('refresh')
     isDeleteDialogOpen.value = false
   } catch (err: any) {
-    const errorMessage = err.error?.message || t('measurements.toast.deleteError')
-    toast.error(errorMessage)
+    toast.error(err.error?.message || t('measurements.toast.deleteError'))
   } finally {
     deleting.value = false
     measurementToDelete.value = null
@@ -150,22 +146,19 @@ async function confirmDelete() {
 
 <template>
   <div class="w-full flex flex-col gap-8">
-
     <Transition name="expand">
       <Card v-if="props.showForm" class="border-primary/30 shadow-2xl bg-card">
         <CardHeader class="pb-4">
           <CardTitle class="text-xl flex items-center gap-2">
             <Plus class="h-5 w-5 text-primary" />
-            {{ editingId ? t('measurements.editMeasurement') : t('measurements.newMeasurement') }} 
+            {{ editingId ? t('measurements.editMeasurement') : t('measurements.newMeasurement') }}
           </CardTitle>
         </CardHeader>
         <CardContent class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="md:col-span-2">
             <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.athlete') }}</label>
             <Select v-model="form.athleteId">
-              <SelectTrigger>
-                <SelectValue :placeholder="t('measurements.form.selectAthlete')" />
-              </SelectTrigger> 
+              <SelectTrigger><SelectValue :placeholder="t('measurements.form.selectAthlete')" /></SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="a in props.athletes" :key="a.id" :value="a.id">
                   {{ a.firstName }} {{ a.lastName }}
@@ -180,15 +173,13 @@ async function confirmDelete() {
           <div>
             <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.height') }}</label>
             <Input v-model.number="form.height" type="number" />
-          </div> 
-
+          </div>
           <div class="md:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t mt-2">
             <div v-for="field in ['chest', 'waist', 'hip', 'thigh', 'arm', 'neck', 'calf', 'forearm']" :key="field">
               <label class="text-[10px] font-bold uppercase">{{ t(`measurements.form.${field}`) }}</label>
               <Input v-model.number="form[field as keyof typeof form]" type="number" step="0.1" />
             </div>
           </div>
-          
           <div class="md:col-span-4">
             <label class="text-[11px] font-bold uppercase mb-1 block">{{ t('measurements.form.notes') }}</label>
             <Input v-model="form.notes" :placeholder="t('measurements.form.notesPlaceholder')" />
@@ -215,18 +206,28 @@ async function confirmDelete() {
       </div>
 
       <TransitionGroup tag="div" name="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card v-for="m in filteredMeasurements" :key="m.id"
-          class="group relative overflow-hidden transition-all hover:border-primary/50 shadow-sm">
+        <Card v-for="m in filteredMeasurements" :key="m.id" class="group relative overflow-hidden transition-all hover:border-primary/50 shadow-sm">
           <CardContent class="p-0">
-            <div class="p-4 bg-primary/5 border-b flex justify-between items-center">
-              <h3 class="font-extrabold text-primary uppercase text-xs truncate max-w-[150px]">
-                {{ getAthleteFullName(m.athleteId) }}
-              </h3>
-              <Badge variant="outline" class="text-[10px] font-mono font-normal">
-                {{ m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '' }}
-              </Badge>
+            <div class="p-4 bg-primary/5 border-b flex justify-between items-center gap-2">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-extrabold text-primary uppercase text-[10px] truncate">
+                  {{ getAthleteFullName(m.athleteId) }}
+                </h3>
+                <p class="text-[9px] text-muted-foreground font-mono">
+                  {{ m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '' }}
+                </p>
+              </div>
+
+              <div class="actions-overlay flex items-center gap-1 shrink-0">
+                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors" @click="editMeasurement(m)">
+                  <Edit3 class="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors" @click="measurementToDelete = m; isDeleteDialogOpen = true">
+                  <Trash2 class="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            
+
             <div class="p-5 flex justify-around items-center border-b">
               <div class="text-center">
                 <p class="text-[10px] uppercase text-muted-foreground">{{ t('measurements.card.weight') }}</p>
@@ -239,7 +240,7 @@ async function confirmDelete() {
               </div>
             </div>
 
-            <div class="grid grid-cols-3 divide-x bg-muted/10 border-b">
+            <div class="grid grid-cols-3 divide-x bg-muted/10">
               <div class="p-2 text-center text-xs">
                 <p class="text-[9px] uppercase text-muted-foreground">{{ t('measurements.card.chest') }}</p>
                 <span class="font-bold">{{ m.chest || '-' }}</span>
@@ -254,51 +255,30 @@ async function confirmDelete() {
               </div>
             </div>
           </CardContent>
-
-          <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button variant="secondary" size="icon" class="h-8 w-8 rounded-full shadow-md bg-background/90" @click="editMeasurement(m)">
-              <Edit3 class="h-3.5 w-3.5" />
-            </Button>
-            <Button variant="destructive" size="icon" class="h-8 w-8 rounded-full shadow-md" @click="measurementToDelete = m; isDeleteDialogOpen = true">
-              <Trash2 class="h-3.5 w-3.5" />
-            </Button>
-          </div>
         </Card>
       </TransitionGroup>
     </div>
 
     <Transition name="expand">
-      <Card v-if="props.selectedAthleteId && chartData.length > 1"
-        class="border-primary/20 shadow-lg overflow-hidden w-full">
+      <Card v-if="props.selectedAthleteId && chartData.length > 1" class="border-primary/20 shadow-lg overflow-hidden w-full">
         <CardHeader class="pb-2 bg-muted/5">
           <div class="flex items-center gap-2">
             <TrendingUp class="h-5 w-5 text-primary" />
             <div>
-              <CardTitle class="text-sm font-bold">
-                {{ t('measurements.analysisTitle') }}
-              </CardTitle>
-              <CardDescription class="text-[11px]">{{ getAthleteFullName(props.selectedAthleteId) }}</CardDescription> 
+              <CardTitle class="text-sm font-bold">{{ t('measurements.analysisTitle') }}</CardTitle>
+              <CardDescription class="text-[11px]">{{ getAthleteFullName(props.selectedAthleteId) }}</CardDescription>
             </div>
           </div>
         </CardHeader>
-
         <CardContent class="p-2 sm:p-4">
           <div class="h-[300px] w-full min-w-0">
-            <LineChart 
-              :data="chartData" 
-              index="date" 
-              :categories="[
-                t('measurements.card.weight'), 
-                t('measurements.card.waist'), 
-                t('measurements.card.chest'), 
-                t('measurements.card.hip')
-              ]"
-              :colors="['#2563eb', '#10b981', '#f59e0b', '#8b5cf6']" 
+            <LineChart
+              :data="chartData"
+              index="date"
+              :categories="[t('measurements.card.weight'), t('measurements.card.waist'), t('measurements.card.chest'), t('measurements.card.hip')]"
+              :colors="['#2563eb', '#10b981', '#f59e0b', '#8b5cf6']"
               :y-formatter="(tick) => `${tick}`"
-              :show-legend="true" 
-              :show-grid-line="true" 
-              :show-tooltip="true" 
-              class="w-full h-full" 
+              :show-legend="true" :show-grid-line="true" :show-tooltip="true" class="w-full h-full"
             />
           </div>
         </CardContent>
@@ -307,13 +287,11 @@ async function confirmDelete() {
 
     <Dialog v-model:open="isDeleteDialogOpen">
       <DialogContent class="max-w-xs">
-        <DialogHeader>
-          <DialogTitle>{{ t('common.delete') }}</DialogTitle>
-        </DialogHeader>
+        <DialogHeader><DialogTitle>{{ t('common.delete') }}</DialogTitle></DialogHeader>
         <p class="text-sm py-2 text-muted-foreground">{{ t('measurements.toast.deleted') }}?</p>
         <div class="flex flex-col gap-2">
           <Button variant="destructive" @click="confirmDelete" :disabled="deleting">
-            <Loader2 v-if="deleting" class="mr-2 h-4 w-4 animate-spin" /> 
+            <Loader2 v-if="deleting" class="mr-2 h-4 w-4 animate-spin" />
             {{ t('common.delete') }}
           </Button>
           <Button variant="ghost" @click="isDeleteDialogOpen = false">{{ t('common.cancel') }}</Button>
@@ -330,14 +308,12 @@ async function confirmDelete() {
   overflow: hidden;
 }
 .expand-enter-from, .expand-leave-to {
-  max-height: 0;
-  opacity: 0;
+  max-height: 0; opacity: 0;
 }
 .grid-enter-active, .grid-leave-active {
   transition: all 0.3s ease;
 }
 .grid-enter-from, .grid-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
+  opacity: 0; transform: translateY(10px);
 }
 </style>

@@ -283,7 +283,11 @@
             "protocolSelect": "Select protocol...",
             "targetRPE": "RPE Target",
             "intensityPlaceholder": "e.g., 7",
-            "targetRPEInfo": "Planned intensity for the session (1-10)"
+            "targetRPEInfo": "Planned intensity for the session (1-10)",
+            "duration": "Session duration (minutes)",
+            "durationValue": "{minutes} minutes",
+            "notSpecified" : "Not specified",
+            "selectAthlete" :"Select an athlete"
         },
         "delete": {
             "title": "Delete Session",
@@ -319,7 +323,9 @@
         "delete": "Delete",
         "details": "Details",
         "optional": "Optional",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "active":"Active",
+        "remove":"Remove"
     },
     "kanban": {
         "title": "Kanban Board",

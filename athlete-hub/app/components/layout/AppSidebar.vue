@@ -10,14 +10,13 @@ const { sidebar } = useAppSettings()
 // 2. Carica il profilo quando il componente viene montato
 onMounted(async () => {
   if (authStore.token && !authStore.user) {
-    debugger;
     await authStore.fetchProfile()
   }
 })
 
 // 3. Mappa i dati dello store per il componente footer
 const userData = computed(() => ({
-  name: authStore.user?.email.split("@")[0] || 'Ospite', 
+  name: authStore.user?.email.split("@")[0] || 'Ospite',
   email: authStore.user?.email || '',
   avatar: '/avatars/avatartion.png', // In futuro potrai caricarlo dal BE
 }))
@@ -45,21 +44,21 @@ function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): an
         <SidebarGroupLabel v-if="nav.heading">
           {{ nav.heading }}
         </SidebarGroupLabel>
-        <component 
-          :is="resolveNavItemComponent(item)" 
-          v-for="(item, index) in nav.items" 
-          :key="index" 
-          :item="item" 
+        <component
+          :is="resolveNavItemComponent(item)"
+          v-for="(item, index) in nav.items"
+          :key="index"
+          :item="item"
         />
       </SidebarGroup>
 
       <SidebarGroup class="mt-auto">
-        <component 
-          :is="resolveNavItemComponent(item)" 
-          v-for="(item, index) in navMenuBottom" 
-          :key="index" 
+        <component
+          :is="resolveNavItemComponent(item)"
+          v-for="(item, index) in navMenuBottom"
+          :key="index"
           :item="item"
-          size="sm" 
+          size="sm"
         />
       </SidebarGroup>
     </SidebarContent>

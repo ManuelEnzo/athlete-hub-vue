@@ -137,6 +137,7 @@ export interface CalendarEventResponse {
   type: string; // Forza, Cardio, Test, ecc.
   focus?: string | null;
   targetRPE?: number | null;
+  duration: string | null;
 }
 
 /**
@@ -150,6 +151,7 @@ export interface CalendarEventCreateRequest {
   focus?: string;
   targetRPE?: number | null;
   testDefinitionId?: number | null; // Aggiunto per i test
+  duration: string | null;
 }
 
 /**
@@ -188,7 +190,7 @@ export interface AthleteEntryDto {
   id: number
   fullName: string
   // Corrisponde al Dictionary<long, string> di C#
-  tempResults?: Record<number, string> 
+  tempResults?: Record<number, string>
 }
 
 export interface TestEntryGridDto {

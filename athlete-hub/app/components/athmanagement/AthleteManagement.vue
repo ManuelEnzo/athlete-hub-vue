@@ -69,7 +69,7 @@ async function saveAthlete() {
       await athleteApi.create(form as AthleteCreateRequest)
       toast.success(t('athlete.success.created'))
     }
-    
+
     await fetchAthletes()
     resetForm()
   } catch (err: any) {
@@ -86,7 +86,7 @@ async function confirmDelete() {
   loading.value = true
   try {
     await athleteApi.delete(athleteToDelete.value.id)
-    
+
     // Aggiornamento locale della lista
     athletes.value = athletes.value.filter(a => a.id !== athleteToDelete.value!.id)
     toast.success(t('athlete.success.deleted'))
@@ -106,7 +106,7 @@ function editAthlete(a: AthleteResponse) {
   editingId.value = a.id
   // Formattazione data per input type="date" (YYYY-MM-DD)
   const formattedDate = a.dateOfBirth ? a.dateOfBirth.split('T')[0] : ''
-  
+
   Object.assign(form, {
     firstName: a.firstName,
     lastName: a.lastName,
@@ -116,7 +116,7 @@ function editAthlete(a: AthleteResponse) {
     weight: a.weight,
     height: a.height,
     gender: a.gender || 'F',
-    dateOfBirth : a.dateOfBirth
+    dateOfBirth: a.dateOfBirth
   })
   emit('update:showForm', true)
 }
@@ -210,19 +210,13 @@ onMounted(fetchAthletes)
       <Loader2 class="h-12 w-12 animate-spin text-primary" />
     </div>
 
-    <TransitionGroup 
-      tag="div" 
-      name="grid" 
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-    >
-      <Card 
-        v-for="athlete in athletes" 
-        :key="athlete.id" 
-        class="group relative overflow-hidden border-muted/40 hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-md"
-      >
+    <TransitionGroup tag="div" name="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Card v-for="athlete in athletes" :key="athlete.id"
+        class="group relative overflow-hidden border-muted/40 hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-md">
         <CardContent class="p-0">
           <div class="flex items-center gap-4 p-5">
-            <div class="h-14 w-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/10 flex items-center justify-center text-primary shadow-inner">
+            <div
+              class="h-14 w-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/10 flex items-center justify-center text-primary shadow-inner">
               <User class="h-7 w-7" />
             </div>
             <div class="flex-1 min-w-0">
@@ -239,7 +233,7 @@ onMounted(fetchAthletes)
               </div>
             </div>
           </div>
-          
+
           <div class="grid grid-cols-3 border-t border-muted/30 bg-muted/5 py-3 text-center">
             <div>
               <p class="text-[10px] text-muted-foreground uppercase">{{ t('fields.age') }}</p>
@@ -256,26 +250,25 @@ onMounted(fetchAthletes)
           </div>
         </CardContent>
 
-        <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0">
-          <button 
-            @click="editAthlete(athlete)" 
-            class="h-8 w-8 rounded-full flex items-center justify-center bg-background/80 backdrop-blur text-primary hover:bg-primary hover:text-white transition shadow-sm border border-border"
-          >
+        <div class="absolute top-3 right-3 actions-overlay">
+          <Button variant="ghost" size="icon"
+            class="h-9 w-9 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+            @click="editAthlete(athlete)">
             <Edit3 class="h-4 w-4" />
-          </button>
-          <button 
-            @click="athleteToDelete = athlete; isDeleteDialogOpen = true" 
-            class="h-8 w-8 rounded-full flex items-center justify-center bg-background/80 backdrop-blur text-destructive hover:bg-destructive hover:text-white transition shadow-sm border border-border"
-          >
+          </Button>
+
+          <Button variant="ghost" size="icon" class="h-9 w-9 rounded-full text-destructive"
+            @click="athleteToDelete = athlete; isDeleteDialogOpen = true">
             <Trash2 class="h-4 w-4" />
-          </button>
+          </Button>
         </div>
       </Card>
     </TransitionGroup>
 
-    <div v-if="!loading && athletes.length === 0" class="text-center py-20 bg-muted/20 rounded-xl border-2 border-dashed">
-        <User class="h-12 w-12 mx-auto text-muted-foreground opacity-50 mb-4" />
-        <p class="text-muted-foreground">{{ t('athlete.noData') }}</p>
+    <div v-if="!loading && athletes.length === 0"
+      class="text-center py-20 bg-muted/20 rounded-xl border-2 border-dashed">
+      <User class="h-12 w-12 mx-auto text-muted-foreground opacity-50 mb-4" />
+      <p class="text-muted-foreground">{{ t('athlete.noData') }}</p>
     </div>
 
   </div>
@@ -286,11 +279,12 @@ onMounted(fetchAthletes)
         <DialogTitle>{{ t('athlete.deleteConfirm') }}</DialogTitle>
       </DialogHeader>
       <div class="py-4">
-          <p class="text-sm">
-            {{ t('athlete.deleteQuestion') }}
-            <span class="font-bold text-foreground">{{ athleteToDelete?.firstName }} {{ athleteToDelete?.lastName }}</span>?
-          </p>
-          <p class="text-[12px] text-destructive mt-2">{{ t('athlete.deleteWarning') }}</p>
+        <p class="text-sm">
+          {{ t('athlete.deleteQuestion') }}
+          <span class="font-bold text-foreground">{{ athleteToDelete?.firstName }} {{ athleteToDelete?.lastName
+          }}</span>?
+        </p>
+        <p class="text-[12px] text-destructive mt-2">{{ t('athlete.deleteWarning') }}</p>
       </div>
       <div class="flex justify-end gap-2">
         <Button variant="ghost" @click="isDeleteDialogOpen = false">{{ t('common.cancel') }}</Button>
@@ -304,21 +298,27 @@ onMounted(fetchAthletes)
 </template>
 
 <style scoped>
-.expand-enter-active, .expand-leave-active {
+.expand-enter-active,
+.expand-leave-active {
   transition: all 0.3s ease-in-out;
   max-height: 500px;
   overflow: hidden;
 }
-.expand-enter-from, .expand-leave-to {
+
+.expand-enter-from,
+.expand-leave-to {
   max-height: 0;
   opacity: 0;
   transform: translateY(-10px);
 }
 
-.grid-enter-active, .grid-leave-active {
+.grid-enter-active,
+.grid-leave-active {
   transition: all 0.4s ease;
 }
-.grid-enter-from, .grid-leave-to {
+
+.grid-enter-from,
+.grid-leave-to {
   opacity: 0;
   transform: scale(0.9);
 }

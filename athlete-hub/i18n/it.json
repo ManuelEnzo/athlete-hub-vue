@@ -280,7 +280,13 @@
             "protocolSelect": "Seleziona protocollo...",
             "targetRPE": "RPE Target",
             "intensityPlaceholder": "Intensità prevista (1-10)",
-            "targetRPEInfo": "Intensità prevista"
+            "targetRPEInfo": "Intensità prevista",
+            "duration": "Durata (minuti)",
+            "durationValue": "{minutes} minuti",
+            "notSpecified" : "Non indicata",
+            "active":"Attiva",
+            "remove":"Rimuovi",
+            "selectAthlete" :"Selezione atleti"
         },
         "deleteConfirmation": "Sei sicuro di voler rimuovere questa sessione? L'atleta non riceverà notifiche automatiche.",
         "deleteTitle": "Cancellare Appuntamento",
@@ -319,7 +325,9 @@
         "delete": "Elimina",
         "details": "Dettagli",
         "optional": "Opzionale",
-        "loading": "Caricamento..."
+        "loading": "Caricamento...",
+        "active":"Attiva",
+        "remove":"Rimuovi"
     },
     "kanban": {
         "title": "Kanban Board",
