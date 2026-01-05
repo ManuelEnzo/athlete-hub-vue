@@ -218,17 +218,19 @@ async function handleSaveEvent() {
     return
   }
 
-  isLoading.value = true
+ isLoading.value = true
   try {
-    let formattedDuration: string | null = null
-    if (newEvent.duration && newEvent.duration > 0) {
-      const hours = Math.floor(newEvent.duration / 60)
-      const minutes = newEvent.duration % 60
-      formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`
+    let formattedDuration = null
+    if (newEvent.duration) {
+      const h = Math.floor(newEvent.duration / 60)
+      const m = newEvent.duration % 60
+      formattedDuration = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`
     }
+
+    // IL PAYLOAD DEVE CORRISPONDERE AL DTO C#
     const payload = {
       title: newEvent.title,
-      athleteIds: newEvent.athleteIds,
+      athleteIds: newEvent.athleteIds, // Inviamo l'array [1, 2, 3]
       date: `${newEvent.date}T${newEvent.time}:00`,
       type: newEvent.type,
       targetRPE: newEvent.targetRpe,
@@ -248,12 +250,12 @@ async function handleSaveEvent() {
     await fetchEvents()
     isAddDialogOpen.value = false
   } catch (err) {
-    console.error("Errore salvataggio:", err)
     toast.error(t('calendar.errors.saveEvent'))
   } finally {
     isLoading.value = false
   }
 }
+
 async function confirmDelete() {
   if (!eventToDeleteId.value) return
   isDeleting.value = true
