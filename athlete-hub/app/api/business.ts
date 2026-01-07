@@ -14,7 +14,8 @@ import type {
   TestResultSaveDto,
   TestEntryGridDto,
   RpeLinkQueueSubmitRpeDto,
-  RpeLinkQueueResponseDto
+  RpeLinkQueueResponseDto,
+  RpeLastSessionOverviewDto
 } from '../types/api'
 
 export const athleteApi = {
@@ -71,6 +72,12 @@ export const athleteApi = {
     api.post<Result<boolean>>('/RpeLinkQueue/submit-rpe-value', data),
 
   getAllInfoFromToken: (tokenId: string) =>
-    api.post<Result<RpeLinkQueueResponseDto>>(`/RpeLinkQueue/get-all-info-from-token`, { rpeTokenId: tokenId })
+    api.post<Result<RpeLinkQueueResponseDto>>(`/RpeLinkQueue/get-all-info-from-token`, { rpeTokenId: tokenId }),
+
+  getLastSessionInfo: () =>
+    api.get<Result<RpeLastSessionOverviewDto>>('/RpeLinkQueue/get-last-session-info'),
+  // Esempio nel file api
+  getHistoricalAnalysis: (athleteId: number) => 
+      api.get<Result<RpeLastSessionOverviewDto[]>>(`/RpeLinkQueue/get-data-historical-analysis/${athleteId}`),
 }
 

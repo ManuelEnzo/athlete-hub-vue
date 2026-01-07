@@ -240,3 +240,12 @@ export interface RpeLinkQueueSubmitRpeDto {
     rpeValue: number;
     notes?: string;
 }
+
+export interface RpeLastSessionOverviewDto {
+    athleteId: number;
+    athleteName: string;
+    sessionDate: string;
+    sessionType: string;
+    rpe: number;
+    notes?: string;
+}
