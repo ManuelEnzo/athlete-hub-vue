@@ -155,7 +155,17 @@
             "required": "Compila tutti i campi obbligatori",
             "server": "Si è verificato un errore del server",
             "save": "Errore durante il salvataggio dei dati",
-            "emailInUse": "Email già in uso"
+            "emailInUse": "Email già in uso",
+            "firstNameRequired": "Il nome è obbligatorio",
+            "lastNameRequired": "Il cognome è obbligatorio",
+            "emailRequired": "L'email è obbligatoria",
+            "emailInvalid": "Formato email non valido",
+            "birthDateFuture": "La data di nascita non può essere futura",
+            "weightInvalid": "Il peso deve essere maggiore di 0",
+            "heightInvalid": "L'altezza deve essere maggiore di 0",
+            "genderInvalid": "Genere non valido",
+            "birthDateInvalid": "La data di nascita non è valida",
+            "birthDateRequired": "La data di nascita è obbligatoria"
         }
     },
     "risk": {

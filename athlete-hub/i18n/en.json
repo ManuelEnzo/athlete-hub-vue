@@ -155,7 +155,17 @@
             "required": "Please fill all required fields",
             "server": "Server error occurred",
             "emailInUse": "Email already in use",
-            "save": "Error saving datas"
+            "save": "Error saving datas",
+            "firstNameRequired": "First name is required",
+            "lastNameRequired": "Last name is required",
+            "emailRequired": "Email is required",
+            "emailInvalid": "Invalid email format",
+            "birthDateFuture": "Birth date cannot be in the future",
+            "weightInvalid": "Weight must be greater than 0",
+            "heightInvalid": "Height must be greater than 0",
+            "genderInvalid": "Invalid gender",
+            "birthDateInvalid": "Invalid birth date",
+            "birthDateRequired": "Birth date is required"
         }
     },
     "risk": {

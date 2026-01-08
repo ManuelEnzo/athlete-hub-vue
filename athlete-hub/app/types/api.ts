@@ -249,3 +249,10 @@ export interface RpeLastSessionOverviewDto {
     rpe: number;
     notes?: string;
 }
+
+export interface RpeHistoricalEntryDto {
+  sessionDate: string   // ISO 8601, es. "2026-01-08T14:00:00"
+  sessionType: string   // es. "Allenamento", "Partita"
+  rpe: number           // 0–10
+  notes?: string        // opzionale
+}

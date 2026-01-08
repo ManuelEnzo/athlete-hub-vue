@@ -10,7 +10,6 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import { Separator } from '../ui/separator'
 
 import { athleteApi } from '../../api/business'
 import type { AthleteResponse, AthleteCreateRequest } from '../../types/api'
@@ -33,8 +32,92 @@ const form = reactive({
   birthDate: '',
   weight: 0,
   height: 0,
-  gender: "F"
+  gender: 'F'
 })
+
+// ---------------- VALIDATION ----------------
+function validateForm(): boolean {
+  if (!form.firstName.trim()) {
+    toast.error(t('athlete.errors.firstNameRequired'))
+    return false
+  }
+
+  if (!form.lastName.trim()) {
+    toast.error(t('athlete.errors.lastNameRequired'))
+    return false
+  }
+
+  if (!form.email.trim()) {
+    toast.error(t('athlete.errors.emailRequired'))
+    return false
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(form.email)) {
+    toast.error(t('athlete.errors.emailInvalid'))
+    return false
+  }
+
+  // ---------------- DATE VALIDATION (DD/MM/YYYY) ----------------
+  // REQUIRED
+  if (!form.birthDate) {
+    toast.error(t('athlete.errors.birthDateRequired'))
+    return false
+  }
+
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+
+  if (!dateRegex.test(form.birthDate)) {
+    toast.error(t('athlete.errors.birthDateInvalid'))
+    return false
+  }
+
+  const parts = form.birthDate.split('-')
+  const year = Number(parts[0])
+  const month = Number(parts[1])
+  const day = Number(parts[2])
+
+  const birthDate = new Date(year, month - 1, day)
+
+  if (
+    birthDate.getFullYear() !== year ||
+    birthDate.getMonth() !== month - 1 ||
+    birthDate.getDate() !== day
+  ) {
+    toast.error(t('athlete.errors.birthDateInvalid'))
+    return false
+  }
+
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  if (birthDate > today) {
+    toast.error(t('athlete.errors.birthDateFuture'))
+    return false
+  }
+
+
+
+  // ---------------- NUMERIC FIELDS ----------------
+  if (form.weight <= 0 || isNaN(form.weight)) {
+    toast.error(t('athlete.errors.weightInvalid'))
+    return false
+  }
+
+  if (form.height <= 0 || isNaN(form.height)) {
+    toast.error(t('athlete.errors.heightInvalid'))
+    return false
+  }
+
+  if (!['M', 'F', 'O'].includes(form.gender)) {
+    toast.error(t('athlete.errors.genderInvalid'))
+    return false
+  }
+
+  return true
+}
+
 
 // ---------------- API ----------------
 
@@ -42,7 +125,6 @@ async function fetchAthletes() {
   loading.value = true
   try {
     const res = await athleteApi.getAll()
-    // Se l'interceptor non lancia errore, il successo è garantito
     athletes.value = res.data.value ?? []
   } catch (err: any) {
     const msg = err.error?.message || t('athlete.errors.load')
@@ -53,19 +135,14 @@ async function fetchAthletes() {
 }
 
 async function saveAthlete() {
-  if (!form.firstName || !form.lastName || !form.email) {
-    toast.error(t('athlete.errors.required'))
-    return
-  }
+  if (!validateForm()) return
 
   loading.value = true
   try {
     if (editingId.value !== null) {
-      // Update: ci fidiamo dello status 204/200 gestito dall'interceptor
       await athleteApi.update(editingId.value, form)
       toast.success(t('athlete.success.updated'))
     } else {
-      // Create
       await athleteApi.create(form as AthleteCreateRequest)
       toast.success(t('athlete.success.created'))
     }
@@ -73,7 +150,6 @@ async function saveAthlete() {
     await fetchAthletes()
     resetForm()
   } catch (err: any) {
-    // Cattura il messaggio specifico del Result Pattern (es. "Email già esistente")
     const msg = err.error?.message || t('errors.save')
     toast.error(msg)
   } finally {
@@ -86,8 +162,6 @@ async function confirmDelete() {
   loading.value = true
   try {
     await athleteApi.delete(athleteToDelete.value.id)
-
-    // Aggiornamento locale della lista
     athletes.value = athletes.value.filter(a => a.id !== athleteToDelete.value!.id)
     toast.success(t('athlete.success.deleted'))
   } catch (err: any) {
@@ -104,7 +178,6 @@ async function confirmDelete() {
 
 function editAthlete(a: AthleteResponse) {
   editingId.value = a.id
-  // Formattazione data per input type="date" (YYYY-MM-DD)
   const formattedDate = a.dateOfBirth ? a.dateOfBirth.split('T')[0] : ''
 
   Object.assign(form, {
@@ -115,9 +188,9 @@ function editAthlete(a: AthleteResponse) {
     birthDate: formattedDate,
     weight: a.weight,
     height: a.height,
-    gender: a.gender || 'F',
-    dateOfBirth: a.dateOfBirth
+    gender: a.gender || 'F'
   })
+
   emit('update:showForm', true)
 }
 
@@ -133,6 +206,7 @@ function resetForm() {
     height: 0,
     gender: 'F'
   })
+
   emit('update:showForm', false)
 }
 
