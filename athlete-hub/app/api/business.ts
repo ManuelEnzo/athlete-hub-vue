@@ -77,7 +77,8 @@ export const athleteApi = {
   getLastSessionInfo: () =>
     api.get<Result<RpeLastSessionOverviewDto>>('/RpeLinkQueue/get-last-session-info'),
   // Esempio nel file api
-  getHistoricalAnalysis: (athleteId: number) => 
-      api.get<Result<RpeLastSessionOverviewDto[]>>(`/RpeLinkQueue/get-data-historical-analysis/${athleteId}`),
+ getHistoricalAnalysis: ( athleteId: number,pageIndex = 0,pageSize = 10 ) =>
+  api.get<Result<RpeLastSessionOverviewDto[]>>(
+    `/RpeLinkQueue/get-historical-session-datas`,{ params: { athleteId, pageIndex, pageSize }}),
 }
 
