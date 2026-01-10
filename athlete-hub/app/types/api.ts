@@ -256,3 +256,13 @@ export interface RpeHistoricalEntryDto {
   rpe: number           // 0–10
   notes?: string        // opzionale
 }
+
+export interface Pagination<T> {
+  items: T[]
+  totalCount: number
+  pageSize: number
+  currentPage: number
+  totalPages: number
+  hasPrevious: boolean
+  hasNext: boolean
+}
