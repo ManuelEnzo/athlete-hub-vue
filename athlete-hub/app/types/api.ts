@@ -255,6 +255,9 @@ export interface RpeHistoricalEntryDto {
   sessionType: string   // es. "Allenamento", "Partita"
   rpe: number           // 0–10
   notes?: string        // opzionale
+  rpeStatus? : string
+  targetRpe? : number,
+  nomeSessione: string;
 }
 
 export interface Pagination<T> {

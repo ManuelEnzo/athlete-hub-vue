@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { User, Loader2, Activity, X } from 'lucide-vue-next'
+import { User2, Loader2, History, ChevronLeft } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
 // UI
@@ -19,12 +19,9 @@ const { t } = useI18n()
 // --- STATE ---
 const athletesOverview = ref<RpeLastSessionOverviewDto[]>([])
 const historicalPagination = ref<Pagination<RpeHistoricalEntryDto> | null>(null)
-
 const loading = ref(false)
 const loadingHistory = ref(false)
-
 const focusedAthleteId = ref<number | null>(null)
-
 const pageSize = 10
 
 // --- API CALLS ---
@@ -36,7 +33,7 @@ async function fetchOverview() {
     const data = res.data.value
     athletesOverview.value = Array.isArray(data) ? data : data ? [data] : []
   } catch {
-    toast.error('Errore nel caricamento overview')
+    toast.error(t('rpe.errors.loadOverview'))
   } finally {
     loading.value = false
   }
@@ -45,24 +42,18 @@ async function fetchOverview() {
 async function fetchHistory(athleteId: number, page = 1) {
   loadingHistory.value = true
   try {
-    const res = await athleteApi.getHistoricalAnalysis(
-      athleteId,
-      page,
-      pageSize
-    )
-
+    const res = await athleteApi.getHistoricalAnalysis(athleteId, page, pageSize)
     if (res.data.isSuccess) {
       historicalPagination.value = res.data.value
     }
   } catch {
-    toast.error('Errore nel caricamento dello storico')
+    toast.error(t('rpe.errors.loadHistory'))
   } finally {
     loadingHistory.value = false
   }
 }
 
 // --- LOGIC ---
-
 const focusedAthlete = computed(() =>
   athletesOverview.value.find(a => a.athleteId === focusedAthleteId.value) ?? null
 )
@@ -89,12 +80,12 @@ function getRpeColor(val: number) {
 }
 
 function getRpeLabel(val: number) {
-  if (val === 0) return 'Nessuno 😴'
-  if (val <= 2) return 'Leggero 🙂'
-  if (val <= 4) return 'Moderato 😐'
-  if (val <= 6) return 'Impegnativo 😰'
-  if (val <= 8) return 'Duro 🥵'
-  return 'Massimale 🔥'
+  if (val === 0) return t('rpe.labels.none')
+  if (val <= 2) return t('rpe.labels.light')
+  if (val <= 4) return t('rpe.labels.moderate')
+  if (val <= 6) return t('rpe.labels.challenging')
+  if (val <= 8) return t('rpe.labels.hard')
+  return t('rpe.labels.maximal')
 }
 
 function formatDate(dateStr: string) {
@@ -110,54 +101,88 @@ onMounted(fetchOverview)
 
 <template>
   <div class="p-4 flex flex-col gap-6">
-    <h1 class="text-2xl font-bold">RPE Dashboard</h1>
+    <h1 class="text-2xl font-bold">{{ t('rpe.dashboardTitle') }}</h1>
 
-    <!-- OVERVIEW -->
+    <div v-if="!focusedAthleteId"
+      class="flex flex-wrap gap-4 p-3 border rounded-lg text-[10px] uppercase tracking-wider">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-300">{{ t('rpe.legendTitle') }}</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <div class="w-2 h-2 rounded-full bg-green-500"></div> 0-2 {{ t('rpe.labels.light') }}
+      </div>
+      <div class="flex items-center gap-1">
+        <div class="w-2 h-2 rounded-full bg-yellow-500"></div> 3-4 {{ t('rpe.labels.moderate') }}
+      </div>
+      <div class="flex items-center gap-1">
+        <div class="w-2 h-2 rounded-full bg-orange-500"></div> 5-6 {{ t('rpe.labels.challenging') }}
+      </div>
+      <div class="flex items-center gap-1">
+        <div class="w-2 h-2 rounded-full bg-red-500"></div> 7-8 {{ t('rpe.labels.hard') }}
+      </div>
+      <div class="flex items-center gap-1">
+        <div class="w-2 h-2 rounded-full bg-red-900"></div> 9-10 {{ t('rpe.labels.maximal') }}
+      </div>
+    </div>
+
     <div v-if="!focusedAthleteId" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <Card
-        v-for="athlete in athletesOverview"
-        :key="athlete.athleteId"
-        class="cursor-pointer hover:shadow-md"
-        @click="toggleFocus(athlete.athleteId)"
-      >
+      <Card v-for="athlete in athletesOverview" :key="athlete.athleteId" class="cursor-pointer hover:shadow-md"
+        @click="toggleFocus(athlete.athleteId)">
         <CardHeader>
           <CardTitle class="flex justify-between items-center">
-            <span class="flex items-center gap-2">
-              <User class="w-5 h-5 text-primary" /> {{ athlete.athleteName }}
+            <span class="flex items-center gap-2 text-primary">
+              <User2 class="w-5 h-5" /> {{ athlete.athleteName }}
             </span>
-            <Badge variant="secondary">Ultima sessione</Badge>
+            <Badge variant="secondary">{{ t('rpe.lastSession') }}</Badge>
           </CardTitle>
         </CardHeader>
 
-        <CardContent class="space-y-2">
-          <p class="text-sm italic">{{ athlete.sessionType }}</p>
-          <p class="text-sm">Data: {{ formatDate(athlete.sessionDate) }}</p>
-          <span :class="getRpeColor(athlete.rpe) + ' px-2 py-1 rounded text-xs font-bold border'">
-            {{ getRpeLabel(athlete.rpe) }} ({{ athlete.rpe }})
-          </span>
+        <CardContent class="space-y-4">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{{ t('rpe.activityType') }}</p>
+            <p class="text-sm italic">{{ athlete.sessionType }}</p>
+          </div>
+
+          <div class="flex justify-between items-end">
+            <div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{{ t('rpe.date') }}</p>
+              <p class="text-sm">{{ formatDate(athlete.sessionDate) }}</p>
+            </div>
+
+            <div class="flex flex-col items-end gap-1">
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{{ t('rpe.effort') }}</p>
+              <div class="flex items-center gap-2 border px-2 py-1 rounded">
+                <div :class="['w-2.5 h-2.5 rounded-full',
+                  athlete.rpe <= 2 ? 'bg-green-500' :
+                  athlete.rpe <= 4 ? 'bg-yellow-500' :
+                  athlete.rpe <= 6 ? 'bg-orange-500' :
+                  athlete.rpe <= 8 ? 'bg-red-500' : 'bg-red-900']">
+                </div>
+                <span class="text-xs font-bold">{{ athlete.rpe }}</span>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
 
-    <!-- DETAIL -->
     <div v-if="focusedAthlete">
       <Card class="mb-6">
         <CardHeader>
           <CardTitle class="flex justify-between">
             <span class="flex gap-2 items-center">
-              <User class="w-5 h-5" /> {{ focusedAthlete.athleteName }}
+              <User2 class="w-5 h-5 text-primary" /> {{ focusedAthlete.athleteName }}
             </span>
             <Button variant="ghost" size="sm" @click="goBack">
-              <X class="w-4 h-4 mr-1" /> Indietro
+              <ChevronLeft class="w-4 h-4 mr-1" /> {{ t('rpe.back') }}
             </Button>
           </CardTitle>
         </CardHeader>
       </Card>
 
-      <!-- HISTORY -->
       <div class="border rounded-xl p-4">
         <h3 class="font-bold mb-4 flex gap-2 items-center">
-          <Activity class="w-5 h-5" /> Storico RPE
+          <History class="w-5 h-5" /> {{ t('rpe.historyTitle') }}
         </h3>
 
         <div v-if="loadingHistory" class="flex justify-center py-10">
@@ -165,45 +190,46 @@ onMounted(fetchOverview)
         </div>
 
         <div v-else>
-          <div
-            v-for="entry in historicalPagination?.items"
-            :key="entry.sessionDate + entry.sessionType"
-            class="flex justify-between items-center p-3 border rounded mb-2"
-          >
+          <div v-for="entry in historicalPagination?.items" :key="entry.sessionDate + entry.sessionType"
+            class="flex justify-between items-center p-3 border rounded mb-2">
             <div>
               <p class="font-bold text-sm">{{ formatDate(entry.sessionDate) }}</p>
-              <p class="text-xs italic">{{ entry.notes || '-' }}</p>
+
+              <p v-if="entry.nomeSessione" class="text-xs font-semibold text-slate-700">
+                {{ entry.nomeSessione }}
+              </p>
+
+              <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                {{ entry.sessionType }} 
+                <span v-if="entry.targetRpe">| {{ t('rpe.target') }}: {{ entry.targetRpe }}</span>
+                <span v-if="entry.rpeStatus"> | {{ entry.rpeStatus }}</span>
+              </p>
+              <p class="text-xs italic text-slate-500">{{ entry.notes || '-' }}</p>
             </div>
 
-            <span :class="getRpeColor(entry.rpe) + ' px-3 py-1 rounded-full text-xs font-bold border'">
-              {{ getRpeLabel(entry.rpe) }} ({{ entry.rpe }})
-            </span>
+            <div class="flex items-center gap-2 border px-3 py-1.5 rounded">
+              <div :class="['w-2.5 h-2.5 rounded-full',
+                entry.rpe <= 2 ? 'bg-green-500' :
+                entry.rpe <= 4 ? 'bg-yellow-500' :
+                entry.rpe <= 6 ? 'bg-orange-500' :
+                entry.rpe <= 8 ? 'bg-red-500' : 'bg-red-900']">
+              </div>
+              <span class="text-xs font-bold">{{ entry.rpe }}</span>
+            </div>
           </div>
 
-          <!-- PAGINATION -->
-          <div
-            v-if="historicalPagination && historicalPagination.totalPages > 1"
-            class="flex justify-between items-center mt-4"
-          >
-            <Button
-              size="sm"
-              :disabled="!historicalPagination.hasPrevious"
-              @click="fetchHistory(focusedAthleteId!, historicalPagination.currentPage - 1)"
-            >
-              Prev
+          <div v-if="historicalPagination && historicalPagination.totalPages > 1"
+            class="flex justify-between items-center mt-4">
+            <Button size="sm" variant="outline" :disabled="!historicalPagination.hasPrevious"
+              @click="fetchHistory(focusedAthleteId!, historicalPagination.currentPage - 1)">
+              {{ t('rpe.pagination.prev') }}
             </Button>
-
-            <span class="text-xs">
-              Pagina {{ historicalPagination.currentPage }} /
-              {{ historicalPagination.totalPages }}
+            <span class="text-xs font-medium">
+              {{ t('rpe.pagination.pageInfo', { current: historicalPagination.currentPage, total: historicalPagination.totalPages }) }}
             </span>
-
-            <Button
-              size="sm"
-              :disabled="!historicalPagination.hasNext"
-              @click="fetchHistory(focusedAthleteId!, historicalPagination.currentPage + 1)"
-            >
-              Next
+            <Button size="sm" variant="outline" :disabled="!historicalPagination.hasNext"
+              @click="fetchHistory(focusedAthleteId!, historicalPagination.currentPage + 1)">
+              {{ t('rpe.pagination.next') }}
             </Button>
           </div>
         </div>
