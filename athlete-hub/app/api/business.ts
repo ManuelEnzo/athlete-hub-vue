@@ -18,7 +18,11 @@ import type {
   RpeLastSessionOverviewDto,
   Pagination,
   RpeHistoricalEntryDto,
-  AthleteAnalyticsDto
+  AthleteAnalyticsDto,
+  InjuryUpdateDTO,
+  InjuryResponseDTO,
+  InjuryCreateDTO,
+  CoachDashboardSummaryDto
 } from '../types/api'
 
 export const athleteApi = {
@@ -93,8 +97,36 @@ export const athleteApi = {
   },
   getDatasForAnalytics: (id: number, from: string, to: string) => {
     const params = { params: { id, from, to } }
-    return api.get<Result<AthleteAnalyticsDto>>('/Athletes/get-datas-for-analytics', params)}
+    return api.get<Result<AthleteAnalyticsDto>>('/Athletes/get-datas-for-analytics', params)},
+/**
+   * Recupera lo storico infortuni di un atleta specifico
+   * @param athleteId ID dell'atleta
+   */
+  getInjuries: (athleteId: number) => 
+    api.get<Result<InjuryResponseDTO[]>>(`/Injury/athlete/${athleteId}`),
 
+  /**
+   * Registra un nuovo infortunio
+   * @param data DTO di creazione infortunio (con Enum numerici)
+   */
+  createInjury: (data: InjuryCreateDTO) => 
+    api.post<Result<InjuryResponseDTO>>('/Injury', data),
 
+  /**
+   * Aggiorna i dettagli o lo stato di un infortunio esistente
+   * @param id ID del record infortunio
+   * @param data DTO di aggiornamento
+   */
+  updateInjury: (id: number, data: InjuryUpdateDTO) => 
+    api.put<Result<boolean>>(`/Injury/${id}`, data),
+
+  /**
+   * Elimina un record di infortunio
+   * @param id ID del record infortunio
+   */
+  deleteInjury: (id: number) => 
+    api.delete<Result<boolean>>(`/Injury/${id}`),
+
+  getSummary: () => api.get<Result<CoachDashboardSummaryDto>>('/dashboard/get-data-for-dashboard')
 }
 

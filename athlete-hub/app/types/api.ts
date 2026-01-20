@@ -329,3 +329,55 @@ export interface InjuriesAnalytics {
   daysOut: number;
   status: string;
 }
+
+export interface InjuryResponseDTO {
+    id: number;
+    athleteId: number;
+    date: string;
+    injury: string;
+    bodyLocation?: string;
+    category: number;       // Enum mapped to Int
+    severity: number;       // Enum mapped to Int
+    status: number;         // Enum mapped to Int
+    categoryName: string;   // Nome stringa per UI
+    severityName: string;   // Nome stringa per UI
+    statusName: string;     // Nome stringa per UI
+    daysOut: number;
+    expectedReturnDate?: string;
+}
+
+export interface InjuryCreateDTO {
+    athleteId: number;
+    date: string;
+    injury: string;
+    bodyLocation?: string;
+    category: number;
+    severity: number;
+    status: number;
+    expectedReturnDate?: string;
+}
+
+export interface InjuryUpdateDTO extends Omit<InjuryCreateDTO, 'athleteId'> {}
+
+export interface CoachDashboardSummaryDto {
+  totalMonitoredAthletes: number;
+  averageReadinessScore: number;
+  criticalAcwrCount: number;
+  missingReportsToday: number;
+  athleteStatusMatrix: AthleteReadinessVsLoadDto[];
+  riskAlerts: AthleteRiskAlertDto[];
+}
+
+export interface AthleteReadinessVsLoadDto {
+  name: string;
+  readiness: number;
+  acwr: number;
+  zone: string;
+}
+
+export interface AthleteRiskAlertDto {
+  athleteName: string;
+  discipline: string;
+  acwrValue: number;
+  riskTrend: string;
+}

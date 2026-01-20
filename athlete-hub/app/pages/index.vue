@@ -1,177 +1,181 @@
 <script setup lang="ts">
-import NumberFlow from '@number-flow/vue'
+import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { TrendingDown, TrendingUp, AlertTriangle, UserCheck } from 'lucide-vue-next' 
+import {
+  Users, Activity, AlertTriangle, Clock, CheckCircle, ClipboardList
+} from 'lucide-vue-next'
 
-// 1. Dati per le Metriche Principali (Riflettendo la terminologia del Preparatore)
-const dataCard = ref({
-  totalLoad: 6250, // Carico Totale Settimanale (es. basato su sRPE x Minuti)
-  avgRPE: 7.2,
-  monitoredAthletes: 23, // Atleti Monitorati
-  unavailabilityRate: 8.7, // Tasso di Indisponibilità (Injury Rate)
-})
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import { athleteApi } from '@/api/business'
+import type { CoachDashboardSummaryDto } from '@/types/api'
 
-// Date range (lasciato invariato)
-const timeRange = ref('30d')
-const isDesktop = useMediaQuery('(min-width: 768px)')
-watch(isDesktop, () => {
-  timeRange.value = isDesktop.value ? '30d' : '7d'
-}, { immediate: true })
 const { t } = useI18n()
 
-// 2. Dati per i Grafici e Widget Aggiornati
+// ---------------- State ----------------
+const dashboardData = ref<CoachDashboardSummaryDto | null>(null)
+const loading = ref(true)
 
-// Andamento del Carico e RPE, inclusa la metrica ACWR (Acute:Chronic Workload Ratio)
-const workloadData = [
-  { week: 'Wk 1', load: 1200, rpe: 6.5, acwr: 0.95 },
-  { week: 'Wk 2', load: 1450, rpe: 7, acwr: 1.15 },
-  { week: 'Wk 3', load: 1300, rpe: 6.8, acwr: 1.05 },
-  { week: 'Wk 4', load: 1600, rpe: 7.5, acwr: 1.35 }, // Alto Carico Acuto (Allerta)
-]
+// ---------------- Actions ----------------
+async function fetchDashboard() {
+  loading.value = true
+  try {
+    const res = await athleteApi.getSummary()
+    if (res.data.isSuccess && res.data.value) {
+      dashboardData.value = res.data.value
+    }
+  } catch (error) {
+    console.error('Errore caricamento dashboard:', error)
+  } finally {
+    loading.value = false
+  }
+}
 
-// Monitoraggio Fisiologico: Frequenza Cardiaca media e RPE
-const physiologicalMonitor = [
-  { session: '01/06', avgHR: 138, RPE: 7 },
-  { session: '02/06', avgHR: 142, RPE: 7.5 },
-  { session: '03/06', avgHR: 140, RPE: 6 },
-  { session: '04/06', avgHR: 145, RPE: 8 },
-]
+onMounted(() => fetchDashboard())
 
-// Distribuzione per Disciplina/Categoria (sostituisce "Posizione")
-const athleteDiscipline = [
-  { discipline: t('eventTypes.Corsa'), count: 10 },
-  { discipline: t('eventTypes.Sport di Squadra'), count: 8 },
-  { discipline: t('eventTypes.Forza'), count: 5 },
-]
-
-// Stato di Prontezza (Readiness Status) - Più generale e proattivo
-const readinessStatus = [
-  { status: t('readiness.statuses.good'), value: 14 },
-  { status: t('readiness.statuses.slowRecover'), value: 5 },
-  { status: t('readiness.statuses.injured'), value: 4 },
-]
-
-
-// Allerte basate sui Dati (Simula atleti con ACWR troppo alto > 1.3)
-const highLoadAlerts = workloadData
-  .filter(item => item.acwr > 1.3)
-  .map(item => ({
-    week: item.week,
-    athlete: 'Atleta Esempio ' + Math.floor(Math.random() * 5 + 1), // Atleti fittizi per l'esempio
-    acwr: item.acwr.toFixed(2),
-  }))
-
-const upcomingSessions = [
-  { session: '2024-07-01', type: 'Forza', focus: 'Ipertrofia', targetRPE: 7, time: '10:00' },
-  { session: '2024-07-02', type: 'Resistenza', focus: 'VO2 Max', targetRPE: 8, time: '16:00' },
-  { session: '2024-07-03', type: 'Recupero', focus: 'Mobilità', targetRPE: 4, time: '09:00' },
-]
+// ---------------- Computed ----------------
+// Numero di RPE mancanti (da DTO)
+const missingRpeCount = computed(() => {
+  if (!dashboardData.value) return 0
+  return dashboardData.value.missingReportsToday < 0 ? 0 : dashboardData.value.missingReportsToday
+})
 </script>
 
 <template>
-  <div class="w-full flex flex-col gap-8">
-    <div class="flex flex-wrap items-center justify-between gap-2">
-      <h2 class="text-2xl font-bold tracking-tight">{{ t('dashboard.title') }}</h2>
-      <div class="flex items-center space-x-2">
-        <BaseDateRangePicker />
-        <Button>{{ t('dashboard.export') }}</Button>
-      </div> 
-    </div>
+<div class="w-full flex flex-col gap-8 p-4 max-w-[1600px] mx-auto">
 
-    <div class="grid grid-cols-1 gap-4 @xl:grid-cols-2 @5xl:grid-cols-4">
-      <Card>
-        <CardHeader>
-          <CardDescription>{{ t('metrics.totalLoad') }}</CardDescription>
-          <CardTitle><NumberFlow :value="dataCard.totalLoad" /></CardTitle>
-          <CardAction><TrendingUp /></CardAction>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardDescription>{{ t('metrics.avgRPE') }}</CardDescription>
-          <CardTitle><NumberFlow :value="dataCard.avgRPE" /></CardTitle>
-          <CardAction><TrendingDown /></CardAction>
-        </CardHeader> 
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardDescription>{{ t('metrics.monitoredAthletes') }}</CardDescription>
-          <CardTitle><NumberFlow :value="dataCard.monitoredAthletes" /></CardTitle>
-          <CardAction><UserCheck /></CardAction>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardDescription>{{ t('metrics.unavailabilityRate') }}</CardDescription>
-          <CardTitle><NumberFlow :value="dataCard.unavailabilityRate" suffix="%" /></CardTitle>
-          <CardAction><TrendingDown /></CardAction>
-        </CardHeader>
-      </Card>
-    </div>
+  <!-- ---------------- Top KPI ---------------- -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+    <!-- Atleti Monitorati -->
+    <Card class="border-2 border-foreground/10 shadow-none">
+      <CardHeader class="pb-2 bg-muted/5">
+        <CardTitle class="text-[11px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-2 italic">
+          <Users class="h-4 w-4" /> {{ t('dashboard.athletes_monitored') }}
+        </CardTitle>
+      </CardHeader>
+      <CardContent class="pt-4">
+        <div class="text-4xl font-black italic tracking-tighter">{{ dashboardData?.totalMonitoredAthletes ?? '-' }}</div>
+      </CardContent>
+    </Card>
 
-    <div class="grid grid-cols-1 gap-6 @xl:grid-cols-2">
-      <Card>
-        <CardHeader><CardTitle>{{ t('charts.weeklyLoad') }}</CardTitle></CardHeader>
-        <CardContent>
-          <AreaChart :data="workloadData" :categories="['load', 'acwr']" index="week" />
-        </CardContent>
-      </Card>
+    <!-- Readiness Media -->
+    <Card class="border-2 border-foreground/10 shadow-none">
+      <CardHeader class="pb-2 bg-muted/5">
+        <CardTitle class="text-[11px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-2 italic">
+          <Activity class="h-4 w-4" /> {{ t('dashboard.average_readiness') }}
+        </CardTitle>
+      </CardHeader>
+      <CardContent class="pt-4">
+        <div class="flex items-center justify-between">
+          <div class="text-4xl font-black italic tracking-tighter">
+            {{ dashboardData?.averageReadinessScore ?? '-' }}%
+          </div>
+          <Badge variant="outline" class="font-black text-[9px] uppercase border-foreground/20 italic tracking-widest h-6">
+            Team
+          </Badge>
+        </div>
+      </CardContent>
+    </Card>
 
-      <Card>
-        <CardHeader><CardTitle>{{ t('charts.physiological') }}</CardTitle></CardHeader>
-        <CardContent>
-          <LineChart :data="physiologicalMonitor" :categories="['avgHR', 'RPE']" index="session" />
-        </CardContent>
-      </Card>
-    </div>
+    <!-- Alert ACWR -->
+    <Card class="border-2 border-foreground/10 shadow-none">
+      <CardHeader class="pb-2 bg-muted/5">
+        <CardTitle class="text-[11px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-2 italic">
+          <AlertTriangle class="h-4 w-4" /> {{ t('dashboard.acwr_alerts') }}
+        </CardTitle>
+      </CardHeader>
+      <CardContent class="pt-4">
+        <div class="text-4xl font-black italic tracking-tighter" :class="dashboardData?.criticalAcwrCount! > 0 ? 'text-foreground' : 'text-muted-foreground/30'">
+          {{ dashboardData?.criticalAcwrCount ?? 0 }}
+        </div>
+      </CardContent>
+    </Card>
 
-    <div class="grid grid-cols-1 gap-4 @xl:grid-cols-3">
-      <Card class="col-span-1 @xl:col-span-2">
-        <CardHeader>
-          <CardTitle class="flex items-center gap-2 text-orange-600">
-            <AlertTriangle class="h-5 w-5" /> {{ t('alerts.highLoadTitle') }}
-          </CardTitle>
-          <CardDescription>{{ t('alerts.highLoadDescription') }}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div v-if="highLoadAlerts.length > 0" class="space-y-2">
-            <div v-for="alert in highLoadAlerts" :key="alert.athlete" class="border-l-4 border-orange-500 pl-3">
-              <p class="font-medium">{{ alert.athlete }}</p>
-              <p class="text-sm text-gray-500">ACWR: **{{ alert.acwr }}** - Settimana: {{ alert.week }}</p>
+    <!-- RPE Mancanti -->
+    <Card class="border-2 border-foreground/10 shadow-none">
+      <CardHeader class="pb-2 bg-muted/5">
+        <CardTitle class="text-[11px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-2 italic">
+          <Clock class="h-4 w-4" /> {{ t('dashboard.rpe_missing') }}
+        </CardTitle>
+      </CardHeader>
+      <CardContent class="pt-4">
+        <div class="text-4xl font-black italic tracking-tighter" :class="missingRpeCount > 0 ? 'text-foreground' : 'text-muted-foreground/30'">
+          {{ missingRpeCount }}
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+
+  <!-- ---------------- Atleti in Evidenza ---------------- -->
+  <div class="space-y-6">
+    <h3 class="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 italic">
+      {{ t('dashboard.athlete_status') }}
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <template v-for="athlete in dashboardData?.athleteStatusMatrix" :key="athlete.name">
+        <Card class="p-4 border-2 border-foreground/10 shadow-none hover:border-foreground transition-all">
+          <div class="flex justify-between items-start mb-2">
+            <p class="text-[11px] font-black uppercase italic tracking-wider">{{ athlete.name }}</p>
+            <Badge variant="outline" :class="athlete.readiness >= 85 ? 'bg-green-500/10 text-green-700 border-green-200' : athlete.readiness >= 70 ? 'bg-yellow-500/10 text-yellow-700 border-yellow-200' : 'bg-red-500/10 text-red-700 border-red-200'">
+              {{ athlete.readiness >= 85 ? 'Ottimo' : athlete.readiness >= 70 ? 'Medio' : 'Critico' }}
+            </Badge>
+          </div>
+
+          <div class="flex justify-between items-center mt-2">
+            <div>
+              <p class="text-[10px] font-bold uppercase opacity-50 italic">Readiness</p>
+              <p class="text-2xl font-black italic">{{ athlete.readiness }}%</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase opacity-50 italic">ACWR</p>
+              <p class="text-2xl font-black italic" :class="athlete.acwr > 1.3 ? 'text-red-600' : 'text-foreground'">{{ athlete.acwr.toFixed(2) }}</p>
             </div>
           </div>
-          <p v-else class="text-green-600 font-medium">{{ t('alerts.noAlerts') }}</p> 
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{{ t('sessions.title') }}</CardTitle>
-          <CardDescription>{{ t('sessions.description') }}</CardDescription>
-        </CardHeader>
-        <CardContent class="space-y-3">
-          <div v-for="session in upcomingSessions" :key="session.session" class="border-l-4 border-blue-500 pl-3">
-            <p class="font-medium">{{ session.session }} - {{ t(`eventTypes.${session.type}`) }}</p>
-            <p class="text-sm text-gray-500">{{ t('sessions.focus') }}: {{ session.focus }} | {{ t('sessions.targetRPE') }}: **{{ session.targetRPE }}**</p> 
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-
-    <div class="grid grid-cols-1 gap-6 @xl:grid-cols-2">
-      <Card>
-        <CardHeader><CardTitle>{{ t('charts.athleteDistribution') }}</CardTitle></CardHeader>
-        <CardContent>
-          <BarChart :data="athleteDiscipline" :categories="['count']" index="discipline" />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader><CardTitle>{{ t('charts.readiness') }}</CardTitle></CardHeader>
-        <CardContent>
-          <DonutChart :data="readinessStatus" :categories="['value']" index="status" category="value" />
-        </CardContent>
-      </Card>
+        </Card>
+      </template>
     </div>
   </div>
+
+  <!-- ---------------- Alert / Anomalie ---------------- -->
+  <div class="space-y-4">
+    <h3 class="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 italic">
+      <AlertTriangle class="h-4 w-4 text-foreground" /> {{ t('dashboard.risk_alerts') }}
+    </h3>
+
+    <div v-if="dashboardData?.riskAlerts && dashboardData.riskAlerts.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <template v-for="alert in dashboardData.riskAlerts" :key="alert.athleteName">
+        <Card class="p-5 border-2 border-foreground/10 transition-all bg-card hover:border-foreground flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <span class="text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 border border-foreground/20 italic">
+              {{ alert.riskTrend }}
+            </span>
+            <p class="text-2xl font-black uppercase italic tracking-tighter text-foreground">{{ alert.athleteName }}</p>
+            <p class="text-[10px] font-bold uppercase opacity-40 tracking-widest italic">{{ alert.discipline }}</p>
+          </div>
+
+          <div class="text-right">
+            <p class="text-4xl font-black italic tracking-tighter leading-none text-foreground flex items-start justify-end gap-1">
+              {{ alert.acwrValue.toFixed(2) }}
+              <AlertTriangle v-if="alert.acwrValue > 1.3" class="h-4 w-4 text-red-500 opacity-50" />
+            </p>
+            <p class="text-[9px] uppercase font-black opacity-30 mt-1 italic tracking-widest leading-none">ACWR UNIT</p>
+          </div>
+        </Card>
+      </template>
+    </div>
+
+    <div v-else class="bg-muted/5 border-2 border-dashed border-foreground/10 rounded-xl p-12 text-center">
+      <CheckCircle class="h-8 w-8 text-foreground/20 mx-auto mb-3" />
+      <p class="text-[10px] font-black text-muted-foreground uppercase italic tracking-widest">
+        SISTEMA SICURO: Nessun Atleta a Rischio
+      </p>
+    </div>
+  </div>
+
+</div>
 </template>
+
+<style scoped>
+</style>

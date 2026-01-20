@@ -65,13 +65,7 @@ async function fetchAnalytics() {
         
         // Estrai il messaggio se presente nella risposta d'errore
         const errorMessage = err.response?.data?.error?.message;
-        
-        if (err.response?.status === 404) {
-             // Non mostrare necessariamente un toast di errore se è solo un "non trovato"
-             console.log("Nessun dato per questo atleta");
-        } else {
-             toast.error(errorMessage || t('analytics.error_loading'));
-        }
+   
     } finally {
         loading.value = false
     }

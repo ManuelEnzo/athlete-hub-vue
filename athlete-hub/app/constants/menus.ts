@@ -44,6 +44,11 @@ export const navMenu: NavMenu[] = [
             icon: 'i-lucide-bar-chart-2',
             link: '/rpedetails',
           },
+          {
+            title: 'Injuries Log', // <--- AGGIUNTO QUI
+            icon: 'i-lucide-heart-pulse',
+            link: '/injuriesmanager',
+          },
         ]
       },
       {

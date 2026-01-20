@@ -209,9 +209,6 @@
         "height": "Altezza: {value} m",
         "bmi": "BMI: {value}"
     },
-    "injuries": {
-        "none": "🎉 Nessun infortunio registrato"
-    },
     "tests": {
         "cmj": "CMJ (cm)",
         "squat1rm": "Squat 1RM (kg)",
@@ -506,6 +503,60 @@
         "no_tests_description": "Non sono stati eseguiti test atletici nel periodo selezionato.",
         "metrics_summary": "Riepilogo Misure Corporee",
         "load_summary": "Dettaglio Carichi Settimanali",
-        "no_data_available":"Dati insufficienti per generare l'analisi. Assicurati che l'atleta abbia sessioni completate con RPE e test registrati."
+        "no_data_available": "Dati insufficienti per generare l'analisi. Assicurati che l'atleta abbia sessioni completate con RPE e test registrati."
+    },
+    "injuries": {
+        "title": "Centro Medico",
+        "management_title": "Centro Medico",
+        "subtitle": "Monitoraggio clinico e tempi di recupero",
+        "history_title": "Registro Infortuni Atleta",
+        "add_new": "Nuovo Infortunio",
+        "no_data": "Nessun infortunio",
+        "no_data_desc": "L'atleta non ha infortuni registrati al momento.",
+        "form": {
+            "add_title": "Nuovo Infortunio",
+            "edit_title": "Aggiorna Infortunio",
+            "description": "Diagnosi / Infortunio",
+            "description_placeholder": "Es. Lesione II Grado Bicipite",
+            "start_date": "Data Inizio",
+            "expected_return": "Rientro Stimato",
+            "category": "Categoria",
+            "severity": "Gravità",
+            "location": "Sede Corporea",
+            "location_placeholder": "Es. Coscia DX",
+            "status": "Stato",
+            "categories": {
+                "muscular": "Muscolare",
+                "articular": "Articolare",
+                "tendon": "Tendineo",
+                "bone": "Osseo"
+            },
+            "severity_levels": {
+                "minor": "Lieve",
+                "moderate": "Moderata",
+                "severe": "Grave"
+            },
+            "status_levels": {
+                "active": "Attivo (Stop)",
+                "rehab": "In Recupero",
+                "returned": "Rientrato"
+            }
+        },
+        "card": {
+            "start": "Inizio",
+            "location_label": "Sede",
+            "stop_duration": "Stop Totale"
+        },
+        "errors": {
+            "loadAthletes": "Errore nel caricamento degli atleti",
+            "loadInjuries": "Errore nel caricamento degli infortuni",
+            "save": "Errore durante il salvataggio dell'infortunio",
+            "delete": "Errore durante l'eliminazione dell'infortunio"
+        },
+        "toast": {
+            "created": "Infortunio registrato con successo",
+            "updated": "Record aggiornato correttamente",
+            "deleted": "Infortunio eliminato"
+        }
     }
 }

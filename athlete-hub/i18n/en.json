@@ -209,9 +209,6 @@
         "height": "Height: {value} m",
         "bmi": "BMI: {value}"
     },
-    "injuries": {
-        "none": "🎉 No injuries recorded"
-    },
     "tests": {
         "cmj": "CMJ (cm)",
         "squat1rm": "Squat 1RM (kg)",
@@ -507,6 +504,60 @@
         "no_tests_description": "No athletic tests were performed in the selected period.",
         "metrics_summary": "Body Measurements Summary",
         "load_summary": "Weekly Load Detail",
-        "no_data_available":"Insufficient data to generate analysis. Ensure the athlete has completed sessions with RPE and recorded tests."
+        "no_data_available": "Insufficient data to generate analysis. Ensure the athlete has completed sessions with RPE and recorded tests."
+    },
+    "injuries": {
+        "title": "Medical Center",
+        "management_title": "Medical Center",
+        "subtitle": "Clinical monitoring and recovery times",
+        "history_title": "Athlete Injury Log",
+        "add_new": "Add New Injury",
+        "no_data": "No injuries found",
+        "no_data_desc": "The athlete has no recorded injuries at the moment.",
+        "form": {
+            "add_title": "New Injury",
+            "edit_title": "Update Injury",
+            "description": "Diagnosis / Injury",
+            "description_placeholder": "E.g. Grade II Hamstring Strain",
+            "start_date": "Start Date",
+            "expected_return": "Estimated Return",
+            "category": "Category",
+            "severity": "Severity",
+            "location": "Body Location",
+            "location_placeholder": "E.g. Right Thigh",
+            "status": "Status",
+            "categories": {
+                "muscular": "Muscular",
+                "articular": "Articular",
+                "tendon": "Tendon",
+                "bone": "Bone"
+            },
+            "severity_levels": {
+                "minor": "Minor",
+                "moderate": "Moderate",
+                "severe": "Severe"
+            },
+            "status_levels": {
+                "active": "Active (Stop)",
+                "rehab": "Rehab",
+                "returned": "Returned"
+            }
+        },
+        "card": {
+            "start": "Start",
+            "location_label": "Site",
+            "stop_duration": "Total Stop"
+        },
+        "errors": {
+            "loadAthletes": "Error loading athletes",
+            "loadInjuries": "Error loading injuries",
+            "save": "Error while saving injury",
+            "delete": "Error while deleting injury"
+        },
+        "toast": {
+            "created": "Injury recorded successfully",
+            "updated": "Record updated correctly",
+            "deleted": "Injury deleted"
+        }
     }
 }
