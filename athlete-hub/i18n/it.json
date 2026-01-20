@@ -293,10 +293,10 @@
             "targetRPEInfo": "Intensità prevista",
             "duration": "Durata (minuti)",
             "durationValue": "{minutes} minuti",
-            "notSpecified" : "Non indicata",
-            "active":"Attiva",
-            "remove":"Rimuovi",
-            "selectAthlete" :"Selezione atleti",
+            "notSpecified": "Non indicata",
+            "active": "Attiva",
+            "remove": "Rimuovi",
+            "selectAthlete": "Selezione atleti",
             "completedTitle": "Sessione Completata",
             "completedInfo": "Segna come eseguita per registrare l'RPE"
         },
@@ -338,8 +338,8 @@
         "details": "Dettagli",
         "optional": "Opzionale",
         "loading": "Caricamento...",
-        "active":"Attiva",
-        "remove":"Rimuovi"
+        "active": "Attiva",
+        "remove": "Rimuovi"
     },
     "kanban": {
         "title": "Kanban Board",
@@ -456,7 +456,34 @@
             "6": "Impegnativo 😰",
             "8": "Duro 🥵",
             "9.5": "Estremo 💀",
-            "10": "Massimale 🔥"
+            "10": "Massimale 🔥",
+            "none": "Nessuno",
+            "light": "Leggero",
+            "moderate": "Moderato",
+            "challenging": "Impegnativo",
+            "hard": "Duro",
+            "maximal": "Massimale"
+        },
+        "dashboardTitle": "RPE Dashboard",
+        "legendTitle": "Legenda RPE:",
+        "lastSession": "Ultima sessione",
+        "historyTitle": "Storico RPE",
+        "sessionName": "Nome Sessione",
+        "activityType": "Tipo Attività",
+        "date": "Data",
+        "effort": "Sforzo (RPE)",
+        "target": "Target",
+        "status": "Status",
+        "notes": "Note",
+        "back": "Indietro",
+        "pagination": {
+            "prev": "Prev",
+            "next": "Next",
+            "pageInfo": "Pagina {current} / {total}"
+        },
+        "errors": {
+            "loadOverview": "Errore nel caricamento overview",
+            "loadHistory": "Errore nel caricamento dello storico"
         }
     }
 }
