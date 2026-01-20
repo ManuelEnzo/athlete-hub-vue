@@ -479,11 +479,33 @@
         "pagination": {
             "prev": "Prev",
             "next": "Next",
-            "pageInfo": "Pagina {current} / {total}"
+            "pageInfo": "Pagina {current} / {total}",
+            "chargeother": "Carica altri"
         },
         "errors": {
             "loadOverview": "Errore nel caricamento overview",
             "loadHistory": "Errore nel caricamento dello storico"
         }
+    },
+    "analytics": {
+        "readiness_title": "Stato di Prontezza",
+        "readiness_label": "Punteggio Recupero",
+        "current_acwr": "ACWR Corrente",
+        "workload_trend": "Andamento Carico Acuto:Cronico (ACWR)",
+        "latest_results": "Ultimi Risultati Test",
+        "performance_history": "Trend Storico Prestazioni",
+        "injuries_status": "Storico Infortuni e Assenze",
+        "all_clear": "Tutto Ok - Nessun Infortunio",
+        "days_off": "Giorni",
+        "no_history": "Nessuno storico prestazioni disponibile per questo periodo",
+        "acwr": "Rapporto ACWR",
+        "error_loading": "Errore nel caricamento dei dati analitici",
+        "no_data_title": "Nessun dato disponibile",
+        "no_data_description": "Controlla il periodo selezionato o i record dell'atleta",
+        "no_tests_title": "Nessun Test Registrato",
+        "no_tests_description": "Non sono stati eseguiti test atletici nel periodo selezionato.",
+        "metrics_summary": "Riepilogo Misure Corporee",
+        "load_summary": "Dettaglio Carichi Settimanali",
+        "no_data_available":"Dati insufficienti per generare l'analisi. Assicurati che l'atleta abbia sessioni completate con RPE e test registrati."
     }
 }

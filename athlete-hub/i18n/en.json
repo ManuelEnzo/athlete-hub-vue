@@ -480,11 +480,33 @@
         "pagination": {
             "prev": "Prev",
             "next": "Next",
-            "pageInfo": "Page {current} / {total}"
+            "pageInfo": "Page {current} / {total}",
+            "chargeother": "Charge other"
         },
         "errors": {
             "loadOverview": "Error loading overview",
             "loadHistory": "Error loading history"
         }
+    },
+    "analytics": {
+        "readiness_title": "Readiness State",
+        "readiness_label": "Recovery Score",
+        "current_acwr": "Current ACWR",
+        "workload_trend": "Acute:Chronic Workload Ratio (ACWR)",
+        "latest_results": "Latest Test Results",
+        "performance_history": "Performance History Trend",
+        "injuries_status": "Injury History & Absences",
+        "all_clear": "All Clear - No Injuries",
+        "days_off": "Days Off",
+        "no_history": "No performance history available for this period",
+        "acwr": "ACWR Ratio",
+        "error_loading": "Error loading analytics data",
+        "no_data_title": "No data available",
+        "no_data_description": "Check the selected period or athlete records",
+        "no_tests_title": "No Tests Recorded",
+        "no_tests_description": "No athletic tests were performed in the selected period.",
+        "metrics_summary": "Body Measurements Summary",
+        "load_summary": "Weekly Load Detail",
+        "no_data_available":"Insufficient data to generate analysis. Ensure the athlete has completed sessions with RPE and recorded tests."
     }
 }

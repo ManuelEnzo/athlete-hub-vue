@@ -269,3 +269,63 @@ export interface Pagination<T> {
   hasPrevious: boolean
   hasNext: boolean
 }
+
+// Shared/types/api.ts (o dove gestisci i tuoi DTO in TS)
+
+export interface AthleteAnalyticsDto {
+  athlete: InfoAthleteAnalytics;
+  acwr: AcwrDetails[];
+  performance: PerformanceAthlete;
+  injuries: InjuriesAnalytics[];
+}
+
+// --- Sezione Atleta ---
+export interface InfoAthleteAnalytics {
+  id: number;
+  name: string;
+  position: string;
+  readinessScore: number;
+  riskLevel: string;
+  antropometrics: InfoAthleteAntropometricsAnalytics;
+}
+
+export interface InfoAthleteAntropometricsAnalytics {
+  weight: number;
+  height: number;
+  bmi: string;
+}
+
+// --- Sezione ACWR ---
+export interface AcwrDetails {
+  week: string;
+  acute: number;
+  chronic: number;
+  acwr: number;
+  zone: string;
+}
+
+// --- Sezione Performance (Dinamica) ---
+export interface PerformanceAthlete {
+  lastTestDate: string;
+  lastTests: MetricValueDto[];
+  history: PerformanceHistoryDto[];
+}
+
+export interface MetricValueDto {
+  metricName: string;
+  value: number;
+  unit: string;
+}
+
+export interface PerformanceHistoryDto {
+  date: string;
+  metrics: MetricValueDto[];
+}
+
+// --- Sezione Infortuni ---
+export interface InjuriesAnalytics {
+  date: string; // Arriva come stringa ISO dal JSON
+  injury: string;
+  daysOut: number;
+  status: string;
+}

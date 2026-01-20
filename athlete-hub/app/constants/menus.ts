@@ -32,12 +32,7 @@ export const navMenu: NavMenu[] = [
             title: 'Details',
             icon: 'i-lucide-biceps-flexed',
             link: '/athletedetails',
-          },
-          {
-            title: 'Health Status',
-            icon: 'i-lucide-heart-pulse',
-            link: '/athletehealth',
-          },
+          }
         ],
       },
       {

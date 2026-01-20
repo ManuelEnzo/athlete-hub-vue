@@ -1,320 +1,261 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { CheckCircle, AlertTriangle, TrendingUp, TrendingDown, Clock, Scale } from 'lucide-vue-next'
-// Assumiamo l'esistenza dei componenti Card, Button, Badge, LineChart ecc.
+import { ref, computed, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import {
+    CheckCircle, AlertTriangle, TrendingUp, TrendingDown,
+    Activity, Scale, Info, Calendar, History, Loader2, ClipboardList, Clock,
+    DivideCircle
+} from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
 
-// ------------------------------------------
-// 1. Tipi e Dati
-// ------------------------------------------
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { LineChart } from '@/components/ui/chart-line'
+import { Skeleton } from '@/components/ui/skeleton'
 
-interface Athlete {
-    id: number
-    name: string
-    position: string
-    readinessScore: number
-    riskLevel: 'Basso' | 'Medio' | 'Alto'
-    antropometrics: {
-        weight: number
-        height: number
-        bmi: string
-    }
-}
+import { athleteApi } from '@/api/business'
+import type { AthleteAnalyticsDto } from '@/types/api'
 
-interface AcwrItem {
-    week: string;
-    acute: number;
-    chronic: number;
-    acwr: number;
-    zone: 'Basso' | 'Medio' | 'Alto';
-}
-
-interface TestResult {
-    date: string;
-    cmj: number;
-    squat1rm: number;
-    sprint30m: number;
-}
-
-interface AthleteData {
-    athlete: Athlete;
-    acwr: AcwrItem[];
-    tests: TestResult[];
-    teamAvg: { cmj: number; squat1rm: number; sprint30m: number; };
-    injuries: { date: string; injury: string; daysOut: number; status: string }[];
-}
-
-
-// **SIMULAZIONE DEL DATABASE DEGLI ATLETI**
-// In un'applicazione reale, questi dati verrebbero recuperati da un'API.
-const ATHLETES_DATA: Record<number, AthleteData> = {
-    1: { // Marco Rossi (Dati di prima)
-        athlete: { id: 1, name: 'Marco Rossi', position: 'Centrocampista', readinessScore: 78, riskLevel: 'Medio', antropometrics: { weight: 75.2, height: 1.80, bmi: '23.2 (Normale)' } },
-        acwr: [
-            { week: 'Wk -4', acute: 1000, chronic: 1100, acwr: 0.91, zone: 'Basso' },
-            { week: 'Wk -3', acute: 1250, chronic: 1150, acwr: 1.09, zone: 'Basso' },
-            { week: 'Wk -2', acute: 1500, chronic: 1200, acwr: 1.25, zone: 'Medio' },
-            { week: 'Wk -1', acute: 1650, chronic: 1300, acwr: 1.27, zone: 'Medio' },
-            { week: 'Wk Corrente', acute: 1750, chronic: 1400, acwr: 1.25, zone: 'Medio' },
-        ],
-        tests: [
-            { date: 'Gen 2024', cmj: 45, squat1rm: 120, sprint30m: 4.15 },
-            { date: 'Mar 2024', cmj: 48, squat1rm: 125, sprint30m: 4.08 },
-            { date: 'Mag 2024', cmj: 47, squat1rm: 122, sprint30m: 4.10 },
-            { date: 'Lug 2024', cmj: 49, squat1rm: 128, sprint30m: 4.05 },
-        ],
-        teamAvg: { cmj: 46, squat1rm: 120, sprint30m: 4.20 },
-        injuries: [
-            { date: '2024-03-15', injury: 'Distrazione Flessore (Grado 1)', daysOut: 14, status: 'Rientrato' },
-        ],
-    },
-    2: { // Nuovi Dati di Esempio: Laura Bianchi (Prestazione Alta, Carico Basso)
-        athlete: { id: 2, name: 'Laura Bianchi', position: 'Attaccante', readinessScore: 92, riskLevel: 'Basso', antropometrics: { weight: 62.1, height: 1.72, bmi: '21.0 (Normale)' } },
-        acwr: [
-            { week: 'Wk -4', acute: 800, chronic: 900, acwr: 0.89, zone: 'Basso' },
-            { week: 'Wk -3', acute: 950, chronic: 920, acwr: 1.03, zone: 'Basso' },
-            { week: 'Wk -2', acute: 850, chronic: 900, acwr: 0.94, zone: 'Basso' },
-            { week: 'Wk -1', acute: 1050, chronic: 950, acwr: 1.11, zone: 'Basso' },
-            { week: 'Wk Corrente', acute: 1000, chronic: 960, acwr: 1.04, zone: 'Basso' },
-        ],
-        tests: [
-            { date: 'Gen 2024', cmj: 55, squat1rm: 95, sprint30m: 3.95 },
-            { date: 'Mar 2024', cmj: 57, squat1rm: 100, sprint30m: 3.90 },
-            { date: 'Mag 2024', cmj: 58, squat1rm: 102, sprint30m: 3.85 },
-            { date: 'Lug 2024', cmj: 58, squat1rm: 105, sprint30m: 3.80 },
-        ],
-        teamAvg: { cmj: 46, squat1rm: 120, sprint30m: 4.20 },
-        injuries: [],
-    }
-};
-
-// ------------------------------------------
-// 2. Props e Caricamento Dinamico
-// ------------------------------------------
-
-// **PASSO 1: Accettare l'ID dell'atleta come prop**
+// ---------------- Props ----------------
+// Riceviamo l'id e opzionalmente le date. 
+// Se le date non sono passate, le calcoliamo noi.
 const props = defineProps<{
     athleteId: number
+    from?: string
+    to?: string
 }>()
 
-// **PASSO 2: Caricare i dati dinamici**
-const currentAthleteData = computed<AthleteData>(() => {
-    // Cerchiamo i dati nell'oggetto simulato
-    const data = ATHLETES_DATA[props.athleteId];
-    
-    // Se non troviamo i dati (o l'ID non esiste), restituiamo un set di dati "vuoto"
-    // Questo è cruciale per evitare errori a catena se l'ID non è valido.
-    if (!data) {
-        return {
-            athlete: { id: 0, name: 'Atleta Sconosciuto', position: '', readinessScore: 0, riskLevel: 'Basso', antropometrics: { weight: 0, height: 0, bmi: 'N/A' } },
-            acwr: [],
-            tests: [],
-            teamAvg: { cmj: 0, squat1rm: 0, sprint30m: 0 },
-            injuries: [],
-        } as AthleteData
+const { t } = useI18n()
+
+// ---------------- State ----------------
+const data = ref<AthleteAnalyticsDto | null>(null)
+const loading = ref(true)
+
+// ---------------- API Actions ----------------
+// AthleteDetail.vue
+
+async function fetchAnalytics() {
+    if (!props.athleteId) return
+
+    loading.value = true
+    // IMPORTANTE: Resetta subito i dati per evitare "fantastmi" del vecchio atleta
+    data.value = null 
+
+    const dateTo = props.to || new Date().toISOString()
+    const dateFrom = props.from || (() => {
+        const d = new Date()
+        d.setDate(d.getDate() - 42)
+        return d.toISOString()
+    })()
+
+    try {
+        const response = await athleteApi.getDatasForAnalytics(props.athleteId, dateFrom, dateTo)
+        
+        // Se il backend risponde 200 ma con isSuccess: false (gestito dall'intercettore)
+        if (response.data.isSuccess) {
+            data.value = response.data.value ?? null
+        } else {
+            // Se isSuccess è false, data.value è già null per il reset sopra
+            console.warn("Dati non trovati (Business Logic)");
+        }
+    } catch (err: any) {
+        // Se il backend risponde 404/400, Axios finisce qui
+        data.value = null // Sicurezza extra
+        
+        // Estrai il messaggio se presente nella risposta d'errore
+        const errorMessage = err.response?.data?.error?.message;
+        
+        if (err.response?.status === 404) {
+             // Non mostrare necessariamente un toast di errore se è solo un "non trovato"
+             console.log("Nessun dato per questo atleta");
+        } else {
+             toast.error(errorMessage || t('analytics.error_loading'));
+        }
+    } finally {
+        loading.value = false
     }
-    return data;
+}
+
+// Ricarica se l'atleta cambia
+watch(() => props.athleteId, () => fetchAnalytics())
+
+onMounted(() => {
+    fetchAnalytics()
 })
 
-// ------------------------------------------
-// 3. Logica Calcolata (Aggiornata per usare currentAthleteData)
-// ------------------------------------------
-
-// Reindirizziamo tutte le ref precedenti alle computed property dinamiche:
-const athleteData = computed(() => currentAthleteData.value.athlete)
-const acwrData = computed(() => currentAthleteData.value.acwr)
-const testPerformance = computed(() => currentAthleteData.value.tests)
-const teamAverage = computed(() => currentAthleteData.value.teamAvg)
-const injuryHistory = computed(() => currentAthleteData.value.injuries)
-
-
-// Computed property per l'ultimo elemento ACWR. Aggiungiamo un check per array vuoto.
-const latestAcwrItem = computed<AcwrItem>(() => acwrData.value[acwrData.value.length - 1] || { week: 'N/A', acwr: 0, acute: 0, chronic: 0, zone: 'Basso' } as AcwrItem)
-
-const latestAcwr = computed(() => latestAcwrItem.value.acwr.toFixed(2))
-
-// Computed property per l'ultimo risultato del test. Aggiungiamo un check per array vuoto.
-const latestTests = computed<TestResult>(() => testPerformance.value[testPerformance.value.length - 1] || { date: 'N/A', cmj: 0, squat1rm: 0, sprint30m: 0 } as TestResult)
-
-// Stato di rischio basato sull'ACWR (logica invariata)
-const acwrStatus = computed(() => {
-    const acwr = parseFloat(latestAcwr.value)
-    if (acwr > 1.5) return { text: 'Alto Rischio (Overload)', class: 'bg-red-100 text-red-800 border-red-500' }
-    if (acwr >= 1.2) return { text: 'Rischio Medio (Attenzione)', class: 'bg-yellow-100 text-yellow-800 border-yellow-500' }
-    return { text: 'Basso Rischio', class: 'bg-green-100 text-green-800 border-green-500' }
+// ---------------- Computed ----------------
+const latestAcwr = computed(() => {
+    const current = data.value?.acwr.find(a => a.week === 'Wk Corrente')
+    return current || { acwr: 0, zone: 'N/A', acute: 0, chronic: 0, week: '---' }
 })
 
-// Calcola la differenza percentuale rispetto alla media del team (logica invariata)
-const performanceComparison = computed(() => {
-    const lT = latestTests.value
-    // Evitiamo divisioni per zero se i dati medi non sono presenti
-    if (teamAverage.value.cmj === 0 || lT.date === 'N/A') return []
+const acwrStatusClass = computed(() => {
+    const val = latestAcwr.value.acwr
+    const zone = latestAcwr.value.zone
 
-    return [
-        { 
-            metric: 'CMJ (cm)', 
-            marco: lT.cmj, 
-            team: teamAverage.value.cmj,
-            diff: (((lT.cmj - teamAverage.value.cmj) / teamAverage.value.cmj) * 100).toFixed(1),
-            isBetter: lT.cmj >= teamAverage.value.cmj
-        },
-        // ... (altre metriche come prima)
-        { 
-            metric: 'Squat 1RM (kg)', 
-            marco: lT.squat1rm, 
-            team: teamAverage.value.squat1rm,
-            diff: (((lT.squat1rm - teamAverage.value.squat1rm) / teamAverage.value.squat1rm) * 100).toFixed(1),
-            isBetter: lT.squat1rm >= teamAverage.value.squat1rm 
-        },
-        { 
-            metric: 'Sprint 30m (s)', 
-            marco: lT.sprint30m, 
-            team: teamAverage.value.sprint30m,
-            diff: (((teamAverage.value.sprint30m - lT.sprint30m) / teamAverage.value.sprint30m) * 100).toFixed(1),
-            isBetter: lT.sprint30m <= teamAverage.value.sprint30m 
-        },
-    ]
+    // Se siamo in inizializzazione, usiamo il BLU
+    if (zone === 'Inizializzazione') return 'bg-blue-500/10 text-blue-700 border-blue-200'
+
+    if (val > 1.5) return 'bg-red-500/10 text-red-700 border-red-200'
+    if (val >= 1.3) return 'bg-yellow-500/10 text-yellow-700 border-yellow-200'
+    return 'bg-green-500/10 text-green-700 border-green-200'
+})
+
+
+const acwrChartData = computed(() => {
+    return data.value?.acwr.map(a => ({
+        week: a.week,
+        [t('analytics.acwr')]: a.acwr
+    })) || []
+})
+
+const historyChartData = computed(() => {
+    if (!data.value?.performance.history) return []
+    return data.value.performance.history.map(h => {
+        const row: any = { date: h.date }
+        h.metrics.forEach(m => {
+            row[m.metricName] = m.value
+        })
+        return row
+    })
+})
+
+const historyCategories = computed(() => {
+    if (!data.value?.performance.history || data.value.performance.history.length === 0) return []
+    const categories = new Set<string>()
+    data.value.performance.history.forEach(h => {
+        h.metrics.forEach(m => categories.add(m.metricName))
+    })
+    return Array.from(categories)
 })
 </script>
 
 <template>
-  <div class="w-full flex flex-col gap-8">
-    
-    <div class="grid grid-cols-1 gap-6 @xl:grid-cols-3">
-        
-      <Card class="col-span-1">
-          <CardHeader>
-              <CardTitle>Stato di Prontezza (Readiness)</CardTitle>
-          </CardHeader>
-          <CardContent class="space-y-4">
-              <div class="flex items-center justify-between border-b pb-3">
-                  <span class="text-lg font-medium">Punteggio di Recupero:</span>
-                  <Badge class="text-xl font-bold" :class="{'bg-green-500/10 text-green-700': athleteData.readinessScore > 75, 'bg-yellow-500/10 text-yellow-700': athleteData.readinessScore <= 75}">
-                    {{ athleteData.readinessScore }}
-                  </Badge>
-              </div>
+    <div class="w-full flex flex-col gap-6">
 
-              <div class="border-l-4 p-3 rounded-r-md" :class="acwrStatus.class">
-                  <div class="flex items-center gap-2">
-                      <AlertTriangle v-if="acwrStatus.text !== 'Basso Rischio'" class="h-5 w-5" />
-                      <CheckCircle v-else class="h-5 w-5 text-green-700" />
-                      <p class="font-semibold">{{ acwrStatus.text }}</p>
-                  </div>
-                  <p class="text-2xl font-extrabold mt-1">{{ latestAcwr }}</p>
-                  <p class="text-sm text-gray-600">ACWR Corrente (Settimana: **{{ latestAcwrItem.week }}**)</p>
-              </div>
+        <div v-if="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Skeleton class="h-[320px] w-full rounded-xl" v-for="i in 3" :key="i" />
+        </div>
 
-              <div class="space-y-2 pt-4">
-                  <h4 class="font-semibold flex items-center gap-2"><Scale class="h-4 w-4" /> Dati Antropometrici</h4>
-                  <div class="text-sm text-gray-700">
-                      Peso: **{{ athleteData.antropometrics.weight }} kg**
-                  </div>
-                  <div class="text-sm text-gray-700">
-                      Altezza: **{{ athleteData.antropometrics.height }} m**
-                  </div>
-                  <div class="text-sm text-gray-700">
-                      BMI: **{{ athleteData.antropometrics.bmi }}**
-                  </div>
-              </div>
-
-          </CardContent>
-      </Card>
-        
-      <Card class="col-span-1 @xl:col-span-2">
-          <CardHeader>
-              <CardTitle>📈 Acute:Chronic Workload Ratio (ACWR)</CardTitle>
-              <CardDescription>Andamento del rapporto Carico Acuto (7 giorni) vs Carico Cronico (28 giorni). Obiettivo: 0.8 - 1.3</CardDescription>
-          </CardHeader>
-          <CardContent>
-             
-            <LineChart 
-                :data="acwrData" 
-                :categories="['acwr']" 
-                index="week"
-                :y-axis-config="{ domain: [0.7, 1.6], label: 'ACWR' }"
-                :x-axis-config="{ label: 'Settimana' }"
-            />
-          </CardContent>
-      </Card>
-      
-    </div>
-
-    <div class="grid grid-cols-1 gap-6 @xl:grid-cols-2">
-        
-        <Card>
-            <CardHeader>
-                <CardTitle>Benchmark Prestazioni (vs Team)</CardTitle>
-                <CardDescription>Risultati ultimi test (**{{ latestTests.date }}**) a confronto con la media del Team.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <template v-if="performanceComparison.length > 0">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <th class="py-3">Metrica</th>
-                            <th class="py-3">{{ athleteData.name }}</th>
-                            <th class="py-3">Media Team</th>
-                            <th class="py-3">Diff (%)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        <tr v-for="item in performanceComparison" :key="item.metric" class="text-sm">
-                            <td class="py-4 font-medium">{{ item.metric }}</td>
-                            <td class="py-4">{{ item.marco }}</td>
-                            <td class="py-4 text-gray-500">{{ item.team }}</td>
-                            <td class="py-4" :class="item.isBetter ? 'text-green-600' : 'text-red-600'">
-                                <span class="flex items-center gap-1">
-                                    <TrendingUp v-if="item.isBetter" class="h-4 w-4" />
-                                    <TrendingDown v-else class="h-4 w-4" />
-                                    {{ item.diff }}%
+        <template v-else-if="data && data.athlete">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card class="border-primary/10 shadow-sm">
+                    <CardHeader class="pb-2 bg-muted/5">
+                        <CardTitle class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                            <Activity class="h-4 w-4 text-primary" /> {{ t('analytics.readiness_title') }}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent class="space-y-6 pt-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-4xl font-black text-foreground">
+                                    {{ data.athlete.readinessScore }}<span class="text-lg font-normal text-muted-foreground">/100</span>
                                 </span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-              </template>
-              <p v-else class="text-center text-gray-500 py-4">Nessun dato di test di prestazione disponibile.</p>
+                            </div>
+                            <Badge variant="outline" :class="[
+                                data.athlete.riskLevel === 'Inizializzazione' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                data.athlete.readinessScore > 70 ? 'bg-green-500/10 text-green-700 border-green-200' : 'bg-yellow-500/10 text-yellow-700 border-yellow-200'
+                            ]">
+                                <Clock v-if="data.athlete.riskLevel === 'Inizializzazione'" class="h-3 w-3 mr-1" />
+                                {{ data.athlete.riskLevel }}
+                            </Badge>
+                        </div>
 
-            </CardContent>
-        </Card>
+                        <div class="p-4 rounded-xl border-2 border-dashed transition-all" :class="acwrStatusClass">
+                            <div class="flex items-center gap-2 mb-2">
+                                <AlertTriangle v-if="latestAcwr.acwr > 1.3" class="h-4 w-4" />
+                                <CheckCircle v-else class="h-4 w-4" />
+                                <span class="text-[10px] font-black uppercase">{{ latestAcwr.zone }}</span>
+                            </div>
+                            <div class="text-3xl font-black">{{ latestAcwr.acwr.toFixed(2) }}</div>
+                            <p class="text-[9px] uppercase font-bold opacity-70">{{ t('analytics.current_acwr') }}</p>
+                        </div>
+                    </CardContent>
+                </Card>
 
-        <Card>
-            <CardHeader>
-                <CardTitle>Storico Infortuni e Assenze</CardTitle>
-                <CardDescription>Riepilogo delle indisponibilità passate.</CardDescription>
-            </CardHeader>
-            <CardContent class="space-y-4">
-              <div v-if="injuryHistory.length > 0">
-                <div v-for="injury in injuryHistory" :key="injury.date" class="border-l-4 border-red-500 pl-3">
-                    <p class="font-medium flex items-center gap-2">
-                        <Clock class="h-4 w-4 text-gray-500"/> {{ injury.date }}
-                    </p>
-                    <p class="text-sm font-semibold mt-1">{{ injury.injury }}</p>
-                    <p class="text-sm text-gray-500">
-                        Assenza: **{{ injury.daysOut }} giorni** | Stato: 
-                        <span class="font-medium" :class="injury.status === 'Rientrato' ? 'text-green-600' : 'text-red-600'">
-                            {{ injury.status }}
-                        </span>
-                    </p>
+                <Card class="md:col-span-2 border-primary/10 shadow-sm overflow-hidden">
+                    <CardHeader class="pb-2 bg-muted/5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                        {{ t('analytics.workload_trend') }}
+                    </CardHeader>
+                    <CardContent class="pt-4">
+                        <div class="h-[200px] w-full">
+                            <LineChart :data="acwrChartData" index="week" :categories="[t('analytics.acwr')]"
+                                :colors="['#2563eb']" :show-grid-line="true" :show-tooltip="true" class="w-full h-full" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-[11px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2">
+                    <TrendingUp class="h-4 w-4 text-primary" /> {{ t('analytics.latest_results') }}
+                </h3>
+                
+                <div v-if="data.performance.lastTests && data.performance.lastTests.length > 0" 
+                     class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    <Card v-for="test in data.performance.lastTests" :key="test.metricName" class="shadow-sm border-primary/5">
+                        <CardContent class="p-4 flex flex-col items-center justify-center text-center">
+                            <span class="text-[9px] font-black uppercase text-muted-foreground/60 mb-2">{{ test.metricName }}</span>
+                            <div class="text-2xl font-black tracking-tighter">
+                                {{ test.value }}<span class="text-xs font-bold ml-0.5 text-muted-foreground">{{ test.unit }}</span>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
-              </div>
-              <p v-else class="text-center text-green-500 py-4 font-medium">🎉 Nessun infortunio registrato.</p>
-            </CardContent>
-        </Card>
-        
+                <div v-else class="bg-muted/10 border-2 border-dashed rounded-xl p-8 text-center">
+                    <ClipboardList class="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
+                    <p class="text-xs font-bold text-muted-foreground/60 uppercase">{{ t('analytics.no_tests_registered') }}</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card class="border-primary/10 shadow-sm">
+                    <CardHeader class="bg-muted/5 pb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <Scale class="h-4 w-4 inline mr-2" /> {{ t('analytics.body_summary') }}
+                    </CardHeader>
+                    <CardContent class="pt-6 space-y-4">
+                        <div class="flex justify-between border-b pb-2 text-sm">
+                            <span class="text-muted-foreground">{{ t('measurements.card.weight') }}</span>
+                            <span class="font-black">{{ data.athlete.antropometrics.weight }} kg</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2 text-sm">
+                            <span class="text-muted-foreground">BMI</span>
+                            <span class="font-black">{{ data.athlete.antropometrics.bmi }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">{{ t('measurements.card.height') }}</span>
+                            <span class="font-black">{{ data.athlete.antropometrics.height }} cm</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card class="lg:col-span-2 border-primary/10 shadow-sm">
+                    <CardHeader class="bg-muted/5 pb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <Info class="h-4 w-4 inline mr-2" /> {{ t('analytics.injuries_status') }}
+                    </CardHeader>
+                    <CardContent class="pt-6">
+                        <div v-if="!data.injuries || data.injuries.length === 0" class="p-4 bg-green-500/5 rounded-xl border border-green-500/10 flex items-center gap-3">
+                            <CheckCircle class="h-5 w-5 text-green-500" />
+                            <span class="text-xs font-bold text-green-700 uppercase">{{ t('analytics.all_clear') }}</span>
+                        </div>
+                        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div v-for="injury in data.injuries" :key="injury.date" class="p-3 rounded-lg border bg-card">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-[9px] font-mono opacity-50">{{ new Date(injury.date).toLocaleDateString() }}</span>
+                                    <Badge variant="secondary" class="text-[8px] font-black uppercase">{{ injury.status }}</Badge>
+                                </div>
+                                <p class="text-xs font-black">{{ injury.injury }}</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </template>
+
+        <div v-else class="py-20 text-center bg-muted/5 rounded-3xl border-2 border-dashed">
+            <ClipboardList class="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
+            <h3 class="text-lg font-bold text-muted-foreground/60">{{ t('analytics.no_data_available') }}</h3>
+        </div>
     </div>
-
-    <Card>
-        <CardHeader>
-            <CardTitle>📉 Trend Storico Prestazioni Chiave</CardTitle>
-            <CardDescription>Evoluzione dei risultati di test su Forza (Squat 1RM) e Potenza (CMJ) nel corso della stagione.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <template v-if="testPerformance.length > 0">
-            <LineChart :data="testPerformance" :categories="['cmj', 'squat1rm']" index="date" />
-          </template>
-          <p v-else class="text-center text-gray-500 py-4">Nessun dato storico di prestazione per il grafico.</p>
-        </CardContent>
-    </Card>
-
-  </div>
 </template>

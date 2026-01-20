@@ -17,7 +17,8 @@ import type {
   RpeLinkQueueResponseDto,
   RpeLastSessionOverviewDto,
   Pagination,
-  RpeHistoricalEntryDto
+  RpeHistoricalEntryDto,
+  AthleteAnalyticsDto
 } from '../types/api'
 
 export const athleteApi = {
@@ -90,6 +91,10 @@ export const athleteApi = {
       params
     )
   },
+  getDatasForAnalytics: (id: number, from: string, to: string) => {
+    const params = { params: { id, from, to } }
+    return api.get<Result<AthleteAnalyticsDto>>('/Athletes/get-datas-for-analytics', params)}
+
 
 }
 

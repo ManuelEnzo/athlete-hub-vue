@@ -246,7 +246,7 @@ onMounted(fetchOverview)
         <div v-if="hasMoreHistory" class="flex justify-center mt-6">
           <Button variant="outline" :disabled="loadingHistory" @click="fetchHistory(focusedAthleteId!)">
             <Loader2 v-if="loadingHistory" class="w-4 h-4 animate-spin mr-2" />
-            Carica altri
+             {{ t('rpe.pagination.chargeother') }}
           </Button>
         </div>
 

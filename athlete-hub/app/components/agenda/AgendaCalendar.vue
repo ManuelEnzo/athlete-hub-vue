@@ -62,6 +62,14 @@ const newEvent = reactive({
   isCompleted: false
 })
 
+// Nello script setup, aggiorna o aggiungi il watch
+watch(() => newEvent.type, (newType) => {
+  if (newType === 'Recovery' || newType === 'Checkup') {
+    newEvent.targetRpe = null;
+    newEvent.isCompleted = false; // Reset dello stato completato
+  }
+})
+
 // --- CALENDAR LOGIC ---
 function changeMonth(delta: number) {
   currentMonth.value += delta
@@ -218,7 +226,7 @@ async function handleSaveEvent() {
     return
   }
 
- isLoading.value = true
+  isLoading.value = true
   try {
     let formattedDuration = null
     if (newEvent.duration) {
@@ -488,7 +496,7 @@ onMounted(() => {
           <div class="col-span-2 md:col-span-1">
             <div class="flex items-center justify-between mb-0.5">
               <label class="text-[10px] font-black uppercase text-muted-foreground block">{{ t('calendar.form.duration')
-                }}</label>
+              }}</label>
               <div class="flex items-center gap-1.5 transition-all duration-300">
                 <template v-if="newEvent.duration && newEvent.duration > 0">
                   <span class="relative flex h-1.5 w-1.5">
@@ -514,7 +522,7 @@ onMounted(() => {
               <div class="text-sm font-bold transition-colors"
                 :class="newEvent.duration ? 'text-primary' : 'text-muted-foreground italic font-medium'">
                 <span v-if="newEvent.duration">{{ t('calendar.form.durationValue', { minutes: newEvent.duration })
-                  }}</span>
+                }}</span>
                 <span v-else>-- min</span>
               </div>
               <button v-if="newEvent.duration" @click="newEvent.duration = null"
@@ -540,19 +548,23 @@ onMounted(() => {
           </div>
 
           <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="text-[10px] font-black uppercase text-muted-foreground mb-0.5 block">{{
-                t('calendar.form.categoryLabel') }}</label>
+            <div :class="['Recovery', 'Checkup'].includes(newEvent.type) ? 'col-span-2' : 'col-span-1'">
+              <label class="text-[10px] font-black uppercase text-muted-foreground mb-0.5 block">
+                {{ t('calendar.form.categoryLabel') }}
+              </label>
               <select v-model="newEvent.type" :disabled="isEditing && newEvent.hasResults"
                 class="w-full border rounded-md p-1.5 text-sm bg-background h-9 disabled:bg-muted">
                 <option v-for="type in ['Strength', 'Endurance', 'Test', 'Recovery', 'Checkup']" :key="type"
-                  :value="type">{{ type
-                  }}</option>
+                  :value="type">
+                  {{ type }}
+                </option>
               </select>
             </div>
-            <div>
-              <label class="text-[10px] font-black uppercase text-primary mb-0.5 block">{{ t('calendar.form.targetRPE')
-                }}</label>
+
+            <div v-if="!['Recovery', 'Checkup'].includes(newEvent.type)" class="col-span-1">
+              <label class="text-[10px] font-black uppercase text-primary mb-0.5 block">
+                {{ t('calendar.form.targetRPE') }}
+              </label>
               <Input type="number" v-model.number="newEvent.targetRpe" min="1" max="10" placeholder="Es. 7"
                 class="h-9 font-bold text-primary" />
             </div>
@@ -561,7 +573,7 @@ onMounted(() => {
           <div v-if="newEvent.type === 'Test'" class="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
             <label class="text-[10px] font-black uppercase text-purple-600 mb-1 block">{{
               t('calendar.form.protocolLabel')
-              }}</label>
+            }}</label>
             <select v-model="newEvent.testDefinitionId" :disabled="isEditing && newEvent.hasResults"
               class="w-full border rounded-md p-1.5 text-sm bg-background h-9 border-purple-200">
               <option :value="null">{{ t('calendar.form.protocolSelect') }}</option>
@@ -569,9 +581,10 @@ onMounted(() => {
             </select>
           </div>
 
-          <div v-if="newEvent.type !== 'Test' && newEvent.type !== 'Recovery'"
+          <div v-if="!['Test', 'Recovery', 'Checkup'].includes(newEvent.type)"
             class="p-3 rounded-xl border transition-all"
             :class="newEvent.isCompleted ? 'bg-green-500/10 border-green-500/30' : 'bg-muted/30 border-transparent'">
+
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div class="h-8 w-8 rounded-full flex items-center justify-center"
@@ -580,9 +593,10 @@ onMounted(() => {
                 </div>
                 <div>
                   <p class="text-xs font-bold uppercase tracking-tight">{{ t('calendar.form.completedTitle') }}</p>
-                  <p class="text-[9px] text-muted-foreground leading-tight">{{ t('calendar.form.completedInfo')}}</p>
+                  <p class="text-[9px] text-muted-foreground leading-tight">{{ t('calendar.form.completedInfo') }}</p>
                 </div>
               </div>
+
               <button @click="newEvent.isCompleted = !newEvent.isCompleted" type="button"
                 class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-muted"
                 :class="{ 'bg-green-600': newEvent.isCompleted }">
@@ -623,8 +637,16 @@ onMounted(() => {
                   {{ t('calendar.grid.athlete') }}
                 </th>
                 <th v-for="metric in selectedGridData?.metrics" :key="metric.id"
-                  class="p-4 text-center text-[10px] font-black uppercase text-muted-foreground border-b min-w-[140px]">
-                  {{ metric.name }}
+                  class="p-4 text-center border-b min-w-[140px]">
+                  <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-black uppercase text-muted-foreground leading-tight">
+                      {{ metric.name }}
+                    </span>
+                    <span
+                      class="mt-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-widest">
+                      {{ metric.unit || '--' }}
+                    </span>
+                  </div>
                 </th>
               </tr>
             </thead>
@@ -632,12 +654,20 @@ onMounted(() => {
               <tr v-for="athlete in selectedGridData?.athletes" :key="athlete.id" class="border-b hover:bg-accent/5">
                 <td class="p-4 font-bold text-sm">{{ athlete.fullName }}</td>
                 <td v-for="metric in selectedGridData?.metrics" :key="metric.id" class="p-2 text-center">
-                  <input
-                    class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm text-center font-mono focus-visible:ring-1 focus-visible:ring-purple-500"
-                    :class="{ 'border-blue-400 bg-blue-50/30': metric.dataType === 1, 'border-purple-400 bg-purple-50/30': metric.dataType === 2 }"
-                    :value="resultsMap[athlete.id]?.[metric.id] || ''"
-                    @change="(e: any) => updateValue(athlete.id, metric.id, e.target.value)"
-                    :placeholder="getPlaceholder(metric.dataType)" />
+                  <div class="relative flex items-center group">
+                    <input
+                      class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm text-center font-mono focus-visible:ring-1 focus-visible:ring-purple-500 pr-10"
+                      :class="{
+                        'border-blue-400 bg-blue-50/30': metric.dataType === 1,
+                        'border-purple-400 bg-purple-50/30': metric.dataType === 2
+                      }" :value="resultsMap[athlete.id]?.[metric.id] || ''"
+                      @change="(e: any) => updateValue(athlete.id, metric.id, e.target.value)"
+                      :placeholder="getPlaceholder(metric.dataType)" />
+                    <span
+                      class="absolute right-3 text-[10px] font-black text-muted-foreground/40 group-hover:text-primary transition-colors pointer-events-none">
+                      {{ metric.unit }}
+                    </span>
+                  </div>
                 </td>
               </tr>
             </tbody>

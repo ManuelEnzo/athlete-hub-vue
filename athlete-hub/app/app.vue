@@ -25,8 +25,8 @@ useHead({
   },
 })
 
-const title = 'Nuxt Shadcn-Vue TailwindCSS 4 - Dashboard Template'
-const description = 'This dashboard, built with Nuxt, Shadcn Vue, and TailwindCSS. It includes a dark mode toggle and is optimized for performance and data efficiency.'
+const title = 'Athlete Hub'
+const description = 'A comprehensive performance monitoring system designed to track training loads, readiness scores, and athletic progress through data-driven analytics.'
 
 useSeoMeta({
   title,
