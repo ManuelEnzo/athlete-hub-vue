@@ -1,7 +1,28 @@
 {
     "dashboard": {
         "title": "Athlete Hub Dashboard",
-        "export": "Export Data"
+        "export": "Export Data",
+        "athletes_monitored": "Monitored Athletes",
+        "average_readiness": "Average Readiness",
+        "acwr_alerts": "ACWR Alerts",
+        "rpe_missing": "Missing RPE",
+        "monitored": "Monitored",
+        "athletes_at_risk": "Athletes At Risk",
+        "reports_to_complete": "Reports to Complete",
+        "acwr_controlled": "ACWR Controlled",
+        "safe_zone": "Safe Zone",
+        "actions_required": "Actions Required",
+        "readiness_distribution": "Readiness Distribution",
+        "athlete_profile": "Athlete Profile (Top 5)",
+        "performance_matrix": "Performance Matrix",
+        "team_status": "Team Status",
+        "athlete_details": "Athlete Details",
+        "readiness_label": "Readiness",
+        "acwr_label": "ACWR",
+        "monitoring_title": "Athletes Under Monitoring",
+        "safe_system": "Safe System",
+        "no_critical_athletes": "No Critical Athletes",
+        "high_acwr": "High ACWR"
     },
     "metrics": {
         "totalLoad": "Weekly Total Load",
@@ -558,6 +579,48 @@
             "created": "Injury recorded successfully",
             "updated": "Record updated correctly",
             "deleted": "Injury deleted"
+        }
+    },
+    "performanceDashboard": {
+        "pageTitle": "Performance Dashboard",
+        "subtitle": "Real-Time Athlete Monitoring & Workload Management",
+        "lastUpdated": "Last Updated",
+        "teamSize": "Team Size",
+        "athletesMonitored": "Athletes monitored",
+        "avgReadiness": "Avg Readiness",
+        "avgAcwr": "Avg ACWR",
+        "rpeSurveyStatus": "RPE Compliance",
+        "atleti": "athletes",
+        "atRisk": "At Risk",
+        "requireAttention": "Require attention",
+        "readinessTrend": "Readiness Trend",
+        "complianceRate": "Compliance Rate",
+        "workloadAcwrDistribution": "Workload ACWR Distribution",
+        "teamHealthDistribution": "Team Health Distribution",
+        "readinessVsAcwrComparison": "Readiness vs ACWR Safety Comparison",
+        "missingSessions": "Missing Sessions Alert",
+        "allAthletesCompliant": "All Athletes Compliant",
+        "noMissingSessions": "No missing sessions",
+        "quickInsights": "Quick Insights",
+        "teamStatus": "Team Status",
+        "athletesInSafeZone": "athletes in safe zone",
+        "averageLoad": "Average Load",
+        "optimal": "Optimal",
+        "monitor": "Monitor",
+        "readyToday": "% ready today",
+        "individualPerformanceMatrix": "Individual Performance Matrix",
+        "readiness": "Readiness",
+        "dashboardAutoUpdated": "Dashboard auto-updated",
+        "performanceIntelligence": "Performance Intelligence",
+        "critical": "Critical",
+        "warning": "Warning",
+        "safe": "Safe",
+        "chartLegends": {
+            "readinessTrend": "Shows athlete readiness percentage over time. Higher values indicate better recovery and mental readiness.",
+            "complianceRate": "Percentage of athletes who completed RPE reports. Essential for workload tracking and injury prevention.",
+            "acwrDistribution": "ACWR (Acute:Chronic Workload Ratio) values. Green < 1.3 = Safe, Yellow 1.3-1.5 = Warning, Red > 1.5 = Critical injury risk.",
+            "teamHealth": "Distribution of athlete health status. Safe = Low injury risk, Warning = Monitoring required.",
+            "radarComparison": "Blue line = Readiness %, Red line = ACWR Safety Score. Wider shape indicates better overall athlete condition."
         }
     }
 }

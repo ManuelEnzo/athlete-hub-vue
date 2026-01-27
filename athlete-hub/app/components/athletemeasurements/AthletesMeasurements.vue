@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Trash2, Edit3, Plus, Loader2, ClipboardList, TrendingUp, Activity } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
@@ -10,7 +10,6 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
-import { LineChart } from '@/components/ui/chart-line'
 import { Separator } from '@/components/ui/separator'
 
 import { athleteApi } from '@/api/business'
@@ -20,6 +19,11 @@ import type {
   AthleteMeasurementsCreateRequest,
   AthleteMeasurementsUpdateRequest
 } from '@/types/api'
+
+// Import ApexCharts per SSR safety
+const VueApexCharts = defineAsyncComponent(() =>
+  import('vue3-apexcharts')
+)
 
 // ---------------- Props & Emits ----------------
 const props = defineProps<{
@@ -69,6 +73,66 @@ const chartData = computed(() => {
       [t('measurements.card.hip')]: m.hip
     }))
 })
+
+// ApexCharts options for line chart
+const chartOptions = computed(() => ({
+  chart: {
+    type: 'line' as const,
+    toolbar: { show: false },
+    foreColor: '#000',
+    sparkline: { enabled: false },
+    animations: { enabled: true }
+  },
+  colors: ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6'],
+  fill: {
+    type: 'gradient' as const,
+    gradient: {
+      shadeIntensity: 0.5,
+      opacityFrom: 0.45,
+      opacityTo: 0.05,
+      stops: [20, 100, 100, 100]
+    }
+  },
+  stroke: { curve: 'smooth' as const, width: 3 },
+  markers: { size: 6, hover: { size: 8, sizeOffset: 2 }, strokeWidth: 0 },
+  xaxis: {
+    categories: chartData.value.map(d => d.date),
+    labels: { style: { colors: 'inherit', fontSize: '12px', fontWeight: 500 } },
+    axisBorder: { show: false },
+    axisTicks: { show: false }
+  },
+  yaxis: {
+    labels: { style: { colors: 'inherit', fontSize: '12px' } },
+    title: { text: undefined },
+    axisBorder: { show: false }
+  },
+  grid: { borderColor: 'hsl(var(--muted-foreground) / 0.15)', strokeDashArray: 4, padding: { left: 10, right: 20 } },
+  tooltip: { enabled: true, theme: 'dark' as const, style: { fontSize: '13px', fontFamily: 'system-ui' }, x: { format: 'dd MMM' } },
+  legend: { position: 'top' as const, horizontalAlign: 'right' as const, fontSize: '13px', fontFamily: 'system-ui', labels: { colors: 'inherit' }, markers: { size: 8 } },
+  states: {
+    hover: { filter: { type: 'none' } },
+    active: { filter: { type: 'none' } }
+  }
+}))
+
+const chartSeries = computed(() => [
+  {
+    name: t('measurements.card.weight'),
+    data: chartData.value.map(d => d[t('measurements.card.weight')] || 0)
+  },
+  {
+    name: t('measurements.card.waist'),
+    data: chartData.value.map(d => d[t('measurements.card.waist')] || 0)
+  },
+  {
+    name: t('measurements.card.chest'),
+    data: chartData.value.map(d => d[t('measurements.card.chest')] || 0)
+  },
+  {
+    name: t('measurements.card.hip'),
+    data: chartData.value.map(d => d[t('measurements.card.hip')] || 0)
+  }
+])
 
 watch(() => props.selectedAthleteId, (newId) => {
   if (newId) form.athleteId = newId
@@ -270,17 +334,10 @@ async function confirmDelete() {
             </div>
           </div>
         </CardHeader>
-        <CardContent class="p-2 sm:p-4">
-          <div class="h-[300px] w-full min-w-0">
-            <LineChart
-              :data="chartData"
-              index="date"
-              :categories="[t('measurements.card.weight'), t('measurements.card.waist'), t('measurements.card.chest'), t('measurements.card.hip')]"
-              :colors="['#2563eb', '#10b981', '#f59e0b', '#8b5cf6']"
-              :y-formatter="(tick) => `${tick}`"
-              :show-legend="true" :show-grid-line="true" :show-tooltip="true" class="w-full h-full"
-            />
-          </div>
+        <CardContent class="pt-6">
+          <ClientOnly>
+            <VueApexCharts type="line" :options="chartOptions" :series="chartSeries" height="300" />
+          </ClientOnly>
         </CardContent>
       </Card>
     </Transition>
