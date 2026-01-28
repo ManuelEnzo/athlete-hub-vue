@@ -233,7 +233,20 @@
     "tests": {
         "cmj": "CMJ (cm)",
         "squat1rm": "Squat 1RM (kg)",
-        "sprint30m": "Sprint 30m (s)"
+        "sprint30m": "Sprint 30m (s)",
+        "pageTitle": "Configurazione Test",
+        "newTest": "Nuova Definizione",
+        "editTest": "Modifica Test",
+        "testName": "Nome del Test",
+        "description": "Descrizione / Protocollo",
+        "metrics": "Metriche Associate",
+        "addMetric": "Aggiungi Metrica",
+        "metricName": "Nome Metrica (es. Salto)",
+        "unit": "Unità (es. cm, sec)",
+        "dataType": "Tipo Dato",
+        "standardValue": "Valore Standard",
+        "saveSuccess": "Test salvato con successo",
+        "deleteConfirm": "Sei sicuro di voler eliminare questo test?"
     },
     "calendar": {
         "grid": {

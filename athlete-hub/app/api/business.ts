@@ -22,7 +22,10 @@ import type {
   InjuryUpdateDTO,
   InjuryResponseDTO,
   InjuryCreateDTO,
-  CoachDashboardSummaryDto
+  CoachDashboardSummaryDto,
+  TestDefinitionDto,
+  TestManagementCreateRequest,
+  TestManagementUpdateRequest
 } from '../types/api'
 
 export const athleteApi = {
@@ -97,19 +100,20 @@ export const athleteApi = {
   },
   getDatasForAnalytics: (id: number, from: string, to: string) => {
     const params = { params: { id, from, to } }
-    return api.get<Result<AthleteAnalyticsDto>>('/Athletes/get-datas-for-analytics', params)},
-/**
-   * Recupera lo storico infortuni di un atleta specifico
-   * @param athleteId ID dell'atleta
-   */
-  getInjuries: (athleteId: number) => 
+    return api.get<Result<AthleteAnalyticsDto>>('/Athletes/get-datas-for-analytics', params)
+  },
+  /**
+     * Recupera lo storico infortuni di un atleta specifico
+     * @param athleteId ID dell'atleta
+     */
+  getInjuries: (athleteId: number) =>
     api.get<Result<InjuryResponseDTO[]>>(`/Injury/athlete/${athleteId}`),
 
   /**
    * Registra un nuovo infortunio
    * @param data DTO di creazione infortunio (con Enum numerici)
    */
-  createInjury: (data: InjuryCreateDTO) => 
+  createInjury: (data: InjuryCreateDTO) =>
     api.post<Result<InjuryResponseDTO>>('/Injury', data),
 
   /**
@@ -117,16 +121,40 @@ export const athleteApi = {
    * @param id ID del record infortunio
    * @param data DTO di aggiornamento
    */
-  updateInjury: (id: number, data: InjuryUpdateDTO) => 
+  updateInjury: (id: number, data: InjuryUpdateDTO) =>
     api.put<Result<boolean>>(`/Injury/${id}`, data),
 
   /**
    * Elimina un record di infortunio
    * @param id ID del record infortunio
    */
-  deleteInjury: (id: number) => 
+  deleteInjury: (id: number) =>
     api.delete<Result<boolean>>(`/Injury/${id}`),
 
-  getSummary: () => api.get<Result<CoachDashboardSummaryDto>>('/dashboard/get-data-for-dashboard')
+  getSummary: () => api.get<Result<CoachDashboardSummaryDto>>('/dashboard/get-data-for-dashboard'),
+
+ // Recupera i lookup veloci (ID e Nome)
+  testDefGetAllLookups: () =>
+    api.get<Result<any[]>>('/TestDefinitions'),
+
+  // Recupera tutte le definizioni complete di metriche
+  testDefGetAllDefinitions: () =>
+    api.get<Result<TestDefinitionDto[]>>('/TestDefinitions/all'),
+
+  // Recupera una definizione specifica per ID
+  testDefGetById: (id: number) =>
+    api.get<Result<TestDefinitionDto>>(`/TestDefinitions/${id}`),
+
+  // Crea una nuova codifica test
+  testDefCreate: (data: TestManagementCreateRequest) =>
+    api.post<Result<TestDefinitionDto>>('/TestDefinitions', data),
+
+  // Aggiorna una codifica esistente
+  testDefUpdate: (id: number, data: TestManagementUpdateRequest) =>
+    api.put<Result<TestDefinitionDto>>(`/TestDefinitions/${id}`, data),
+
+  // Elimina una codifica test
+  testDefDelete: (id: number) =>
+    api.delete<Result<boolean>>(`/TestDefinitions/${id}`)
 }
 

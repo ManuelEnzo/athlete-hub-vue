@@ -9,7 +9,7 @@ import type { Result, UserSignInResponse } from '../types/api'
 const t = (key: string) => i18n.global.t(key)
 
 const api = axios.create({
-  baseURL: 'http://localhost:5051/api/v1',
+  baseURL: 'http://192.168.178.24:5051/api/v1',
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true 
 })
@@ -84,7 +84,7 @@ api.interceptors.response.use(
 
         try {
           const { data } = await axios.post<Result<UserSignInResponse>>(
-            'http://localhost:5051/api/v1/Auth/refresh', {}, { withCredentials: true }
+            'http://192.168.178.24:5051/api/v1/Auth/refresh', {}, { withCredentials: true }
           )
           
           if (data.isSuccess && data.value) {

@@ -210,17 +210,41 @@ export interface TestResultSaveDto {
   value: number;
   note?: string;
 }
+
 export interface TestDefinitionDto {
   id: number;
   name: string;
-  description?: string;
-  metrics: TestMetricDto[];
+  description: string | null;
+  metrics: MetricDto[];
 }
 
-export interface TestMetricDto {
+export enum MetricDataType {
+    Number = 0,
+    Text = 1,
+    Boolean = 2,
+    Duration = 3 // Esempio: mm:ss
+}
+
+export interface TestManagementCreateRequest {
+  name: string;
+  description: string;
+  metrics: MetricDto[]; // Deve usare l'interfaccia sopra
+}
+
+export interface TestManagementUpdateRequest extends TestManagementCreateRequest {
+    // In TypeScript solitamente l'ID viene passato nel path, 
+    // ma lo aggiungiamo qui se il tuo backend lo richiede nel body
+    id?: number; 
+}
+
+export interface MetricDto {
   id: number;
   name: string;
   unit: string;
+  dataType: number;
+  standardValue?: number | null;     // Il punto interrogativo è fondamentale
+  normativeDataRef?: string | null;  // Aggiungi questi per completezza
+  formula?: string | null;
 }
 
 export interface RpeLinkQueueTokenRequestDto{
