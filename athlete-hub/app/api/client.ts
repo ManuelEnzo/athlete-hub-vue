@@ -4,18 +4,19 @@ import axios, { type InternalAxiosRequestConfig, AxiosError } from 'axios'
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '../stores/auth'
 import type { Result, UserSignInResponse } from '../types/api'
+import config from '@/config';
 
 // Helper per la traduzione fuori dai componenti Vue
 const t = (key: string) => i18n.global.t(key)
 
 const api = axios.create({
-  baseURL: 'http://192.168.178.24:5051/api/v1',
+  baseURL: config.apiEndpoint,
   headers: { 'Content-Type': 'application/json' },
-  withCredentials: true 
+  withCredentials: true
 })
 
 let isRefreshing = false
-let isLoggingOut = false 
+let isLoggingOut = false
 let failedQueue: any[] = []
 
 const processQueue = (error: any, token: string | null = null) => {
@@ -54,10 +55,10 @@ api.interceptors.response.use(
 
     const authStore = useAuthStore()
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
-    
+
     if (isLoggingOut) return Promise.reject(error)
 
-    const isAuthRoute = originalRequest.url?.includes('/Auth/refresh') || 
+    const isAuthRoute = originalRequest.url?.includes('/Auth/refresh') ||
                         originalRequest.url?.includes('/Auth/logout')
 
     if (isAuthRoute) {
@@ -84,9 +85,9 @@ api.interceptors.response.use(
 
         try {
           const { data } = await axios.post<Result<UserSignInResponse>>(
-            'http://192.168.178.24:5051/api/v1/Auth/refresh', {}, { withCredentials: true }
+            `${config.apiEndpoint}/Auth/refresh`, {}, { withCredentials: true }
           )
-          
+
           if (data.isSuccess && data.value) {
             authStore.setTokens(data.value.accessToken, data.value.refreshToken)
             isRefreshing = false
@@ -111,17 +112,17 @@ api.interceptors.response.use(
 
 async function forceLogout(authStore: any) {
   if (isLoggingOut) return
-  isLoggingOut = true 
-  
+  isLoggingOut = true
+
   authStore.token = null
   authStore.user = null
 
   // Pulizia rapida
   localStorage.clear()
-  // Nota: I cookie HttpOnly non possono essere cancellati da JS, 
+  // Nota: I cookie HttpOnly non possono essere cancellati da JS,
   // ci deve pensare il backend nella rotta /logout
-  
-  window.location.replace('/login?reason=expired') 
+
+  window.location.replace('/login?reason=expired')
 }
 
 export default api

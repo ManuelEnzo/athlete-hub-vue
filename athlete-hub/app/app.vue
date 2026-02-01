@@ -3,6 +3,8 @@ import { ConfigProvider } from 'reka-ui'
 import 'vue-sonner/style.css'
 import { Toaster } from 'vue-sonner'
 import { useI18n } from 'vue-i18n'
+import config from '@/config';
+
 const { locale } = useI18n()
 const colorMode = useColorMode()
 const color = computed(() => colorMode.value === 'dark' ? '#09090b' : '#ffffff')
@@ -25,8 +27,8 @@ useHead({
   },
 })
 
-const title = 'Athlete Hub'
-const description = 'A comprehensive performance monitoring system designed to track training loads, readiness scores, and athletic progress through data-driven analytics.'
+const title = config.siteName
+const description = config.siteDescription
 
 useSeoMeta({
   title,

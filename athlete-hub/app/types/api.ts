@@ -232,9 +232,9 @@ export interface TestManagementCreateRequest {
 }
 
 export interface TestManagementUpdateRequest extends TestManagementCreateRequest {
-    // In TypeScript solitamente l'ID viene passato nel path, 
+    // In TypeScript solitamente l'ID viene passato nel path,
     // ma lo aggiungiamo qui se il tuo backend lo richiede nel body
-    id?: number; 
+    id?: number;
 }
 
 export interface MetricDto {
@@ -383,20 +383,27 @@ export interface InjuryCreateDTO {
 
 export interface InjuryUpdateDTO extends Omit<InjuryCreateDTO, 'athleteId'> {}
 
+
 export interface CoachDashboardSummaryDto {
+  /** KPI sintetici */
   totalMonitoredAthletes: number;
   averageReadinessScore: number;
   criticalAcwrCount: number;
   missingReportsToday: number;
+
+  /** Liste per grafici e tabelle */
+  workloadComparison: WorkloadDataPointDto[];
   athleteStatusMatrix: AthleteReadinessVsLoadDto[];
   riskAlerts: AthleteRiskAlertDto[];
+  upcomingAgenda: CoachAgendaItemDto[];
+  healthDistribution: HealthStatusCountDto[];
+  disciplineDistribution: DisciplineCountDto[];
 }
 
 export interface AthleteReadinessVsLoadDto {
   name: string;
   readiness: number;
   acwr: number;
-  zone: string;
 }
 
 export interface AthleteRiskAlertDto {
@@ -404,4 +411,27 @@ export interface AthleteRiskAlertDto {
   discipline: string;
   acwrValue: number;
   riskTrend: string;
+}
+
+export interface CoachAgendaItemDto {
+  scheduledAt: string; // ISO Date string
+  athleteName: string;
+  sessionType: string;
+  priority: string;
+}
+
+export interface WorkloadDataPointDto {
+  label: string; // es: "31/01"
+  value: number; // sRPE Load
+}
+
+export interface HealthStatusCountDto {
+  status: string; // "Ottimo", "Affaticato", "Rischio"
+  count: number;
+  color: string;
+}
+
+export interface DisciplineCountDto {
+  discipline: string;
+  count: number;
 }

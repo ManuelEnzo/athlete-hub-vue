@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
-import { athleteApi } from '~/api/business' 
+import { athleteApi } from '~/api/business'
 import type { TestDefinitionDto, TestManagementCreateRequest } from '~/types/api'
 import { toast } from 'vue-sonner'
 
@@ -47,7 +47,7 @@ function addMetric() {
     id: 0,
     name: '',
     unit: '',
-    dataType: 0, 
+    dataType: 0,
     standardValue: null,
     normativeDataRef: '',
     formula: ''
@@ -116,7 +116,7 @@ onMounted(fetchTests)
 </script>
 
 <template>
-  <div class="min-h-screen mx-auto p-6">
+  <div class="min-h-screen">
     <div class="flex flex-wrap items-center justify-between pb-6 gap-4">
       <div>
         <h2 class="text-2xl font-bold tracking-tight">{{ t('tests.pageTitle') }}</h2>
@@ -162,9 +162,9 @@ onMounted(fetchTests)
               Nessuna metrica definita. Aggiungi almeno un parametro (es. Tempo, Distanza).
             </div>
 
-            <div v-for="(metric, index) in form.metrics" :key="index" 
+            <div v-for="(metric, index) in form.metrics" :key="index"
                  class="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 border rounded-lg bg-card items-end shadow-sm">
-              
+
               <div class="md:col-span-3 space-y-1">
                 <label class="text-[10px] font-bold uppercase text-muted-foreground">{{ t('tests.metricName') }}</label>
                 <Input v-model="metric.name" placeholder="es. Tempo" />
@@ -235,7 +235,7 @@ onMounted(fetchTests)
         <CardContent>
           <p class="text-sm text-muted-foreground line-clamp-2 mb-4 h-10">{{ test.description }}</p>
           <div class="flex flex-wrap gap-1.5">
-            <span v-for="m in test.metrics" :key="m.id" 
+            <span v-for="m in test.metrics" :key="m.id"
                   class="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold uppercase border border-primary/20">
               {{ m.name }} ({{ m.unit }})
             </span>
