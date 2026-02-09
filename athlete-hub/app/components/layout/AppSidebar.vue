@@ -1,34 +1,46 @@
 <script setup lang="ts">
 import type { NavGroup, NavLink, NavSectionTitle } from '~/types/nav'
 import { navMenu, navMenuBottom } from '~/constants/menus'
-import { useAuthStore } from '~/stores/auth' // 1. Importa lo store
+import { useAuthStore } from '~/stores/auth'
 
-// Inizializza gli store e le impostazioni
-const authStore = useAuthStore()
 const { sidebar } = useAppSettings()
 
-// 2. Carica il profilo quando il componente viene montato
 onMounted(async () => {
+  const authStore = useAuthStore()
   if (authStore.token && !authStore.user) {
-    await authStore.fetchProfile()
+    try {
+      await authStore.fetchProfile()
+    } catch (error) {
+      console.error("Errore durante il fetch del profilo:", error)
+    }
   }
 })
 
-// 3. Mappa i dati dello store per il componente footer
-const userData = computed(() => ({
-  name: authStore.user?.email.split("@")[0] || 'Ospite',
-  email: authStore.user?.email || '',
-  avatar: '/avatars/avatartion.png', // In futuro potrai caricarlo dal BE
-}))
+/**
+ * 2. Mappa i dati dello store per il componente footer.
+ * Usiamo un controllo preventivo per evitare crash durante l'SSR.
+ */
+const userData = computed<{ name: string; email: string; avatar: string }>(() => {
+  // Verifichiamo se siamo in un contesto dove Pinia è accessibile
+  // In Nuxt, questo risolve spesso il problema del "no active Pinia"
+  const nuxtApp = useNuxtApp()
+  const authStore = useAuthStore(nuxtApp.$pinia)
+
+  const email = authStore.user?.email || ''
+  const name = email.split("@")[0] || 'Ospite'
+
+  return {
+    name,
+    email,
+    avatar: '/avatars/avatartion.png',
+  }
+})
 
 function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): any {
-  if ('children' in item)
-    return resolveComponent('LayoutSidebarNavGroup')
-
+  if ('children' in item) return resolveComponent('LayoutSidebarNavGroup')
   return resolveComponent('LayoutSidebarNavLink')
 }
 </script>
-
 <template>
   <Sidebar :collapsible="sidebar?.collapsible" :side="sidebar?.side" :variant="sidebar?.variant">
     <SidebarHeader>
@@ -70,5 +82,3 @@ function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): an
     <SidebarRail />
   </Sidebar>
 </template>
-
-<style scoped></style>

@@ -13,8 +13,14 @@ import { athleteApi } from '@/api/business'
 import type { CoachDashboardSummaryDto } from '@/types/api'
 import type { ApexOptions } from 'apexcharts'
 
-const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'))
-const { t, locale } = useI18n()
+// 1. IMPORT SICURO PER SSR
+const VueApexCharts = defineAsyncComponent(() =>
+  (import.meta.client) // <--- Cambia qui
+    ? import('vue3-apexcharts')
+    : Promise.resolve({ render: () => null }) as any
+)
+
+const { t } = useI18n()
 
 // State
 const dashboardData = ref<CoachDashboardSummaryDto | null>(null)
@@ -37,8 +43,7 @@ async function fetchDashboard() {
 
 onMounted(() => fetchDashboard())
 
-
-// 1️⃣ TEAM WORKLOAD (Bar Chart - Dati reali dal backend)
+// CHART OPTIONS (Rimangono uguali, ma ora sono protette dal ClientOnly nel template)
 const workloadChartOptions = computed<ApexOptions>(() => ({
   chart: { type: 'bar', toolbar: { show: false }, fontFamily: 'system-ui'},
   colors: ['#3b82f6'],
@@ -55,7 +60,6 @@ const workloadChartSeries = computed(() => [
   { name: 'Total Workload', data: dashboardData.value?.workloadComparison?.map(d => d.value) ?? [] }
 ])
 
-// 2️⃣ HEALTH DISTRIBUTION (Donut - Mappato su HealthStatusCountDto)
 const healthChartOptions = computed<ApexOptions>(() => ({
   chart: { type: 'donut', fontFamily: 'system-ui' },
   labels: dashboardData.value?.healthDistribution?.map(h => h.status) ?? [],
@@ -66,11 +70,8 @@ const healthChartOptions = computed<ApexOptions>(() => ({
   dataLabels: { enabled: true }
 }))
 
-const healthChartSeries = computed(() =>
-  dashboardData.value?.healthDistribution?.map(h => h.count) ?? []
-)
+const healthChartSeries = computed(() => dashboardData.value?.healthDistribution?.map(h => h.count) ?? [])
 
-// 3️⃣ DISCIPLINE DISTRIBUTION (Pie Chart)
 const disciplineChartOptions = computed<ApexOptions>(() => ({
   chart: { type: 'pie', fontFamily: 'system-ui' },
   labels: dashboardData.value?.disciplineDistribution?.map(d => d.discipline) ?? [],
@@ -78,11 +79,8 @@ const disciplineChartOptions = computed<ApexOptions>(() => ({
   tooltip: { theme: 'dark' }
 }))
 
-const disciplineChartSeries = computed(() =>
-  dashboardData.value?.disciplineDistribution?.map(d => d.count) ?? []
-)
+const disciplineChartSeries = computed(() => dashboardData.value?.disciplineDistribution?.map(d => d.count) ?? [])
 
-// 4️⃣ RADAR COMPARISON
 const radarChartOptions = computed<ApexOptions>(() => ({
   chart: { type: 'radar', fontFamily: 'system-ui', toolbar: { show: false } },
   colors: ['#3b82f6', '#ef4444'],
@@ -95,72 +93,64 @@ const radarChartSeries = computed(() => [
   { name: 'Readiness', data: dashboardData.value?.athleteStatusMatrix?.map(a => a.readiness) ?? [] },
   { name: 'ACWR Intensity', data: dashboardData.value?.athleteStatusMatrix?.map(a => Math.min(100, a.acwr * 40)) ?? [] }
 ])
-
 </script>
 
 <template>
   <div class="w-full min-h-screen bg-background space-y-8 font-sans pb-10">
-
     <div class="bg-gradient-to-r from-primary/5 to-transparent border-b border-primary/10 px-6 py-8">
       <div class="flex justify-between items-start">
         <div>
-          <h1 class="text-4xl font-bold text-foreground tracking-tight mb-2">{{ t('performanceDashboard.pageTitle') }}
-          </h1>
+          <h1 class="text-4xl font-bold text-foreground tracking-tight mb-2">{{ t('performanceDashboard.pageTitle') }}</h1>
           <p class="text-muted-foreground text-sm font-medium">{{ t('performanceDashboard.subtitle') }}</p>
         </div>
         <div class="text-right">
-          <p class="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">{{
-            t('performanceDashboard.lastUpdated') }}</p>
+          <p class="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">{{ t('performanceDashboard.lastUpdated') }}</p>
           <p class="text-lg font-bold text-foreground">{{ new Date().toLocaleTimeString() }}</p>
         </div>
       </div>
     </div>
 
     <div class="px-6 space-y-8">
-
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card class="border border-foreground/10 shadow-md">
           <CardContent class="p-6">
             <div class="flex items-start justify-between">
               <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Atleti Totali</p>
-                <p class="text-3xl font-bold tracking-tight">{{ dashboardData?.totalMonitoredAthletes }}</p>
+                <p class="text-3xl font-bold tracking-tight">{{ dashboardData?.totalMonitoredAthletes || 0 }}</p>
               </div>
               <Users class="h-6 w-6 text-muted-foreground/40" />
             </div>
           </CardContent>
         </Card>
-
         <Card class="border border-foreground/10 shadow-md">
           <CardContent class="p-6">
             <div class="flex items-start justify-between">
               <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Readiness Media</p>
-                <p class="text-3xl font-bold tracking-tight">{{ dashboardData?.averageReadinessScore }}%</p>
+                <p class="text-3xl font-bold tracking-tight">{{ dashboardData?.averageReadinessScore || 0 }}%</p>
               </div>
               <Activity class="h-6 w-6 text-muted-foreground/40" />
             </div>
           </CardContent>
         </Card>
-
         <Card class="border border-foreground/10 shadow-md">
           <CardContent class="p-6">
             <div class="flex items-start justify-between">
               <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">ACWR Critici</p>
-                <p class="text-3xl font-bold tracking-tight text-red-600">{{ dashboardData?.criticalAcwrCount }}</p>
+                <p class="text-3xl font-bold tracking-tight text-red-600">{{ dashboardData?.criticalAcwrCount || 0 }}</p>
               </div>
               <Flame class="h-6 w-6 text-muted-foreground/40" />
             </div>
           </CardContent>
         </Card>
-
         <Card class="border border-foreground/10 shadow-md">
           <CardContent class="p-6">
             <div class="flex items-start justify-between">
               <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Report Mancanti</p>
-                <p class="text-3xl font-bold tracking-tight text-amber-600">{{ dashboardData?.missingReportsToday }}</p>
+                <p class="text-3xl font-bold tracking-tight text-amber-600">{{ dashboardData?.missingReportsToday || 0 }}</p>
               </div>
               <CheckCircle class="h-6 w-6 text-muted-foreground/40" />
             </div>
@@ -176,7 +166,10 @@ const radarChartSeries = computed(() => [
             </CardTitle>
           </CardHeader>
           <CardContent class="pt-6">
-            <VueApexCharts type="bar" :options="workloadChartOptions" :series="workloadChartSeries" height="300" />
+            <ClientOnly>
+              <VueApexCharts type="bar" :options="workloadChartOptions" :series="workloadChartSeries" height="300" />
+              <template #fallback><div class="h-[300px] w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento grafico...</div></template>
+            </ClientOnly>
           </CardContent>
         </Card>
 
@@ -187,7 +180,10 @@ const radarChartSeries = computed(() => [
             </CardTitle>
           </CardHeader>
           <CardContent class="pt-6">
-            <VueApexCharts type="donut" :options="healthChartOptions" :series="healthChartSeries" height="280" />
+            <ClientOnly>
+              <VueApexCharts type="donut" :options="healthChartOptions" :series="healthChartSeries" height="280" />
+              <template #fallback><div class="h-[280px] w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento...</div></template>
+            </ClientOnly>
           </CardContent>
         </Card>
       </div>
@@ -200,7 +196,10 @@ const radarChartSeries = computed(() => [
             </CardTitle>
           </CardHeader>
           <CardContent class="pt-6">
-            <VueApexCharts type="radar" :options="radarChartOptions" :series="radarChartSeries" height="280" />
+            <ClientOnly>
+              <VueApexCharts type="radar" :options="radarChartOptions" :series="radarChartSeries" height="280" />
+              <template #fallback><div class="h-[280px] w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento...</div></template>
+            </ClientOnly>
           </CardContent>
         </Card>
 
@@ -211,7 +210,10 @@ const radarChartSeries = computed(() => [
             </CardTitle>
           </CardHeader>
           <CardContent class="pt-6">
-            <VueApexCharts type="pie" :options="disciplineChartOptions" :series="disciplineChartSeries" height="280" />
+            <ClientOnly>
+              <VueApexCharts type="pie" :options="disciplineChartOptions" :series="disciplineChartSeries" height="280" />
+              <template #fallback><div class="h-[280px] w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento...</div></template>
+            </ClientOnly>
           </CardContent>
         </Card>
 
@@ -226,71 +228,22 @@ const radarChartSeries = computed(() => [
               <div v-for="item in dashboardData?.upcomingAgenda" :key="item.scheduledAt"
                 class="flex items-center p-3 border border-foreground/5 rounded-lg bg-foreground/[0.02]">
                 <div class="mr-4 text-center border-r pr-4 border-foreground/10">
-                  <p class="text-[10px] font-bold uppercase text-primary">{{ new
-                    Date(item.scheduledAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short' }) }}</p>
+                  <p class="text-[10px] font-bold uppercase text-primary">
+                    {{ new Date(item.scheduledAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short' }) }}
+                  </p>
                 </div>
                 <div class="flex-1">
                   <p class="text-xs font-bold">{{ item.sessionType }}</p>
                   <p class="text-[10px] text-muted-foreground">{{ item.athleteName }}</p>
                 </div>
-                <Badge variant="outline" class="text-[9px]">{{ new Date(item.scheduledAt).toLocaleTimeString([], {
-                  hour:
-                    '2-digit', minute: '2-digit' }) }}</Badge>
+                <Badge variant="outline" class="text-[9px]">
+                  {{ new Date(item.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+                </Badge>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
-
-      <div v-if="dashboardData?.riskAlerts.length" class="space-y-4">
-        <h2 class="text-xs font-bold text-red-600 uppercase tracking-widest flex items-center gap-2">
-          <AlertCircle class="h-4 w-4" /> Avvisi Critici
-        </h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-          <Card v-for="alert in dashboardData.riskAlerts" :key="alert.athleteName"
-            class="border-red-500/20 bg-red-500/[0.02] shadow-sm">
-            <CardContent class="p-4 space-y-2">
-
-              <!-- Header -->
-              <div class="flex justify-between items-start">
-                <div>
-                  <p class="text-sm font-bold">{{ alert.athleteName }}</p>
-                  <p class="text-[10px] text-muted-foreground">{{ alert.discipline }}</p>
-                </div>
-
-                <Badge class="bg-red-500 text-white text-[10px]">
-                  ACWR {{ alert.acwrValue }}
-                </Badge>
-              </div>
-
-              <!-- Risk Trend -->
-              <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full" :class="{
-                  'bg-red-500': alert.riskTrend.includes('PERICOLO'),
-                  'bg-yellow-500': alert.riskTrend.includes('Moderato'),
-                  'bg-green-500': alert.riskTrend.includes('Ottimale'),
-                  'bg-blue-500': alert.riskTrend.includes('Inizializzazione')
-                }" />
-                <p class="text-xs font-medium text-red-600 uppercase italic">
-                  {{ alert.riskTrend }}
-                </p>
-              </div>
-
-            </CardContent>
-          </Card>
-
-        </div>
-      </div>
-
-
     </div>
   </div>
 </template>
-
-<style scoped>
-:deep(.apexcharts-canvas) {
-  font-family: 'system-ui', sans-serif !important;
-}
-</style>

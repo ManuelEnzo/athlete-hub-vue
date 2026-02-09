@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useSidebar } from '~/components/ui/sidebar'
-import { useAuthStore } from '~/stores/auth' // Usa ~/ per sicurezza
+import { useAuthStore } from '~/stores/auth'
 
+// Riceviamo la prop user definita come stringhe obbligatorie
 defineProps<{
   user: {
     name: string
@@ -9,16 +10,33 @@ defineProps<{
     avatar: string
   }
 }>()
-const authStore = useAuthStore()
-const { isMobile, setOpenMobile } = useSidebar()
 
+const { isMobile, setOpenMobile } = useSidebar()
+const showModalTheme = ref(false)
+
+/**
+ * Gestione Logout: chiamiamo lo store solo al momento del click.
+ * Questo previene l'errore "no active Pinia" durante il rendering iniziale.
+ */
 async function handleLogout() {
+  const authStore = useAuthStore() // Inizializzazione lazy dello store
   console.log("COMPONENTE: Click logout");
-  console.log("COMPONENTE: authStore ha logout?", !!authStore.logout);
-  await authStore.logout()
+
+  try {
+    await authStore.logout()
+    // Se necessario, aggiungi un redirect o una notifica qui
+  } catch (error) {
+    console.error("Errore durante il logout:", error)
+  }
 }
 
-const showModalTheme = ref(false)
+/**
+ * Helper per generare le iniziali dell'avatar
+ */
+const getInitials = (name: string) => {
+  if (!name) return '??'
+  return name.split(' ').map((n) => n[0]).join('').toUpperCase()
+}
 </script>
 
 <template>
@@ -33,7 +51,7 @@ const showModalTheme = ref(false)
             <Avatar class="h-8 w-8 rounded-lg">
               <AvatarImage :src="user.avatar" :alt="user.name" />
               <AvatarFallback class="rounded-lg">
-                {{ user.name.split(' ').map((n) => n[0]).join('') }}
+                {{ getInitials(user.name) }}
               </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
@@ -43,6 +61,7 @@ const showModalTheme = ref(false)
             <Icon name="i-lucide-chevrons-up-down" class="ml-auto size-4" />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
+
         <DropdownMenuContent
           class="min-w-56 w-[--radix-dropdown-menu-trigger-width] rounded-lg"
           :side="isMobile ? 'bottom' : 'right'"
@@ -53,7 +72,7 @@ const showModalTheme = ref(false)
               <Avatar class="h-8 w-8 rounded-lg">
                 <AvatarImage :src="user.avatar" :alt="user.name" />
                 <AvatarFallback class="rounded-lg">
-                  {{ user.name.split(' ').map((n) => n[0]).join('') }}
+                  {{ getInitials(user.name) }}
                 </AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
@@ -62,19 +81,19 @@ const showModalTheme = ref(false)
               </div>
             </div>
           </DropdownMenuLabel>
+
           <DropdownMenuSeparator />
+
           <DropdownMenuGroup>
             <DropdownMenuItem>
               <Icon name="i-lucide-sparkles" />
               Upgrade to Pro
             </DropdownMenuItem>
           </DropdownMenuGroup>
+
           <DropdownMenuSeparator />
+
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <Icon name="i-lucide-badge-check" />
-              Account
-            </DropdownMenuItem>
             <DropdownMenuItem as-child>
               <NuxtLink to="/settings" @click="setOpenMobile(false)">
                 <Icon name="i-lucide-settings" />
@@ -85,19 +104,17 @@ const showModalTheme = ref(false)
               <Icon name="i-lucide-bell" />
               Notifications
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem as-child>
-              <NuxtLink to="https://github.com/dianprata/nuxt-shadcn-dashboard" external target="_blank">
-                <Icon name="i-lucide-github" />
-                Github Repository
-              </NuxtLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="showModalTheme = true">
-              <Icon name="i-lucide-paintbrush" />
-              Theme
-            </DropdownMenuItem>
           </DropdownMenuGroup>
+
           <DropdownMenuSeparator />
+
+          <DropdownMenuItem @click="showModalTheme = true">
+            <Icon name="i-lucide-paintbrush" />
+            Theme
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem @click="handleLogout">
             <Icon name="i-lucide-log-out" />
             Log out
@@ -119,7 +136,3 @@ const showModalTheme = ref(false)
     </DialogContent>
   </Dialog>
 </template>
-
-<style scoped>
-
-</style>
