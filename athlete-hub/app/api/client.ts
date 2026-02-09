@@ -1,5 +1,4 @@
 // api/axios.ts
-import { i18n } from '../plugins/i18n' // Assicurati che il percorso sia corretto
 import axios, { type InternalAxiosRequestConfig, AxiosError } from 'axios'
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '../stores/auth'
@@ -7,8 +6,14 @@ import type { Result, UserSignInResponse } from '../types/api'
 import config from '@/config';
 
 // Helper per la traduzione fuori dai componenti Vue
-const t = (key: string) => i18n.global.t(key)
-
+const t = (key: string) => {
+  const translations: Record<string, string> = {
+    logoutInProgress: 'Logout in corso...',
+    operationFailed: 'Operazione fallita',
+    refreshFailed: 'Sessione scaduta'
+  }
+  return translations[key] || key
+}
 const api = axios.create({
   baseURL: config.apiEndpoint,
   headers: { 'Content-Type': 'application/json' },
