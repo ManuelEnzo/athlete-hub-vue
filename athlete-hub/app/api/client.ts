@@ -16,7 +16,10 @@ const t = (key: string) => {
 }
 const api = axios.create({
   baseURL: config.apiEndpoint,
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true' //NGROCK
+  },
   withCredentials: true
 })
 
@@ -90,7 +93,10 @@ api.interceptors.response.use(
 
         try {
           const { data } = await axios.post<Result<UserSignInResponse>>(
-            `${config.apiEndpoint}/Auth/refresh`, {}, { withCredentials: true }
+            `${config.apiEndpoint}/Auth/refresh`, {}, {
+              withCredentials: true,
+              headers: { 'ngrok-skip-browser-warning': 'true' } //NGROK
+            }
           )
 
           if (data.isSuccess && data.value) {
