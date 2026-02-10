@@ -58,15 +58,12 @@ function validateForm(): boolean {
     return false
   }
 
-  // ---------------- DATE VALIDATION (DD/MM/YYYY) ----------------
-  // REQUIRED
   if (!form.birthDate) {
     toast.error(t('athlete.errors.birthDateRequired'))
     return false
   }
 
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-
   if (!dateRegex.test(form.birthDate)) {
     toast.error(t('athlete.errors.birthDateInvalid'))
     return false
@@ -88,7 +85,6 @@ function validateForm(): boolean {
     return false
   }
 
-
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -97,9 +93,6 @@ function validateForm(): boolean {
     return false
   }
 
-
-
-  // ---------------- NUMERIC FIELDS ----------------
   if (form.weight <= 0 || isNaN(form.weight)) {
     toast.error(t('athlete.errors.weightInvalid'))
     return false
@@ -118,9 +111,7 @@ function validateForm(): boolean {
   return true
 }
 
-
 // ---------------- API ----------------
-
 async function fetchAthletes() {
   loading.value = true
   try {
@@ -175,7 +166,6 @@ async function confirmDelete() {
 }
 
 // ---------------- UI ----------------
-
 function editAthlete(a: AthleteResponse) {
   editingId.value = a.id
   const formattedDate = a.dateOfBirth ? a.dateOfBirth.split('T')[0] : ''
@@ -226,39 +216,49 @@ onMounted(fetchAthletes)
           </CardTitle>
         </CardHeader>
 
-        <CardContent class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-          <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.firstName') }}</label>
-            <Input v-model="form.firstName" :placeholder="t('fields.firstName')" />
+        <CardContent class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 items-end">
+
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.firstName') }}</label>
+            <Input v-model="form.firstName" :placeholder="t('fields.firstName')" class="h-10" />
           </div>
-          <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.lastName') }}</label>
-            <Input v-model="form.lastName" :placeholder="t('fields.lastName')" />
+
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.lastName') }}</label>
+            <Input v-model="form.lastName" :placeholder="t('fields.lastName')" class="h-10" />
           </div>
-          <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.email') }}</label>
-            <Input v-model="form.email" type="email" :placeholder="t('fields.email')" />
+
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.email') }}</label>
+            <Input v-model="form.email" type="email" :placeholder="t('fields.email')" class="h-10" />
           </div>
-          <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.sportCategory') }}</label>
-            <Input v-model="form.sportCategory" :placeholder="t('fields.sportCategoryPlaceholder')" />
+
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.sportCategory') }}</label>
+            <Input v-model="form.sportCategory" :placeholder="t('fields.sportCategoryPlaceholder')" class="h-10" />
           </div>
-          <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.birthDate') }}</label>
-            <Input v-model="form.birthDate" type="date" />
+
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4 truncate">
+              {{ t('fields.birthDate') }}
+            </label>
+            <Input v-model="form.birthDate" type="date" class="h-10 w-full" />
           </div>
-          <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.weight') }} (kg)</label>
-            <Input v-model.number="form.weight" type="number" step="0.1" />
+
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.weight') }} (kg)</label>
+            <Input v-model.number="form.weight" type="number" step="0.1" class="h-10" />
           </div>
-          <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.height') }} (cm)</label>
-            <Input v-model.number="form.height" type="number" />
+
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.height') }} (cm)</label>
+            <Input v-model.number="form.height" type="number" class="h-10" />
           </div>
-          <div class="space-y-1">
-            <label class="text-xs font-semibold ml-1 text-muted-foreground">{{ t('fields.gender') }}</label>
+
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.gender') }}</label>
             <Select v-model="form.gender">
-              <SelectTrigger>
+              <SelectTrigger class="h-10">
                 <SelectValue :placeholder="t('fields.genderPlaceholder')" />
               </SelectTrigger>
               <SelectContent>
@@ -270,7 +270,7 @@ onMounted(fetchAthletes)
           </div>
         </CardContent>
 
-        <CardFooter class="flex justify-end gap-2 bg-muted/50 p-4">
+        <CardFooter class="flex justify-end gap-2 bg-muted/50 p-4 mt-2">
           <Button variant="ghost" @click="resetForm">{{ t('common.cancel') }}</Button>
           <Button @click="saveAthlete" :disabled="loading">
             <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
@@ -375,7 +375,7 @@ onMounted(fetchAthletes)
 .expand-enter-active,
 .expand-leave-active {
   transition: all 0.3s ease-in-out;
-  max-height: 500px;
+  max-height: 600px;
   overflow: hidden;
 }
 
@@ -395,5 +395,12 @@ onMounted(fetchAthletes)
 .grid-leave-to {
   opacity: 0;
   transform: scale(0.9);
+}
+
+/* Rimuove lo spin nativo degli input number per un look più pulito */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 </style>

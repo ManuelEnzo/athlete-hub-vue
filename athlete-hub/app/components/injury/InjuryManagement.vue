@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { 
-    Plus, Activity, Stethoscope, Trash2, Edit3, Save, 
-    X, Loader2, Info, CheckCircle2, AlertCircle 
+import {
+    Plus, Activity, Stethoscope, Trash2, Edit3, Save,
+    X, Loader2, Info, CheckCircle2, AlertCircle
 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
@@ -67,7 +67,7 @@ async function fetchInjuries() {
         injuries.value = []
         return
     }
-    
+
     loading.value = true
     try {
         const res = await athleteApi.getInjuries(props.athleteId)
@@ -97,7 +97,7 @@ async function handleSave() {
                 status: injuryForm.status,
                 bodyLocation: injuryForm.bodyLocation,
                 expectedReturnDate: injuryForm.expectedReturnDate || undefined,
-                date: validDate 
+                date: validDate
             }
             await athleteApi.updateInjury(injuryForm.id, updatePayload)
             toast.success(t('injuries.toast.updated'))
@@ -180,9 +180,9 @@ const getSeverityBadge = (sev: number) => {
 }
 
 const getStatusIcon = (status: number) => {
-    if (status === 0) return AlertCircle 
-    if (status === 1) return Activity    
-    return CheckCircle2                  
+    if (status === 0) return AlertCircle
+    if (status === 1) return Activity
+    return CheckCircle2
 }
 
 // Reagisce immediatamente al cambio dell'atleta nel padre
@@ -194,7 +194,8 @@ watch(() => props.athleteId, () => {
 
 <template>
     <div class="w-full flex flex-col gap-6">
-        <div class="flex items-center justify-between bg-muted/20 p-4 rounded-2xl border border-dashed border-primary/20">
+        <div
+            class="flex items-center justify-between bg-muted/20 p-4 rounded-2xl border border-dashed border-primary/20">
             <div class="flex items-center gap-3">
                 <div class="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                     <Stethoscope class="h-5 w-5" />
@@ -213,11 +214,13 @@ watch(() => props.athleteId, () => {
         </div>
 
         <div v-else-if="injuries.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card v-for="item in injuries" :key="item.id" class="group border-primary/5 shadow-sm hover:shadow-md transition-all rounded-2xl overflow-hidden">
+            <Card v-for="item in injuries" :key="item.id"
+                class="group border-primary/5 shadow-sm hover:shadow-md transition-all rounded-2xl overflow-hidden">
                 <CardHeader class="pb-2 bg-muted/5">
                     <div class="flex justify-between items-start">
                         <div class="flex flex-col">
-                            <span class="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest">{{ item.categoryName }}</span>
+                            <span class="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest">{{
+                                item.categoryName }}</span>
                             <CardTitle class="text-sm font-bold leading-tight mt-1">{{ item.injury }}</CardTitle>
                         </div>
                         <Badge variant="outline" class="text-[9px]" :class="getSeverityBadge(item.severity)">
@@ -228,10 +231,12 @@ watch(() => props.athleteId, () => {
                 <CardContent class="pt-4 space-y-3">
                     <div class="flex justify-between items-center bg-muted/30 p-2.5 rounded-xl border border-primary/5">
                         <div class="flex items-center gap-2">
-                            <component :is="getStatusIcon(item.status)" class="h-3.5 w-3.5" :class="item.status === 2 ? 'text-green-500' : 'text-orange-500'" />
+                            <component :is="getStatusIcon(item.status)" class="h-3.5 w-3.5"
+                                :class="item.status === 2 ? 'text-green-500' : 'text-orange-500'" />
                             <span class="text-[9px] font-black uppercase">{{ item.statusName }}</span>
                         </div>
-                        <span class="text-[10px] font-mono font-bold">{{ new Date(item.date).toLocaleDateString() }}</span>
+                        <span class="text-[10px] font-mono font-bold">{{ new Date(item.date).toLocaleDateString()
+                            }}</span>
                     </div>
 
                     <div class="flex justify-between items-center px-1">
@@ -249,7 +254,8 @@ watch(() => props.athleteId, () => {
                         <Button variant="ghost" size="icon" class="h-7 w-7 rounded-full" @click="openDialog(item)">
                             <Edit3 class="h-3.5 w-3.5 text-muted-foreground" />
                         </Button>
-                        <Button variant="ghost" size="icon" class="h-7 w-7 rounded-full hover:bg-red-50" @click="deleteInjury(item.id)">
+                        <Button variant="ghost" size="icon" class="h-7 w-7 rounded-full hover:bg-red-50"
+                            @click="deleteInjury(item.id)">
                             <Trash2 class="h-3.5 w-3.5 text-destructive" />
                         </Button>
                     </div>
@@ -257,12 +263,14 @@ watch(() => props.athleteId, () => {
             </Card>
         </div>
 
-        <div v-else class="flex flex-col items-center justify-center py-16 bg-muted/5 rounded-3xl border-2 border-dashed border-muted">
+        <div v-else
+            class="flex flex-col items-center justify-center py-16 bg-muted/5 rounded-3xl border-2 border-dashed border-muted">
             <Info class="h-8 w-8 text-muted-foreground/20 mb-3" />
             <h3 class="text-xs font-black uppercase text-muted-foreground/60">{{ t('injuries.no_data') }}</h3>
         </div>
 
-        <div v-if="isDialogOpen" class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div v-if="isDialogOpen"
+            class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <Card class="w-full max-w-lg shadow-2xl border-none">
                 <CardHeader class="flex flex-row items-center justify-between border-b pb-4">
                     <CardTitle class="text-lg font-black uppercase tracking-tight">
@@ -274,20 +282,26 @@ watch(() => props.athleteId, () => {
                 </CardHeader>
                 <CardContent class="grid grid-cols-2 gap-4 pt-6">
                     <div class="col-span-2">
-                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Diagnosi / Infortunio</label>
+                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Diagnosi /
+                            Infortunio</label>
                         <Input v-model="injuryForm.injury" placeholder="Es. Lesione II Grado" class="h-9 text-sm" />
                     </div>
                     <div class="col-span-1">
                         <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Inizio</label>
-                        <Input type="date" v-model="injuryForm.date" class="h-9 text-sm" />
+                        <Input type="date" v-model="injuryForm.date"
+                            class="h-9 text-sm pr-10 appearance-none bg-background focus:ring-2" />
                     </div>
                     <div class="col-span-1">
-                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Rientro Stimato</label>
-                        <Input type="date" v-model="injuryForm.expectedReturnDate" class="h-9 text-sm" />
+                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Rientro
+                            Stimato</label>
+                        <Input type="date" v-model="injuryForm.expectedReturnDate"
+                            class="h-9 text-sm pr-10 appearance-none bg-background focus:ring-2" />
                     </div>
                     <div class="col-span-1">
-                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Categoria</label>
-                        <select v-model.number="injuryForm.category" class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs">
+                        <label
+                            class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Categoria</label>
+                        <select v-model.number="injuryForm.category"
+                            class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs">
                             <option :value="0">Muscolare</option>
                             <option :value="1">Articolare</option>
                             <option :value="2">Tendineo</option>
@@ -296,7 +310,8 @@ watch(() => props.athleteId, () => {
                     </div>
                     <div class="col-span-1">
                         <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Gravità</label>
-                        <select v-model.number="injuryForm.severity" class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs">
+                        <select v-model.number="injuryForm.severity"
+                            class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs">
                             <option :value="0">Lieve</option>
                             <option :value="1">Moderata</option>
                             <option :value="2">Grave</option>
@@ -308,14 +323,16 @@ watch(() => props.athleteId, () => {
                     </div>
                     <div class="col-span-1">
                         <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Stato</label>
-                        <select v-model.number="injuryForm.status" class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs font-bold">
+                        <select v-model.number="injuryForm.status"
+                            class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs font-bold">
                             <option :value="0">Attivo</option>
                             <option :value="1">Rehab</option>
                             <option :value="2">Rientrato</option>
                         </select>
                     </div>
                     <div class="col-span-2 pt-4 flex justify-end gap-2 border-t mt-2">
-                        <Button variant="ghost" size="sm" @click="isDialogOpen = false">{{ t('common.cancel') }}</Button>
+                        <Button variant="ghost" size="sm" @click="isDialogOpen = false">{{ t('common.cancel')
+                            }}</Button>
                         <Button @click="handleSave" size="sm" :disabled="isSubmitting" class="font-bold">
                             <Loader2 v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
                             <Save class="mr-2 h-4 w-4" /> {{ t('common.save') }}

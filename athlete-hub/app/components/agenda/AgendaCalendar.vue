@@ -482,14 +482,15 @@ onMounted(() => {
 
           <div class="flex gap-3">
             <div class="flex-1">
-              <label class="text-[10px] font-black uppercase text-muted-foreground mb-0.5 block">{{
-                t('calendar.form.dateLabel') }}</label>
-              <Input type="date" v-model="newEvent.date" class="h-9" />
+              <label class="text-[10px] font-black uppercase text-muted-foreground mb-0.5 block">
+                {{ t('calendar.form.dateLabel') }}
+              </label>
+              <Input type="date" v-model="newEvent.date" class="h-9 pr-10 appearance-none bg-background w-full" />
             </div>
-            <div class="w-28">
-              <label class="text-[10px] font-black uppercase text-muted-foreground mb-0.5 block">{{
-                t('calendar.form.timeLabel') }}</label>
-              <Input type="time" v-model="newEvent.time" class="h-9" />
+            <div class="w-32"> <label class="text-[10px] font-black uppercase text-muted-foreground mb-0.5 block">
+                {{ t('calendar.form.timeLabel') }}
+              </label>
+              <Input type="time" v-model="newEvent.time" class="h-9 pr-8 appearance-none bg-background w-full" />
             </div>
           </div>
 
@@ -653,18 +654,21 @@ onMounted(() => {
             <tbody>
               <tr v-for="athlete in selectedGridData?.athletes" :key="athlete.id" class="border-b hover:bg-accent/5">
                 <td class="p-4 font-bold text-sm">{{ athlete.fullName }}</td>
-                <td v-for="metric in selectedGridData?.metrics" :key="metric.id" class="p-2 text-center">
-                  <div class="relative flex items-center group">
+                <td v-for="metric in selectedGridData?.metrics" :key="metric.id" class="p-2 text-center align-middle">
+                  <div class="relative flex items-center group w-full max-w-[180px] mx-auto">
                     <input
-                      class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm text-center font-mono focus-visible:ring-1 focus-visible:ring-purple-500 pr-10"
+                      class="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-sm text-center font-mono focus-visible:ring-1 focus-visible:ring-purple-500 pr-10 transition-all box-border"
                       :class="{
-                        'border-blue-400 bg-blue-50/30': metric.dataType === 1,
-                        'border-purple-400 bg-purple-50/30': metric.dataType === 2
-                      }" :value="resultsMap[athlete.id]?.[metric.id] || ''"
+                        'border-blue-400 bg-blue-50/20': metric.dataType === 1,
+                        'border-purple-400 bg-purple-50/20': metric.dataType === 2,
+                        'appearance-none': true
+                      }" :type="metric.dataType === 1 ? 'number' : 'text'"
+                      :value="resultsMap[athlete.id]?.[metric.id] || ''"
                       @change="(e: any) => updateValue(athlete.id, metric.id, e.target.value)"
                       :placeholder="getPlaceholder(metric.dataType)" />
+
                     <span
-                      class="absolute right-3 text-[10px] font-black text-muted-foreground/40 group-hover:text-primary transition-colors pointer-events-none">
+                      class="absolute right-2 text-[9px] font-black text-muted-foreground/40 group-hover:text-primary transition-colors pointer-events-none uppercase">
                       {{ metric.unit }}
                     </span>
                   </div>
