@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<{
 // Use weakmap to store reference to each datapoint for Tooltip
 const wm = new WeakMap()
 function template(d: any) {
+  if (!import.meta.client) return ''
   if (wm.has(d)) {
     return wm.get(d)
   }

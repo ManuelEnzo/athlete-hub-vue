@@ -123,11 +123,13 @@ async function forceLogout(authStore: any) {
   authStore.user = null
 
   // Pulizia rapida
-  localStorage.clear()
-  // Nota: I cookie HttpOnly non possono essere cancellati da JS,
-  // ci deve pensare il backend nella rotta /logout
+  if (import.meta.client) {
+    localStorage.clear()
+    // Nota: I cookie HttpOnly non possono essere cancellati da JS,
+    // ci deve pensare il backend nella rotta /logout
 
-  window.location.replace('/login?reason=expired')
+    window.location.replace('/login?reason=expired')
+  }
 }
 
 export default api

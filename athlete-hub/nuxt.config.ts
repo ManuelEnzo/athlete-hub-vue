@@ -16,7 +16,7 @@ export default defineNuxtConfig({
       devSourcemap: true
     },
     plugins: [
-      tailwindcss(),
+      tailwindcss() as any,
     ],
   },
 
@@ -77,4 +77,7 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2024-12-14',
+  nitro: {
+    preset: 'static',
+  },
 })

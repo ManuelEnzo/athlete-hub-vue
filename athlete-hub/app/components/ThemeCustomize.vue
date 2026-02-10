@@ -12,6 +12,7 @@ watch(() => theme.value?.color, () => {
 })
 
 function setClassColor() {
+  if (!import.meta.client) return
   document.body.classList.remove(
     ...allColors.map(color => `color-${color}`),
   )
@@ -23,6 +24,7 @@ watch(() => theme.value?.type, () => {
 })
 
 function setClassType() {
+  if (!import.meta.client) return
   document.body.classList.remove(
     ...allTypes.map(type => `theme-${type}`),
   )

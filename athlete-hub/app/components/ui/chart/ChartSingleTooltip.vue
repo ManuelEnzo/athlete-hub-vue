@@ -17,6 +17,7 @@ const props = defineProps<{
 // Use weakmap to store reference to each datapoint for Tooltip
 const wm = new WeakMap()
 function template(d: any, i: number, elements: (HTMLElement | SVGElement)[]) {
+  if (!import.meta.client) return ''
   const valueFormatter = props.valueFormatter ?? ((tick: number) => `${tick}`)
   if (props.index in d) {
     if (wm.has(d)) {
