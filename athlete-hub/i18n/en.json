@@ -442,7 +442,10 @@
         "Team Sport": "Team Sport",
         "Sport di Squadra": "Team Sport",
         "Checkup": "Check-Up",
-        "Controllo": "Check-Up"
+        "Controllo": "Check-Up",
+        "Conditioning": "Conditioning",
+        "Match": "Match",
+        "Technical": "Technical"
     },
     "genders": {
         "genderPlaceholder": "Select gender",

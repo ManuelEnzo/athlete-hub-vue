@@ -439,7 +439,10 @@
         "Corsa": "Corsa",
         "Team Sport": "Sport di Squadra",
         "Sport di Squadra": "Sport di Squadra",
-        "Checkup": "Controllo"
+        "Checkup": "Controllo",
+        "Conditioning": "Condizionamento",
+        "Match": "Partita",
+        "Technical": "Tecnico"
     },
     "genders": {
         "genderPlaceholder": "Seleziona sesso",
