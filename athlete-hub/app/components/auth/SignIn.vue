@@ -50,13 +50,16 @@ async function onSubmit(event: Event) {
 <template>
   <form class="grid gap-6" @submit="onSubmit">
     <div class="flex flex-col gap-4">
-      <Button variant="outline" class="w-full gap-2" type="button" :disabled="loadingStore?.isLoading">
+      <Button variant="outline" class="w-full gap-2 opacity-60 cursor-not-allowed" type="button" disabled>
         <Icon name="i-lucide-apple" class="size-4" />
         {{ t('auth.login.withApple') }}
+        <span class="text-[10px] uppercase font-bold text-muted-foreground">(Soon)</span>
       </Button>
-      <Button variant="outline" class="w-full gap-2" type="button" :disabled="loadingStore?.isLoading">
+
+      <Button variant="outline" class="w-full gap-2 opacity-60 cursor-not-allowed" type="button" disabled>
         <Icon name="i-lucide-mail" class="size-4" />
         {{ t('auth.login.withGoogle') }}
+        <span class="text-[10px] uppercase font-bold text-muted-foreground">(Soon)</span>
       </Button>
     </div>
 

@@ -2,8 +2,7 @@
 import { useSidebar } from '~/components/ui/sidebar'
 import { useAuthStore } from '~/stores/auth'
 
-// Riceviamo la prop user definita come stringhe obbligatorie
-defineProps<{
+const props = defineProps<{
   user: {
     name: string
     email: string
@@ -13,7 +12,15 @@ defineProps<{
 
 const { isMobile, setOpenMobile } = useSidebar()
 const showModalTheme = ref(false)
-
+/**
+ * Apre il client mail predefinito per inviare un feedback.
+ * Soluzione rapida per MVP senza necessità di backend dedicato.
+ */
+function openFeedback() {
+  const subject = encodeURIComponent(`Feedback Athlete-Hub - Coach ${props.user.name}`)
+  const body = encodeURIComponent("Ciao, vorrei suggerire questa funzionalità...")
+  window.location.href = `mailto:tua-email@esempio.com?subject=${subject}&body=${body}`
+}
 /**
  * Gestione Logout: chiamiamo lo store solo al momento del click.
  * Questo previene l'errore "no active Pinia" durante il rendering iniziale.
@@ -44,10 +51,8 @@ const getInitials = (name: string) => {
     <SidebarMenuItem>
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <SidebarMenuButton
-            size="lg"
-            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-          >
+          <SidebarMenuButton size="lg"
+            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
             <Avatar class="h-8 w-8 rounded-lg">
               <AvatarImage :src="user.avatar" :alt="user.name" />
               <AvatarFallback class="rounded-lg">
@@ -62,18 +67,13 @@ const getInitials = (name: string) => {
           </SidebarMenuButton>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent
-          class="min-w-56 w-[--radix-dropdown-menu-trigger-width] rounded-lg"
-          :side="isMobile ? 'bottom' : 'right'"
-          align="end"
-        >
+        <DropdownMenuContent class="min-w-56 w-[--radix-dropdown-menu-trigger-width] rounded-lg"
+          :side="isMobile ? 'bottom' : 'right'">
           <DropdownMenuLabel class="p-0 font-normal">
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar class="h-8 w-8 rounded-lg">
                 <AvatarImage :src="user.avatar" :alt="user.name" />
-                <AvatarFallback class="rounded-lg">
-                  {{ getInitials(user.name) }}
-                </AvatarFallback>
+                <AvatarFallback class="rounded-lg">{{ getInitials(user.name) }}</AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
                 <span class="truncate font-semibold">{{ user.name }}</span>
@@ -85,9 +85,9 @@ const getInitials = (name: string) => {
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <Icon name="i-lucide-sparkles" />
-              Upgrade to Pro
+            <DropdownMenuItem @click="openFeedback">
+              <Icon name="i-lucide-message-square" />
+              Invia Feedback
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
@@ -97,12 +97,8 @@ const getInitials = (name: string) => {
             <DropdownMenuItem as-child>
               <NuxtLink to="/settings" @click="setOpenMobile(false)">
                 <Icon name="i-lucide-settings" />
-                Settings
+                Impostazioni
               </NuxtLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Icon name="i-lucide-bell" />
-              Notifications
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
@@ -110,12 +106,12 @@ const getInitials = (name: string) => {
 
           <DropdownMenuItem @click="showModalTheme = true">
             <Icon name="i-lucide-paintbrush" />
-            Theme
+            Personalizza Tema
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem @click="handleLogout">
+          <DropdownMenuItem @click="handleLogout" class="text-red-500 focus:text-red-500">
             <Icon name="i-lucide-log-out" />
             Log out
           </DropdownMenuItem>
