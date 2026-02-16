@@ -39,6 +39,7 @@ export interface UserProfileResponse {
   userName: string;
   email: string;
   role: number; // Gli Enum in C# vengono serializzati come numeri (0, 1, 2...)
+  createdAt: string; // Arriva come stringa ISO dal JSON
 }
 
 export interface AthleteResponse {

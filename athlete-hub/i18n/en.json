@@ -420,8 +420,16 @@
             "noAccount": "Don't have an account?",
             "signUpLink": "Sign Up",
             "success": "Login successful",
-            "forgotPassword": "Forgot Password?"
-        }
+            "forgotPassword": "Forgot Password?",
+            "alreadyHaveAccount": "Already have an account?"
+        },
+         "forgotPassword": {
+                "title": "Recover Credentials",
+                "description": "Enter your email to receive reset instructions",
+                "submit": "Send Reset Link",
+                "backToLogin": "Back to Login",
+                "successMsg": "Check your email inbox"
+            }
     },
     "tasks": {
         "title": "Tasks",
@@ -640,6 +648,33 @@
             "acwrDistribution": "ACWR (Acute:Chronic Workload Ratio) values. Green < 1.3 = Safe, Yellow 1.3-1.5 = Warning, Red > 1.5 = Critical injury risk.",
             "teamHealth": "Distribution of athlete health status. Safe = Low injury risk, Warning = Monitoring required.",
             "radarComparison": "Blue line = Readiness %, Red line = ACWR Safety Score. Wider shape indicates better overall athlete condition."
+        }
+    },
+    "profile": {
+        "title": "My Profile",
+        "subtitle": "Manage your Athlete-Hub account",
+        "accountInfo": "Account Information",
+        "username": "Username",
+        "role": "Access Level",
+        "memberSince": "Member Since",
+        "settingsTitle": "Settings",
+        "settingsDesc": "Modify your information and login credentials.",
+        "emailLabel": "Email Address",
+        "passwordSection": "Change Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "confirmMod": "Confirm Changes",
+        "currentPassPlaceholder": "Enter current password",
+        "saveBtn": "Update Profile",
+        "errors": {
+            "emailInvalid": "Please enter a valid email address",
+            "currentPasswordRequired": "Please enter your current password to save changes",
+            "passwordTooShort": "New password must be at least 8 characters long",
+            "passwordsDontMatch": "Passwords do not match"
+        },
+        "toast": {
+            "success": "Profile updated successfully",
+            "error": "Error while saving data"
         }
     }
 }

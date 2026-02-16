@@ -36,7 +36,7 @@ defineProps<{
             performance, and empowering smarter decisions every day&rdquo;
           </p>
           <footer class="text-sm">
-            Manuel Enzo
+            V&M
           </footer>
         </blockquote>
       </div>

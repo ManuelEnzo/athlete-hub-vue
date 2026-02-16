@@ -35,7 +35,7 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = []
 }
 
-const PUBLIC_ROUTES = ['/Auth/sign-in', '/Auth/sign-up', '/Auth/refresh']
+const PUBLIC_ROUTES = ['/Auth/sign-in', '/Auth/sign-up', '/Auth/refresh', '/Auth/forgot-password']
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (isLoggingOut && !config.url?.includes('/Auth/logout')) {

@@ -1,46 +1,44 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
 definePageMeta({
   layout: 'blank',
+  auth: false,
+  guestOnly: true
 })
+const { t } = useI18n()
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center gap-6 bg-muted p-6 min-h-svh md:p-10">
+  <div class="flex flex-col items-center justify-center bg-background p-6 min-h-svh md:p-10">
     <div class="max-w-sm w-full flex flex-col gap-6">
-      <NuxtLink to="#" class="flex items-center self-center gap-2 font-medium">
+
+      <NuxtLink to="/" class="flex items-center self-center gap-2 font-medium">
         <div class="h-6 w-6 flex items-center justify-center rounded-md bg-primary text-primary-foreground">
-          <Icon name="i-lucide-gallery-vertical-end" class-name="size-4" />
+          <div class="i-lucide-dumbbell size-4"></div>
         </div>
-        Acme Inc.
+        <span class="font-bold tracking-tight text-lg">Athlete Hub</span>
       </NuxtLink>
-      <Card>
-        <CardHeader class="text-center">
-          <CardTitle class="text-xl">
-            Forgot Password
-          </CardTitle>
-          <CardDescription>
-            Enter your email below to reset your password
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div class="grid mx-auto max-w-sm gap-6">
-            <AuthForgotPassword />
-            <p class="text-center text-sm text-muted-foreground">
-              Already have an account?
-              <NuxtLink
-                to="/login"
-                class="underline underline-offset-4 hover:text-primary"
-              >
-                Login
-              </NuxtLink>
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+
+      <div class="flex flex-col gap-6">
+        <div class="text-center">
+          <h1 class="text-2xl font-semibold tracking-tight">
+            {{ t('auth.forgotPassword.title') }}
+          </h1>
+          <p class="text-sm text-muted-foreground mt-1">
+            {{ t('auth.forgotPassword.description') }}
+          </p>
+        </div>
+
+        <AuthForgotPassword />
+
+        <div class="text-center text-sm">
+          {{ t('auth.login.alreadyHaveAccount') }}
+          <NuxtLink to="/login" class="underline underline-offset-4 font-medium">
+            {{ t('auth.login.submit') }}
+          </NuxtLink>
+        </div>
+      </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-
-</style>
