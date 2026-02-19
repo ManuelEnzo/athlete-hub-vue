@@ -20,13 +20,11 @@ async function onSubmit(event: Event) {
     return
   }
 
-  // Utilizzo corretto delle azioni dello store (start/stop)
   loadingStore.start()
 
   try {
     const response = await authApi.forgotPassword(email.value)
 
-    // Assumendo che il backend restituisca un oggetto Result con isSuccess
     if (response.data.isSuccess) {
       toast.success(t('auth.forgotPassword.successMsg'))
       email.value = ''
@@ -38,38 +36,34 @@ async function onSubmit(event: Event) {
     console.error('[Forgot Password Error]', err)
     toast.error(t('auth.errors.generic'))
   } finally {
-    // Spegne il caricamento
     loadingStore.stop()
   }
 }
 </script>
 
 <template>
-  <form class="grid gap-6" @submit="onSubmit">
+  <form class="grid gap-4" @submit="onSubmit">
     <div class="grid gap-2">
-      <Label
-        for="email"
-        class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 ml-1"
-      >
+      <Label for="email">
         {{ t('auth.fields.email') }}
       </Label>
       <Input
         id="email"
         v-model="email"
         type="email"
-        placeholder="CHAMPION@ATHLETE.HUB"
-        class="bg-black/40 border-zinc-800 h-12 text-white placeholder:text-zinc-700 font-bold focus-visible:ring-primary transition-all"
+        placeholder="name@example.com"
         :disabled="loadingStore.isLoading"
         auto-complete="email"
+        required
       />
     </div>
 
     <Button
       type="submit"
-      class="w-full h-14 bg-primary text-black font-[1000] uppercase tracking-widest text-lg hover:bg-white transition-all active:scale-[0.98]"
+      class="w-full"
       :disabled="loadingStore.isLoading"
     >
-      <Loader2 v-if="loadingStore.isLoading" class="mr-2 h-5 w-5 animate-spin" />
+      <Loader2 v-if="loadingStore.isLoading" class="mr-2 h-4 w-4 animate-spin" />
       {{ t('auth.forgotPassword.submit') }}
     </Button>
   </form>

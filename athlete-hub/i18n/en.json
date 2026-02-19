@@ -385,14 +385,14 @@
     },
     "auth": {
         "signup": {
-            "success": "Account created",
-            "networkError": "Network error during signup",
+            "success": "Registration successful",
+            "networkError": "Network error during registration",
             "validation": {
-                "fillAll": "Please fill all fields",
+                "fillAll": "Please fill in all fields",
                 "passwordMismatch": "Passwords do not match"
             },
             "errors": {
-                "general": "Error during signup"
+                "general": "Error during registration"
             },
             "email": "Email",
             "password": "Password",
@@ -405,31 +405,46 @@
             "submit": "Sign Up"
         },
         "errors": {
-            "requiredFields": "Campi obbligatorio",
-            "passwordMismatch": "Le password non coincidono"
+            "requiredFields": "All fields are required",
+            "invalidToken": "Missing or expired token. Please request a new link.",
+            "passwordsDoNotMatch": "Passwords do not match",
+            "expiredLink": "Link has expired, please restart the process",
+            "genericLogin": "Invalid credentials",
+            "emailRequired": "Please enter a valid email address"
         },
         "fields": {
             "email": "Email",
             "password": "Password",
+            "newPassword": "New Password",
             "confirmPassword": "Confirm Password"
         },
         "login": {
             "withApple": "Login with Apple",
             "withGoogle": "Login with Google",
-            "submit": "Login",
+            "submit": "Sign In",
             "noAccount": "Don't have an account?",
-            "signUpLink": "Sign Up",
+            "signUpLink": "Sign up here",
             "success": "Login successful",
-            "forgotPassword": "Forgot Password?",
-            "alreadyHaveAccount": "Already have an account?"
+            "forgotPassword": "Forgot password?",
+            "alreadyHaveAccount": "Already have an account?",
+            "backToLogin": "Back to login",
+            "title": "Welcome Back"
         },
-         "forgotPassword": {
-                "title": "Recover Credentials",
-                "description": "Enter your email to receive reset instructions",
-                "submit": "Send Reset Link",
-                "backToLogin": "Back to Login",
-                "successMsg": "Check your email inbox"
-            }
+        "forgotPassword": {
+            "title": "Recover Credentials",
+            "description": "Enter your email to receive reset instructions",
+            "submit": "Send reset link",
+            "backToLogin": "Back to login",
+            "successMsg": "Check your email inbox"
+        },
+        "reset": {
+            "title": "Set New Password",
+            "description": "Define your new credentials",
+            "submit": "Reset Password",
+            "done": "Done!",
+            "success": "Password updated successfully",
+            "successMessage": "Credentials updated. You're ready to get back to it."
+        }
     },
     "tasks": {
         "title": "Tasks",

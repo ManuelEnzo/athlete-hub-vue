@@ -404,12 +404,17 @@
             "submit": "Registrati"
         },
         "errors": {
-            "requiredFields": "Campi obbligatorio",
-            "passwordMismatch": "Le password non coincidono"
+            "requiredFields": "Tutti i campi sono obbligatori",
+            "invalidToken": "Token mancante o scaduto. Richiedi un nuovo link.",
+            "passwordsDoNotMatch": "Le password non coincidono",
+            "expiredLink": "Il link è scaduto, riprova la procedura",
+            "genericLogin": "Credenziali non valide",
+            "emailRequired": "Inserisci un indirizzo email valido"
         },
         "fields": {
             "email": "Email",
             "password": "Password",
+            "newPassword": "Nuova Password",
             "confirmPassword": "Conferma Password"
         },
         "login": {
@@ -420,7 +425,9 @@
             "signUpLink": "Registrati qui",
             "success": "Login avvenuto con successo",
             "forgotPassword": "Hai dimenticato la password?",
-            "alreadyHaveAccount": "Hai già un account?"
+            "alreadyHaveAccount": "Hai già un account?",
+            "backToLogin": "Torna al login",
+            "title": "Bentornato"
         },
         "forgotPassword": {
             "title": "Recupero Credenziali",
@@ -428,6 +435,14 @@
             "submit": "Invia link di reset",
             "backToLogin": "Torna al login",
             "successMsg": "Controlla la tua casella email"
+        },
+        "reset": {
+            "title": "Imposta Nuova Password",
+            "description": "Definisci le tue nuove credenziali",
+            "submit": "Reset Password",
+            "done": "Fatto!",
+            "success": "Password aggiornata con successo",
+            "successMessage": "Credenziali aggiornate. Sei pronto a ripartire."
         }
     },
     "tasks": {
