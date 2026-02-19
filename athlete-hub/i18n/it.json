@@ -369,8 +369,21 @@
         "details": "Dettagli",
         "optional": "Opzionale",
         "loading": "Caricamento...",
-        "active": "Attiva",
-        "remove": "Rimuovi"
+        "active": "Attivo",
+        "remove": "Rimuovi",
+        "noRecords": "Nessun record trovato",
+        "prev": "Precedente",
+        "next": "Successiva",
+        "search": "Cerca",
+        "filter": "Filtra",
+        "actions": "Azioni",
+        "error": "Errore",
+        "success": "Successo",
+        "refresh": "Aggiorna",
+        "all": "Tutti",
+        "back": "Indietro",
+        "close": "Chiudi",
+        "paginationInfo": "Pagina {current} di {total} ({count} record totali)"
     },
     "kanban": {
         "title": "Kanban Board",
@@ -485,6 +498,19 @@
     "rpe": {
         "title": "Invia il tuo RPE",
         "description": "Inserisci il tuo RPE per la sessione. Valori da 0 (nessuna fatica) a 10 (massimo sforzo).",
+        "pageTitle": "Monitoraggio Invii RPE",
+        "pageDescription": "Gestisci e monitora lo stato delle richieste RPE inviate agli atleti in tempo reale.",
+        "searchPlaceholder": "Cerca atleta o email...",
+        "dashboardTitle": "RPE Dashboard",
+        "legendTitle": "Legenda RPE:",
+        "lastSession": "Ultima sessione",
+        "historyTitle": "Storico RPE",
+        "sessionName": "Nome Sessione",
+        "activityType": "Tipo Attività",
+        "date": "Data",
+        "effort": "Sforzo (RPE)",
+        "target": "Target",
+        "back": "Indietro",
         "fields": {
             "rpe": "RPE",
             "notes": "Note (opzionale)",
@@ -492,7 +518,22 @@
         },
         "buttons": {
             "submit": "Invia",
-            "sent": "Inviato"
+            "sent": "Inviato",
+            "resend": "Reinvia Email"
+        },
+        "table": {
+            "athlete": "Atleta",
+            "emailStatus": "Stato Email",
+            "lastSent": "Ultimo Invio",
+            "submission": "Compilazione RPE"
+        },
+        "status": {
+            "pending": "In Coda",
+            "processing": "In Invio...",
+            "completed": "Inviata",
+            "failed": "Errore Invio",
+            "unknown": "Sconosciuto",
+            "waiting": "In attesa di compilazione"
         },
         "validation": {
             "range": "L'RPE deve essere compreso tra 1 e 10"
@@ -521,27 +562,21 @@
             "hard": "Duro",
             "maximal": "Massimale"
         },
-        "dashboardTitle": "RPE Dashboard",
-        "legendTitle": "Legenda RPE:",
-        "lastSession": "Ultima sessione",
-        "historyTitle": "Storico RPE",
-        "sessionName": "Nome Sessione",
-        "activityType": "Tipo Attività",
-        "date": "Data",
-        "effort": "Sforzo (RPE)",
-        "target": "Target",
-        "status": "Status",
-        "notes": "Note",
-        "back": "Indietro",
         "pagination": {
             "prev": "Prev",
             "next": "Next",
             "pageInfo": "Pagina {current} / {total}",
+            "paginationInfo": "Pagina {current} di {total} ({count} record totali)",
             "chargeother": "Carica altri"
         },
         "errors": {
             "loadOverview": "Errore nel caricamento overview",
-            "loadHistory": "Errore nel caricamento dello storico"
+            "loadHistory": "Errore nel caricamento dello storico",
+            "fetch": "Errore nel caricamento degli stati email",
+            "resend": "Errore nel reinvio dell'email"
+        },
+        "messages": {
+            "resendSuccess": "Email reinviata con successo a {email}"
         }
     },
     "analytics": {

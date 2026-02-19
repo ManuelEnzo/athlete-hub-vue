@@ -25,7 +25,8 @@ import type {
   CoachDashboardSummaryDto,
   TestDefinitionDto,
   TestManagementCreateRequest,
-  TestManagementUpdateRequest
+  TestManagementUpdateRequest,
+  RpeEmailStatus
 } from '../types/api'
 
 export const athleteApi = {
@@ -155,6 +156,14 @@ export const athleteApi = {
 
   // Elimina una codifica test
   testDefDelete: (id: number) =>
-    api.delete<Result<boolean>>(`/TestDefinitions/${id}`)
+    api.delete<Result<boolean>>(`/TestDefinitions/${id}`),
+
+  getInfoForEmailStatus: (pageIndex: number, pageSize: number) =>
+  api.get<Result<Pagination<RpeEmailStatus>>>(`/RpeLinkQueue/get-info-status-email`, {
+    params: { pageIndex, pageSize }
+  }),
+
+resendRpeEmail: (email: string) =>
+  api.post(`/RpeLinkQueue/resend`, { email }),
 }
 

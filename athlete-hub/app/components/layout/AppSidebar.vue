@@ -64,7 +64,7 @@ function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): an
         />
       </SidebarGroup>
 
-      <SidebarGroup class="mt-auto">
+      <!-- <SidebarGroup class="mt-auto">
         <component
           :is="resolveNavItemComponent(item)"
           v-for="(item, index) in navMenuBottom"
@@ -72,7 +72,7 @@ function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): an
           :item="item"
           size="sm"
         />
-      </SidebarGroup>
+      </SidebarGroup> -->
     </SidebarContent>
 
     <SidebarFooter>

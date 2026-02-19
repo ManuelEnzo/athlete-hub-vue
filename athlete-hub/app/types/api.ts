@@ -391,8 +391,7 @@ export interface CoachDashboardSummaryDto {
   averageReadinessScore: number;
   criticalAcwrCount: number;
   missingReportsToday: number;
-
-  /** Liste per grafici e tabelle */
+  athletesHealth: Record<number, AthleteHealthStatusDto>;
   workloadComparison: WorkloadDataPointDto[];
   athleteStatusMatrix: AthleteReadinessVsLoadDto[];
   riskAlerts: AthleteRiskAlertDto[];
@@ -401,6 +400,23 @@ export interface CoachDashboardSummaryDto {
   disciplineDistribution: DisciplineCountDto[];
 }
 
+export interface AthleteHealthStatusDto {
+  athleteId: number;
+  acwr: number;
+  readiness: number;
+  riskLevel: 'Low' | 'Moderate' | 'High';
+  riskMessage: string | null;
+}
+
+export interface CoachAgendaItemDto {
+  scheduledAt: string; // ISO Date string
+  athleteId: number;   // Fondamentale per il lookup nel dizionario health
+  athleteFullName: string;
+  sessionType: string;
+  priority: string;
+}
+
+// Gli altri restano invariati ma assicurati che siano esportati
 export interface AthleteReadinessVsLoadDto {
   name: string;
   readiness: number;
@@ -414,20 +430,13 @@ export interface AthleteRiskAlertDto {
   riskTrend: string;
 }
 
-export interface CoachAgendaItemDto {
-  scheduledAt: string; // ISO Date string
-  athleteName: string;
-  sessionType: string;
-  priority: string;
-}
-
 export interface WorkloadDataPointDto {
-  label: string; // es: "31/01"
-  value: number; // sRPE Load
+  label: string;
+  value: number;
 }
 
 export interface HealthStatusCountDto {
-  status: string; // "Ottimo", "Affaticato", "Rischio"
+  status: string;
   count: number;
   color: string;
 }
@@ -435,4 +444,13 @@ export interface HealthStatusCountDto {
 export interface DisciplineCountDto {
   discipline: string;
   count: number;
+}
+
+export interface RpeEmailStatus {
+  nomeAtleta: string
+  emailAtleta: string
+  statoEmail: number // 0: Coda, 1: Inviata, 2: Errore
+  dataInvio: string | null
+  noteInserite: string | null
+  dataInserimento: string | null
 }

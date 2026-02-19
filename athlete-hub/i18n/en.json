@@ -371,7 +371,20 @@
         "optional": "Optional",
         "loading": "Loading...",
         "active": "Active",
-        "remove": "Remove"
+        "remove": "Remove",
+        "noRecords": "No records found",
+        "prev": "Previous",
+        "next": "Next",
+        "search": "Search",
+        "filter": "Filter",
+        "actions": "Actions",
+        "error": "Error",
+        "success": "Success",
+        "refresh": "Refresh",
+        "all": "All",
+        "back": "Back",
+        "close": "Close",
+        "paginationInfo": "Page {current} of {total} ({count} total records)"
     },
     "kanban": {
         "title": "Kanban Board",
@@ -488,7 +501,20 @@
     },
     "rpe": {
         "title": "Submit your RPE",
-        "description": "Enter your RPE for the session. Values range from 0 (no exertion) to 10 (maximum effort).",
+        "description": "Enter your RPE for the session. Values from 0 (no fatigue) to 10 (maximum effort).",
+        "pageTitle": "RPE Dispatch Monitoring",
+        "pageDescription": "Manage and monitor the status of RPE requests sent to athletes in real time.",
+        "searchPlaceholder": "Search athlete or email...",
+        "dashboardTitle": "RPE Dashboard",
+        "legendTitle": "RPE Legend:",
+        "lastSession": "Last session",
+        "historyTitle": "RPE History",
+        "sessionName": "Session Name",
+        "activityType": "Activity Type",
+        "date": "Date",
+        "effort": "Effort (RPE)",
+        "target": "Target",
+        "back": "Back",
         "fields": {
             "rpe": "RPE",
             "notes": "Notes (optional)",
@@ -496,7 +522,22 @@
         },
         "buttons": {
             "submit": "Submit",
-            "sent": "Sent"
+            "sent": "Sent",
+            "resend": "Resend Email"
+        },
+        "table": {
+            "athlete": "Athlete",
+            "emailStatus": "Email Status",
+            "lastSent": "Last Sent",
+            "submission": "RPE Submission"
+        },
+        "status": {
+            "pending": "Pending",
+            "processing": "Sending...",
+            "completed": "Sent",
+            "failed": "Send Error",
+            "unknown": "Unknown",
+            "waiting": "Waiting for submission"
         },
         "validation": {
             "range": "RPE must be between 1 and 10"
@@ -525,27 +566,21 @@
             "hard": "Hard",
             "maximal": "Maximal"
         },
-        "dashboardTitle": "RPE Dashboard",
-        "legendTitle": "RPE Legend:",
-        "lastSession": "Last session",
-        "historyTitle": "RPE History",
-        "sessionName": "Session Name",
-        "activityType": "Activity Type",
-        "date": "Date",
-        "effort": "Effort (RPE)",
-        "target": "Target",
-        "status": "Status",
-        "notes": "Notes",
-        "back": "Back",
         "pagination": {
             "prev": "Prev",
             "next": "Next",
             "pageInfo": "Page {current} / {total}",
-            "chargeother": "Charge other"
+            "paginationInfo": "Page {current} of {total} ({count} total records)",
+            "chargeother": "Load more"
         },
         "errors": {
             "loadOverview": "Error loading overview",
-            "loadHistory": "Error loading history"
+            "loadHistory": "Error loading history",
+            "fetch": "Error loading email statuses",
+            "resend": "Error resending email"
+        },
+        "messages": {
+            "resendSuccess": "Email successfully resent to {email}"
         }
     },
     "analytics": {

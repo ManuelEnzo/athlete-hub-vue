@@ -15,6 +15,11 @@ export const navMenu: NavMenu[] = [
         link: '/agenda',
       },
       {
+        title: 'Email',
+        icon: 'i-lucide-mail-search',
+        link: '/email',
+      },
+      {
         title: 'Athletes',
         icon: 'i-lucide-users',
         children: [
