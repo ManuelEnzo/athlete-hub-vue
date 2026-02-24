@@ -384,7 +384,8 @@
         "all": "All",
         "back": "Back",
         "close": "Close",
-        "paginationInfo": "Page {current} of {total} ({count} total records)"
+        "paginationInfo": "Page {current} of {total} ({count} total records)",
+        "loadMore":"Charge Other"
     },
     "kanban": {
         "title": "Kanban Board",

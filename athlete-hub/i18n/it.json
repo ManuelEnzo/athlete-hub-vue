@@ -383,7 +383,8 @@
         "all": "Tutti",
         "back": "Indietro",
         "close": "Chiudi",
-        "paginationInfo": "Pagina {current} di {total} ({count} record totali)"
+        "paginationInfo": "Pagina {current} di {total} ({count} record totali)",
+        "loadMore":"Carica altri"
     },
     "kanban": {
         "title": "Kanban Board",
