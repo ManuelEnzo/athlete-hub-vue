@@ -581,7 +581,11 @@
         },
         "messages": {
             "resendSuccess": "Email successfully resent to {email}"
-        }
+        },
+        "filters": {
+            "allAthletes": "All Athletes",
+            "allStatuses": "All Statuses"
+         }
     },
     "analytics": {
         "readiness_title": "Readiness State",

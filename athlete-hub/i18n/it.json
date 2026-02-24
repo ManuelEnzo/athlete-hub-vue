@@ -577,6 +577,10 @@
         },
         "messages": {
             "resendSuccess": "Email reinviata con successo a {email}"
+        },
+        "filters":{
+            "allAthletes": "Tutti gli atleti",
+            "allStatuses": "Tutti gli stati"
         }
     },
     "analytics": {

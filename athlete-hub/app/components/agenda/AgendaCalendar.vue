@@ -100,6 +100,36 @@ const newEvent = reactive({
   isCompleted: false
 })
 
+const isFormValid = computed(() => {
+  // Titolo obbligatorio
+  if (!newEvent.title.trim()) return false
+
+  // Almeno un atleta
+  if (!newEvent.athleteIds.length) return false
+
+  // Data e ora
+  if (!newEvent.date) return false
+  if (!newEvent.time) return false
+
+  // Durata obbligatoria e > 0
+  if (!newEvent.duration || newEvent.duration <= 0) return false
+
+  // Categoria obbligatoria
+  if (!newEvent.type) return false
+
+  // Se NON è Recovery/Checkup serve RPE
+  if (!['Recovery', 'Checkup'].includes(newEvent.type)) {
+    if (newEvent.targetRpe == null) return false
+  }
+
+  // Se è Test serve protocollo
+  if (newEvent.type === 'Test' && !newEvent.testDefinitionId) {
+    return false
+  }
+
+  return true
+})
+
 // Reset automatico campi basato sul tipo
 watch(() => newEvent.type, (newType) => {
   if (['Recovery', 'Checkup'].includes(newType)) {
@@ -548,7 +578,7 @@ onMounted(async () => {
         </CardContent>
         <CardFooter class="flex justify-end gap-2 border-t p-4">
           <Button variant="ghost" size="sm" @click="isAddDialogOpen = false">{{ t('common.cancel') }}</Button>
-          <Button size="sm" @click="handleSaveEvent" :disabled="isLoading">
+          <Button size="sm" @click="handleSaveEvent" :disabled="isLoading || !isFormValid" :class="{ 'opacity-50 cursor-not-allowed': isLoading || !isFormValid}">
             <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
             {{ isEditing ? t('common.update') : t('common.create') }}
           </Button>
@@ -634,3 +664,4 @@ onMounted(async () => {
     </Dialog>
   </div>
 </template>
+

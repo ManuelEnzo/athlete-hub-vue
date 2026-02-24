@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   Mail, Send, Search, ChevronLeft, ChevronRight,
@@ -17,12 +17,12 @@ import { Badge } from '@/components/ui/badge'
 // --- STATE ---
 const { t } = useI18n()
 const isLoading = ref(false)
-const data = ref<any[]>([])
+const rawData = ref<any[]>([])
 const pageIndex = ref(1)
 const pageSize = ref(10)
-const totalItems = ref(0)
-const totalPages = ref(0)
 const searchQuery = ref('')
+const selectedStatus = ref<string | number>('')
+const selectedAthlete = ref<string>('')
 
 /** * Mapping Enum RpeStatus:
  * 0: Pending, 1: Processing, 2: Completed, 3: Failed
@@ -47,9 +47,8 @@ const fetchStatuses = async () => {
   try {
     const res = await athleteApi.getInfoForEmailStatus(pageIndex.value, pageSize.value)
     if (res.data.value) {
-      data.value = res.data.value.items
-      totalItems.value = res.data.value.totalCount
-      totalPages.value = Math.ceil(totalItems.value / pageSize.value)
+      // keep raw data and let client-side filters/pagination handle presentation
+      rawData.value = res.data.value.items
     }
   } catch (error) {
     toast.error(t('rpe.errors.fetch'))
@@ -58,7 +57,13 @@ const fetchStatuses = async () => {
   }
 }
 
-const handleResend = async (email: string) => {
+const handleResend = async (email: string, status?: number) => {
+  // prevent resending when status is 'Processing' (1)
+  if (status === 1) {
+    toast.error(t('rpe.errors.cannotResendProcessing') || t('rpe.errors.resend'))
+    return
+  }
+
   try {
     await athleteApi.resendRpeEmail(email)
     toast.success(t('rpe.messages.resendSuccess', { email }))
@@ -76,7 +81,54 @@ const formatDate = (date: string | null) => {
 }
 
 onMounted(fetchStatuses)
-watch(pageIndex, fetchStatuses)
+watch(pageIndex, () => {
+  // when changing pageIndex we don't need to refetch from API for client-side filtering
+})
+
+// Derived lists and filtering
+const statusOptions = computed(() => {
+  const set = new Map<number, string>()
+  rawData.value.forEach(r => {
+    if (r.statoEmail !== undefined && r.statoEmail !== null) {
+      const key = Number(r.statoEmail)
+      if (!set.has(key)) set.set(key, getStatusConfig(key).label)
+    }
+  })
+  return Array.from(set.entries()).map(([value, label]) => ({ value, label }))
+})
+
+const athleteOptions = computed(() => {
+  const set = new Set<string>()
+  rawData.value.forEach(r => { if (r.nomeAtleta) set.add(r.nomeAtleta) })
+  return Array.from(set.values())
+})
+
+const filtered = computed(() => {
+  const q = searchQuery.value?.toString().trim().toLowerCase() || ''
+  return rawData.value.filter(r => {
+    // filter by athlete
+    if (selectedAthlete.value && r.nomeAtleta !== selectedAthlete.value) return false
+    // filter by status
+    if (selectedStatus.value !== '' && String(r.statoEmail) !== String(selectedStatus.value)) return false
+    // search across name and email
+    if (!q) return true
+    const name = (r.nomeAtleta || '').toString().toLowerCase()
+    const email = (r.emailAtleta || '').toString().toLowerCase()
+    const statusLabel = getStatusConfig(Number(r.statoEmail)).label?.toString().toLowerCase() || ''
+    return name.includes(q) || email.includes(q) || statusLabel.includes(q)
+  })
+})
+
+const totalItems = computed(() => filtered.value.length)
+const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / pageSize.value)))
+
+const displayedData = computed(() => {
+  const start = (pageIndex.value - 1) * pageSize.value
+  return filtered.value.slice(start, start + pageSize.value)
+})
+
+// reset page when filters/search change
+watch([searchQuery, selectedStatus, selectedAthlete], () => { pageIndex.value = 1 })
 </script>
 
 <template>
@@ -91,6 +143,18 @@ watch(pageIndex, fetchStatuses)
       </div>
 
       <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <select v-model="selectedAthlete" class="px-2 py-1 bg-background border rounded">
+            <option value="">{{ t('rpe.filters.allAthletes') || 'All athletes' }}</option>
+            <option v-for="name in athleteOptions" :key="name" :value="name">{{ name }}</option>
+          </select>
+
+          <select v-model="selectedStatus" class="px-2 py-1 bg-background border rounded">
+            <option value="">{{ t('rpe.filters.allStatuses') || 'All statuses' }}</option>
+            <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+          </select>
+        </div>
+
         <div class="relative w-64">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
           <Input v-model="searchQuery" :placeholder="t('rpe.searchPlaceholder')"
@@ -126,7 +190,7 @@ watch(pageIndex, fetchStatuses)
                 </td>
               </tr>
 
-              <tr v-else-if="data.length > 0" v-for="row in data" :key="row.emailAtleta"
+              <tr v-else-if="displayedData.length > 0" v-for="(row, idx) in displayedData" :key="(row.emailAtleta || 'noemail') + '::' + (row.nomeAtleta || 'noname') + '::' + idx"
                 class="hover:bg-muted/30 transition-colors group">
                 <td class="p-4">
                   <div class="flex flex-col">
@@ -153,8 +217,13 @@ watch(pageIndex, fetchStatuses)
                   </span>
                 </td>
                 <td class="p-4 text-right">
-                  <Button variant="ghost" size="icon" class="h-8 w-8 opacity-0 group-hover:opacity-100 transition-all"
-                    @click="handleResend(row.emailAtleta)">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8 opacity-0 group-hover:opacity-100 transition-all"
+                    :disabled="row.statoEmail === 1"
+                    :title="row.statoEmail === 1 ? t('rpe.status.processing') : t('rpe.actions.resend')"
+                    @click="handleResend(row.emailAtleta, row.statoEmail)">
                     <Send class="h-3.5 w-3.5" />
                   </Button>
                 </td>
