@@ -9,7 +9,9 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 
 definePageMeta({
-  layout: 'blank'
+  layout: 'blank',
+  auth: false,
+  guestOnly: true
 })
 
 const email = ref('')
