@@ -18,8 +18,9 @@ export interface UserSignInResponse {
 }
 // DTO per la richiesta di registrazione
 export interface UserSignUpRequest {
-  email: string;
-  password?: string; // Opzionale se gestisci social login, ma qui richiesto
+  email: string
+  password?: string
+  codeId?: string | null
 }
 
 // DTO per la risposta di registrazione (mappa il tuo UserSignUpResponse C#)

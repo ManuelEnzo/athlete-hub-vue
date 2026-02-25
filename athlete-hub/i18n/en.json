@@ -430,7 +430,8 @@
             "email": "Email",
             "password": "Password",
             "newPassword": "New Password",
-            "confirmPassword": "Confirm Password"
+            "confirmPassword": "Confirm Password",
+            "invitationCode": "Invitation Code"
         },
         "login": {
             "withApple": "Login with Apple",

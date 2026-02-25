@@ -429,7 +429,8 @@
             "email": "Email",
             "password": "Password",
             "newPassword": "Nuova Password",
-            "confirmPassword": "Conferma Password"
+            "confirmPassword": "Conferma Password",
+            "invitationCode": "Codice Invito"
         },
         "login": {
             "withApple": "Login with Apple",

@@ -5,20 +5,35 @@ import { toast } from 'vue-sonner'
 import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/auth'
 import { useI18n } from 'vue-i18n'
-import { cn } from '@/lib/utils' // Assicurati che l'import di cn sia corretto
+import { cn } from '@/lib/utils'
 
 const { t } = useI18n()
+
+// ENV FLAG (VITE_REQUIRE_INVITATION_CODE=true/false)
+const isInvitationCodeRequired =
+  import.meta.env.VITE_REQUIRE_INVITATION_CODE === 'true'
+
+// State
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const code = ref('')
 const isLoading = ref(false)
+
 const authStore = useAuthStore()
+
+// GUID validation (compatibile con ASP.NET Guid)
+function isValidGuid(value: string): boolean {
+  const guidRegex =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/
+  return guidRegex.test(value)
+}
 
 async function onSubmit(event: Event) {
   event.preventDefault()
 
-  // Validazione client-side con i18n
-  if (!email.value || !password.value) {
+  // Validazione base
+  if (!email.value || !password.value || !confirmPassword.value) {
     toast.error(t('auth.errors.requiredFields'))
     return
   }
@@ -28,22 +43,34 @@ async function onSubmit(event: Event) {
     return
   }
 
+  // Validazione codice se richiesto da ENV
+  if (isInvitationCodeRequired) {
+    if (!code.value) {
+      toast.error(t('auth.errors.codeRequired'))
+      return
+    }
+
+    if (!isValidGuid(code.value)) {
+      toast.error(t('auth.errors.invalidCode'))
+      return
+    }
+  }
+
   isLoading.value = true
 
   try {
-    // Se l'API restituisce 400/500, l'interceptor lancia un reject e salta al catch
     const response = await authApi.signUp({
       email: email.value,
-      password: password.value
+      password: password.value,
+      codeId: isInvitationCodeRequired ? code.value : null
     })
 
-    // Qui entriamo SOLO se isSuccess è true (HTTP 2xx)
     const result = response.data
 
-    if (result.value) { // Controllo di guardia
+    if (result?.value) {
       authStore.setTokens(
-        result.value?.accessToken,
-        result.value?.refreshToken
+        result.value.accessToken,
+        result.value.refreshToken
       )
     }
 
@@ -51,15 +78,11 @@ async function onSubmit(event: Event) {
     await navigateTo('/')
 
   } catch (error: any) {
-    // 'error' qui è l'oggetto Result (apiResult) rigettato dall'interceptor
-    // Cerchiamo il messaggio nel tuo Result Pattern C#
-    const serverMessage = error.error?.message
+    const serverMessage = error?.error?.message
 
     if (serverMessage) {
-      // Mostra il messaggio specifico inviato dal backend (es: "Email già registrata")
       toast.error(serverMessage)
     } else {
-      // Fallback su una risorsa i18n locale se l'errore è generico o di rete
       toast.error(t('auth.signup.networkError'))
     }
   } finally {
@@ -73,28 +96,74 @@ async function onSubmit(event: Event) {
     <form @submit="onSubmit">
       <div class="grid gap-4">
 
+        <!-- EMAIL -->
         <div class="grid gap-2">
-          <Label for="email">{{ t('auth.fields.email') }}</Label>
-          <Input id="email" v-model="email" placeholder="name@example.com" type="email" :disabled="isLoading"
-            required />
+          <Label for="email">
+            {{ t('auth.fields.email') }}
+          </Label>
+          <Input
+            id="email"
+            v-model="email"
+            placeholder="name@example.com"
+            type="email"
+            :disabled="isLoading"
+            required
+          />
         </div>
 
+        <!-- PASSWORD -->
         <div class="grid gap-2">
-          <Label for="password">{{ t('auth.fields.password') }}</Label>
-          <PasswordInput id="password" v-model="password" :disabled="isLoading" required />
+          <Label for="password">
+            {{ t('auth.fields.password') }}
+          </Label>
+          <PasswordInput
+            id="password"
+            v-model="password"
+            :disabled="isLoading"
+            required
+          />
         </div>
 
+        <!-- CONFIRM PASSWORD -->
         <div class="grid gap-2">
-          <Label for="confirm-password">{{ t('auth.fields.confirmPassword') }}</Label>
-          <PasswordInput id="confirm-password" v-model="confirmPassword" :disabled="isLoading" required />
+          <Label for="confirm-password">
+            {{ t('auth.fields.confirmPassword') }}
+          </Label>
+          <PasswordInput
+            id="confirm-password"
+            v-model="confirmPassword"
+            :disabled="isLoading"
+            required
+          />
         </div>
 
+        <!-- INVITATION CODE (CONDIZIONALE) -->
+        <div
+          v-if="isInvitationCodeRequired"
+          class="grid gap-2"
+        >
+          <Label for="code">
+            {{ t('auth.fields.invitationCode') }}
+          </Label>
+          <Input
+            id="code"
+            v-model="code"
+            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            :disabled="isLoading"
+            required
+          />
+        </div>
+
+        <!-- SUBMIT -->
         <Button type="submit" :disabled="isLoading">
-          <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
+          <Loader2
+            v-if="isLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          />
           {{ t('auth.signup.submit') }}
         </Button>
+
       </div>
     </form>
-
   </div>
 </template>
