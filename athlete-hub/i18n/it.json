@@ -423,7 +423,8 @@
             "passwordsDoNotMatch": "Le password non coincidono",
             "expiredLink": "Il link è scaduto, riprova la procedura",
             "genericLogin": "Credenziali non valide",
-            "emailRequired": "Inserisci un indirizzo email valido"
+            "emailRequired": "Inserisci un indirizzo email valido",
+            "invalidCode": "Codice invito non valido"
         },
         "fields": {
             "email": "Email",

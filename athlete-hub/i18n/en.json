@@ -424,7 +424,8 @@
             "passwordsDoNotMatch": "Passwords do not match",
             "expiredLink": "Link has expired, please restart the process",
             "genericLogin": "Invalid credentials",
-            "emailRequired": "Please enter a valid email address"
+            "emailRequired": "Please enter a valid email address",
+            "invalidCode": "Invalid invitation code"
         },
         "fields": {
             "email": "Email",
