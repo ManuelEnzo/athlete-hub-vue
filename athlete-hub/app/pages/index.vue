@@ -97,15 +97,15 @@ const radarChartSeries = computed(() => [
 
 <template>
   <div class="w-full min-h-screen bg-background space-y-8 font-sans pb-10">
-    <div class="bg-gradient-to-r from-primary/5 to-transparent border-b border-primary/10 px-6 py-8">
-      <div class="flex justify-between items-start">
+    <div class="bg-gradient-to-r from-primary/5 to-transparent border-b border-primary/10 px-4 md:px-6 py-6 md:py-8">
+      <div class="flex flex-col md:flex-row md:justify-between gap-3 md:gap-0 items-start">
         <div>
-          <h1 class="text-4xl font-bold text-foreground tracking-tight mb-2">{{ t('performanceDashboard.pageTitle') }}</h1>
-          <p class="text-muted-foreground text-sm font-medium">{{ t('performanceDashboard.subtitle') }}</p>
+          <h1 class="text-2xl md:text-4xl font-bold text-foreground tracking-tight mb-1 md:mb-2">{{ t('performanceDashboard.pageTitle') }}</h1>
+          <p class="text-muted-foreground text-xs md:text-sm font-medium">{{ t('performanceDashboard.subtitle') }}</p>
         </div>
-        <div class="text-right">
-          <p class="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">{{ t('performanceDashboard.lastUpdated') }}</p>
-          <p class="text-lg font-bold text-foreground">{{ new Date().toLocaleTimeString() }}</p>
+        <div class="mt-2 md:mt-0 text-left md:text-right">
+          <p class="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">{{ t('performanceDashboard.lastUpdated') }}</p>
+          <p class="text-base md:text-lg font-bold text-foreground">{{ new Date().toLocaleTimeString() }}</p>
         </div>
       </div>
     </div>
@@ -167,8 +167,10 @@ const radarChartSeries = computed(() => [
           </CardHeader>
           <CardContent class="pt-6">
             <ClientOnly>
-              <VueApexCharts type="bar" :options="workloadChartOptions" :series="workloadChartSeries" height="300" />
-              <template #fallback><div class="h-[300px] w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento grafico...</div></template>
+              <div class="h-56 md:h-72 lg:h-80">
+                <VueApexCharts type="bar" :options="workloadChartOptions" :series="workloadChartSeries" height="100%" />
+              </div>
+              <template #fallback><div class="h-56 md:h-72 lg:h-80 w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento grafico...</div></template>
             </ClientOnly>
           </CardContent>
         </Card>
@@ -181,8 +183,10 @@ const radarChartSeries = computed(() => [
           </CardHeader>
           <CardContent class="pt-6">
             <ClientOnly>
-              <VueApexCharts type="donut" :options="healthChartOptions" :series="healthChartSeries" height="280" />
-              <template #fallback><div class="h-[280px] w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento...</div></template>
+              <div class="h-56 md:h-72">
+                <VueApexCharts type="donut" :options="healthChartOptions" :series="healthChartSeries" height="100%" />
+              </div>
+              <template #fallback><div class="h-56 md:h-72 w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento...</div></template>
             </ClientOnly>
           </CardContent>
         </Card>
@@ -197,8 +201,10 @@ const radarChartSeries = computed(() => [
           </CardHeader>
           <CardContent class="pt-6">
             <ClientOnly>
-              <VueApexCharts type="radar" :options="radarChartOptions" :series="radarChartSeries" height="280" />
-              <template #fallback><div class="h-[280px] w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento...</div></template>
+              <div class="h-56 md:h-72">
+                <VueApexCharts type="radar" :options="radarChartOptions" :series="radarChartSeries" height="100%" />
+              </div>
+              <template #fallback><div class="h-56 md:h-72 w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento...</div></template>
             </ClientOnly>
           </CardContent>
         </Card>
@@ -211,8 +217,10 @@ const radarChartSeries = computed(() => [
           </CardHeader>
           <CardContent class="pt-6">
             <ClientOnly>
-              <VueApexCharts type="pie" :options="disciplineChartOptions" :series="disciplineChartSeries" height="280" />
-              <template #fallback><div class="h-[280px] w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento...</div></template>
+              <div class="h-56 md:h-72">
+                <VueApexCharts type="pie" :options="disciplineChartOptions" :series="disciplineChartSeries" height="100%" />
+              </div>
+              <template #fallback><div class="h-56 md:h-72 w-full flex items-center justify-center bg-muted/5 animate-pulse text-xs">Caricamento...</div></template>
             </ClientOnly>
           </CardContent>
         </Card>
@@ -226,19 +234,21 @@ const radarChartSeries = computed(() => [
           <CardContent class="pt-4 px-2">
             <div class="space-y-3">
               <div v-for="item in dashboardData?.upcomingAgenda" :key="item.scheduledAt"
-                class="flex items-center p-3 border border-foreground/5 rounded-lg bg-foreground/[0.02]">
-                <div class="mr-4 text-center border-r pr-4 border-foreground/10">
-                  <p class="text-[10px] font-bold uppercase text-primary">
+                class="flex flex-col sm:flex-row items-start sm:items-center p-3 border border-foreground/5 rounded-lg bg-foreground/[0.02] gap-2">
+                <div class="mr-0 sm:mr-4 mb-2 sm:mb-0 text-center sm:border-r sm:pr-4 border-foreground/10">
+                  <p class="text-[10px] md:text-[11px] font-bold uppercase text-primary">
                     {{ new Date(item.scheduledAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short' }) }}
                   </p>
                 </div>
-                <div class="flex-1">
-                  <p class="text-xs font-bold">{{ item.sessionType }}</p>
-                  <p class="text-[10px] text-muted-foreground">{{ item.athleteName }}</p>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-bold truncate">{{ item.sessionType }}</p>
+                  <p class="text-[10px] text-muted-foreground truncate">{{ item.athleteFullName }}</p>
                 </div>
-                <Badge variant="outline" class="text-[9px]">
-                  {{ new Date(item.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
-                </Badge>
+                <div class="mt-1 sm:mt-0 ml-0 sm:ml-3">
+                  <Badge variant="outline" class="text-[9px] md:text-[9px]">
+                    {{ new Date(item.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+                  </Badge>
+                </div>
               </div>
             </div>
           </CardContent>

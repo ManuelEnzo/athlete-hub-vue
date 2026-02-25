@@ -195,7 +195,7 @@ watch(() => props.athleteId, () => {
 <template>
     <div class="w-full flex flex-col gap-6">
         <div
-            class="flex items-center justify-between bg-muted/20 p-4 rounded-2xl border border-dashed border-primary/20">
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 bg-muted/20 p-4 rounded-2xl border border-dashed border-primary/20">
             <div class="flex items-center gap-3">
                 <div class="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                     <Stethoscope class="h-5 w-5" />
@@ -204,8 +204,9 @@ watch(() => props.athleteId, () => {
                     {{ t('injuries.history_title') || 'Registro Infortuni Atleta' }}
                 </h2>
             </div>
-            <Button @click="openDialog()" size="sm" class="font-bold uppercase tracking-wider h-9">
-                <Plus class="mr-2 h-4 w-4" /> {{ t('injuries.add_new') }}
+            <Button @click="openDialog()" size="sm" class="font-bold uppercase tracking-wider h-9 flex items-center whitespace-nowrap sm:px-3">
+                <Plus class="h-4 w-4 mr-0 sm:mr-2" />
+                <span class="hidden sm:inline">{{ t('injuries.add_new') }}</span>
             </Button>
         </div>
 

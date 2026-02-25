@@ -11,7 +11,7 @@ import { Label } from '~/components/ui/label'
 definePageMeta({
   layout: 'blank',
   auth: false,
-  guestOnly: true
+  guestOnly: false
 })
 
 const email = ref('')
@@ -68,14 +68,14 @@ const coreFeatures = [
   <div class="min-h-screen bg-black text-white font-sans antialiased selection:bg-white/20">
 
     <nav class="sticky top-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-lg">
-      <div class="container mx-auto h-20 flex items-center justify-between px-6">
-        <div class="flex items-center gap-3">
-          <img src="/favicon.ico" alt="Logo" class="size-6 object-contain" />
-          <span class="font-black tracking-tighter text-2xl uppercase italic">Athlete<span class="text-white/40 font-light">Hub</span></span>
+      <div class="container mx-auto px-6 md:px-8 py-4 md:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-4 min-w-0">
+          <img src="/favicon.ico" alt="Logo" class="h-10 w-10 object-contain" />
+          <span class="font-black tracking-tighter text-2xl md:text-3xl uppercase italic min-w-0 truncate">Athlete<span class="text-white/40 font-light">Hub</span></span>
         </div>
-        <div class="flex items-center gap-6">
-          <NuxtLink to="/login" class="text-sm font-medium text-white/60 hover:text-white transition">Client Log in</NuxtLink>
-          <Button variant="outline" @click="scrollToWaitlist" class="border-white/20 rounded-full hover:bg-white hover:text-black transition-all px-6">
+        <div class="flex items-center gap-4 sm:gap-6 flex-shrink-0">
+          <NuxtLink to="/login" class="text-sm md:text-base font-medium text-white/60 hover:text-white transition">Client Log in</NuxtLink>
+          <Button variant="outline" @click="scrollToWaitlist" class="border-white/20 rounded-full hover:bg-white hover:text-black transition-all px-6 sm:px-8 py-2">
             Prenota Demo
           </Button>
         </div>
@@ -90,7 +90,7 @@ const coreFeatures = [
             MVP 1.0.2 Open for Early Adopters
           </div>
 
-          <h1 class="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.85] mb-12 uppercase">
+          <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight mb-8 md:mb-12 uppercase">
             DATI D'ÉLITE PER<br />
             <span class="text-white/20 italic font-light">ATLETI D'ÉLITE.</span>
           </h1>
@@ -99,11 +99,12 @@ const coreFeatures = [
             Athlete Hub trasforma la complessità della preparazione atletica in una dashboard intuitiva, sicura e scientificamente rigorosa.
           </p>
 
-          <div class="flex flex-col sm:flex-row justify-center gap-6">
-            <Button size="lg" @click="scrollToWaitlist" class="h-16 px-12 rounded-2xl bg-white text-black hover:bg-white/90 text-xl font-bold group transition-transform active:scale-95">
-              Inizia come Coach <ArrowRight class="ml-2 size-6 group-hover:translate-x-1 transition" />
+          <div class="flex flex-col sm:flex-row justify-center gap-4 w-full max-w-xl mx-auto px-4">
+            <Button size="lg" @click="scrollToWaitlist" class="w-full sm:w-auto h-14 sm:h-16 px-6 sm:px-12 rounded-2xl bg-white text-black hover:bg-white/90 text-lg md:text-xl font-bold group transition-transform active:scale-95">
+              <span class="inline-block">Inizia come Coach</span>
+              <ArrowRight class="ml-2 size-5 md:size-6 group-hover:translate-x-1 transition inline-block" />
             </Button>
-            <Button size="lg" @click="scrollToWaitlist" variant="ghost" class="h-16 px-10 text-lg text-white/60 hover:text-white">
+            <Button size="lg" @click="scrollToWaitlist" variant="ghost" class="w-full sm:w-auto h-14 sm:h-16 px-6 sm:px-10 text-lg text-white/60 hover:text-white">
               Esplora le Funzioni
             </Button>
           </div>

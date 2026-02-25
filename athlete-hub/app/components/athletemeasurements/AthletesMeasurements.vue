@@ -148,6 +148,16 @@ function resetForm() {
   emit('update:showForm', false)
 }
 
+function openNewMeasurement() {
+  editingId.value = null
+  Object.assign(form, {
+    athleteId: props.selectedAthleteId ?? 0,
+    weight: 0, height: 0, chest: 0, waist: 0, hip: 0,
+    thigh: 0, arm: 0, calf: 0, forearm: 0, neck: 0, notes: ''
+  })
+  emit('update:showForm', true)
+}
+
 function editMeasurement(m: AthleteMeasurementsResponse) {
   editingId.value = m.id
   Object.assign(form, {
@@ -210,6 +220,12 @@ async function confirmDelete() {
 
 <template>
   <div class="w-full flex flex-col gap-8">
+    <!-- Mobile floating 'New' button -->
+    <div class="md:hidden fixed right-4 bottom-4 z-50">
+      <Button @click="openNewMeasurement" class="h-12 w-12 rounded-full p-0 flex items-center justify-center shadow-lg">
+        <Plus class="h-6 w-6 text-white" />
+      </Button>
+    </div>
     <Transition name="expand">
       <Card v-if="props.showForm" class="border-primary/30 shadow-2xl bg-card">
         <CardHeader class="pb-4">

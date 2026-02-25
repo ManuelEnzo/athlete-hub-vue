@@ -588,6 +588,9 @@
         "filters": {
             "allAthletes": "All Athletes",
             "allStatuses": "All Statuses"
+         },
+         "actions": {
+            "resend": "Resend Email"
          }
     },
     "analytics": {
@@ -609,7 +612,8 @@
         "no_tests_description": "No athletic tests were performed in the selected period.",
         "metrics_summary": "Body Measurements Summary",
         "load_summary": "Weekly Load Detail",
-        "no_data_available": "Insufficient data to generate analysis. Ensure the athlete has completed sessions with RPE and recorded tests."
+        "no_data_available": "Insufficient data to generate analysis. Ensure the athlete has completed sessions with RPE and recorded tests.",
+        "no_tests_registered": "No tests registered for this athlete. Please add test results to view performance trends."
     },
     "injuries": {
         "title": "Medical Center",

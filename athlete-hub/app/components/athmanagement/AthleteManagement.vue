@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Trash2, Edit3, User, Plus, Loader2 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
@@ -21,6 +21,7 @@ const { t } = useI18n()
 const athletes = ref<AthleteResponse[]>([])
 const loading = ref(false)
 const editingId = ref<number | null>(null)
+const formCardRef = ref<HTMLElement | null>(null)
 const athleteToDelete = ref<AthleteResponse | null>(null)
 const isDeleteDialogOpen = ref(false)
 
@@ -184,6 +185,34 @@ function editAthlete(a: AthleteResponse) {
   emit('update:showForm', true)
 }
 
+// When the parent opens the form (or we enter edit mode), scroll the form into view and focus first input
+watch(
+  () => props.showForm,
+  async (val) => {
+    if (val && editingId.value !== null) {
+      await nextTick()
+      // scroll card into view
+      formCardRef.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // focus first input inside the form card
+      const input = formCardRef.value?.querySelector('input') as HTMLInputElement | null
+      if (input) input.focus()
+    }
+  }
+)
+
+// also watch editingId in case showForm already true
+watch(
+  () => editingId.value,
+  async (val) => {
+    if (val !== null && props.showForm) {
+      await nextTick()
+      formCardRef.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      const input = formCardRef.value?.querySelector('input') as HTMLInputElement | null
+      if (input) input.focus()
+    }
+  }
+)
+
 function resetForm() {
   editingId.value = null
   Object.assign(form, {
@@ -207,7 +236,7 @@ onMounted(fetchAthletes)
   <div class="w-full flex flex-col gap-8 mx-auto p-4 relative">
 
     <Transition name="expand">
-      <Card v-if="props.showForm" class="border-primary/20 shadow-lg">
+      <Card ref="formCardRef" v-if="props.showForm" class="border-primary/20 shadow-lg">
         <CardHeader>
           <CardTitle class="flex items-center gap-2 text-primary">
             <Edit3 v-if="editingId" class="h-5 w-5" />

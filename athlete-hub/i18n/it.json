@@ -584,7 +584,10 @@
         "filters":{
             "allAthletes": "Tutti gli atleti",
             "allStatuses": "Tutti gli stati"
-        }
+        },
+        "actions": {
+            "resend": "Reinvia Email"
+         }
     },
     "analytics": {
         "readiness_title": "Stato di Prontezza",
@@ -605,7 +608,8 @@
         "no_tests_description": "Non sono stati eseguiti test atletici nel periodo selezionato.",
         "metrics_summary": "Riepilogo Misure Corporee",
         "load_summary": "Dettaglio Carichi Settimanali",
-        "no_data_available": "Dati insufficienti per generare l'analisi. Assicurati che l'atleta abbia sessioni completate con RPE e test registrati."
+        "no_data_available": "Dati insufficienti per generare l'analisi. Assicurati che l'atleta abbia sessioni completate con RPE e test registrati.",
+        "no_tests_registered": "Nessun risultato di test disponibile per questo periodo. Esegui test atletici per monitorare i progressi e identificare aree di miglioramento"
     },
     "injuries": {
         "title": "Centro Medico",
