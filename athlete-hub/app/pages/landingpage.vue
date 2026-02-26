@@ -236,7 +236,7 @@ const coreFeatures = [
           <img src="/favicon.ico" class="size-4 grayscale" /> Athlete Hub
         </div>
         <div class="flex gap-10">
-          <a href="#" class="hover:text-white transition">Privacy</a>
+          <NuxtLink to="/data-policy" class="hover:text-white transition">Privacy & Data Policy</NuxtLink>
           <a href="#" class="hover:text-white transition">Stack</a>
           <a href="https://github.com/manuelenzo" target="_blank" class="hover:text-white transition">Github</a>
         </div>
