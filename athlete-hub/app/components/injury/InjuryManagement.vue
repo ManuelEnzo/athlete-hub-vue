@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 // API & Types
 import { athleteApi } from '@/api/business'
@@ -34,6 +35,8 @@ const injuries = ref<InjuryResponseDTO[]>([])
 const loading = ref(false)
 const isSubmitting = ref(false)
 const isDialogOpen = ref(false)
+const isDeleteDialogOpen = ref(false)
+const injuryToDelete = ref<InjuryResponseDTO | null>(null)
 
 interface InjuryForm {
     id: number | null;
@@ -60,8 +63,6 @@ const injuryForm = reactive<InjuryForm>({
 // --------------------
 // API ACTIONS
 // --------------------
-
-// Carica infortuni ogni volta che l'ID atleta cambia
 async function fetchInjuries() {
     if (!props.athleteId) {
         injuries.value = []
@@ -103,7 +104,7 @@ async function handleSave() {
             toast.success(t('injuries.toast.updated'))
         } else {
             const createPayload: InjuryCreateDTO = {
-                athleteId: props.athleteId, // Usa l'ID ricevuto dalle props
+                athleteId: props.athleteId,
                 date: validDate,
                 injury: injuryForm.injury,
                 category: injuryForm.category,
@@ -124,14 +125,25 @@ async function handleSave() {
     }
 }
 
-async function deleteInjury(id: number) {
-    if (!confirm(t('common.confirmDelete'))) return
+async function deleteInjury(injury: InjuryResponseDTO) {
+    injuryToDelete.value = injury
+    isDeleteDialogOpen.value = true
+}
+
+async function confirmDelete() {
+    if (!injuryToDelete.value) return
+
+    isSubmitting.value = true
     try {
-        await athleteApi.deleteInjury(id)
+        await athleteApi.deleteInjury(injuryToDelete.value.id)
         toast.success(t('injuries.toast.deleted'))
         fetchInjuries()
+        isDeleteDialogOpen.value = false
+        injuryToDelete.value = null
     } catch {
         toast.error(t('injuries.errors.delete'))
+    } finally {
+        isSubmitting.value = false
     }
 }
 
@@ -185,7 +197,6 @@ const getStatusIcon = (status: number) => {
     return CheckCircle2
 }
 
-// Reagisce immediatamente al cambio dell'atleta nel padre
 watch(() => props.athleteId, () => {
     fetchInjuries()
 }, { immediate: true })
@@ -193,154 +204,162 @@ watch(() => props.athleteId, () => {
 </script>
 
 <template>
-    <div class="w-full flex flex-col gap-6">
-        <div
-            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 bg-muted/20 p-4 rounded-2xl border border-dashed border-primary/20">
-            <div class="flex items-center gap-3">
-                <div class="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                    <Stethoscope class="h-5 w-5" />
-                </div>
-                <h2 class="text-sm font-black uppercase tracking-widest text-muted-foreground">
-                    {{ t('injuries.history_title') || 'Registro Infortuni Atleta' }}
-                </h2>
+<div class="w-full flex flex-col gap-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 bg-muted/20 p-4 rounded-2xl border border-dashed border-primary/20">
+        <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <Stethoscope class="h-5 w-5" />
             </div>
-            <Button @click="openDialog()" size="sm" class="font-bold uppercase tracking-wider h-9 flex items-center whitespace-nowrap sm:px-3">
-                <Plus class="h-4 w-4 mr-0 sm:mr-2" />
-                <span class="hidden sm:inline">{{ t('injuries.add_new') }}</span>
-            </Button>
+            <h2 class="text-sm font-black uppercase tracking-widest text-muted-foreground">
+                {{ t('injuries.history_title') }}
+            </h2>
         </div>
-
-        <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Skeleton class="h-[160px] w-full rounded-2xl" v-for="i in 3" :key="i" />
-        </div>
-
-        <div v-else-if="injuries.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card v-for="item in injuries" :key="item.id"
-                class="group border-primary/5 shadow-sm hover:shadow-md transition-all rounded-2xl overflow-hidden">
-                <CardHeader class="pb-2 bg-muted/5">
-                    <div class="flex justify-between items-start">
-                        <div class="flex flex-col">
-                            <span class="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest">{{
-                                item.categoryName }}</span>
-                            <CardTitle class="text-sm font-bold leading-tight mt-1">{{ item.injury }}</CardTitle>
-                        </div>
-                        <Badge variant="outline" class="text-[9px]" :class="getSeverityBadge(item.severity)">
-                            {{ item.severityName }}
-                        </Badge>
-                    </div>
-                </CardHeader>
-                <CardContent class="pt-4 space-y-3">
-                    <div class="flex justify-between items-center bg-muted/30 p-2.5 rounded-xl border border-primary/5">
-                        <div class="flex items-center gap-2">
-                            <component :is="getStatusIcon(item.status)" class="h-3.5 w-3.5"
-                                :class="item.status === 2 ? 'text-green-500' : 'text-orange-500'" />
-                            <span class="text-[9px] font-black uppercase">{{ item.statusName }}</span>
-                        </div>
-                        <span class="text-[10px] font-mono font-bold">{{ new Date(item.date).toLocaleDateString()
-                            }}</span>
-                    </div>
-
-                    <div class="flex justify-between items-center px-1">
-                        <div class="flex flex-col">
-                            <span class="text-[8px] font-bold text-muted-foreground uppercase">Sede</span>
-                            <span class="font-bold text-[10px]">{{ item.bodyLocation || 'N/D' }}</span>
-                        </div>
-                        <div class="flex flex-col text-right">
-                            <span class="text-[8px] font-bold text-muted-foreground uppercase">Stop</span>
-                            <span class="font-black text-[10px] text-primary">{{ item.daysOut }} gg</span>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end gap-2 pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" class="h-7 w-7 rounded-full" @click="openDialog(item)">
-                            <Edit3 class="h-3.5 w-3.5 text-muted-foreground" />
-                        </Button>
-                        <Button variant="ghost" size="icon" class="h-7 w-7 rounded-full hover:bg-red-50"
-                            @click="deleteInjury(item.id)">
-                            <Trash2 class="h-3.5 w-3.5 text-destructive" />
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-
-        <div v-else
-            class="flex flex-col items-center justify-center py-16 bg-muted/5 rounded-3xl border-2 border-dashed border-muted">
-            <Info class="h-8 w-8 text-muted-foreground/20 mb-3" />
-            <h3 class="text-xs font-black uppercase text-muted-foreground/60">{{ t('injuries.no_data') }}</h3>
-        </div>
-
-        <div v-if="isDialogOpen"
-            class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <Card class="w-full max-w-lg shadow-2xl border-none">
-                <CardHeader class="flex flex-row items-center justify-between border-b pb-4">
-                    <CardTitle class="text-lg font-black uppercase tracking-tight">
-                        {{ injuryForm.id ? 'Aggiorna Infortunio' : 'Nuovo Infortunio' }}
-                    </CardTitle>
-                    <Button variant="ghost" size="icon" @click="isDialogOpen = false">
-                        <X class="h-5 w-5" />
-                    </Button>
-                </CardHeader>
-                <CardContent class="grid grid-cols-2 gap-4 pt-6">
-                    <div class="col-span-2">
-                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Diagnosi /
-                            Infortunio</label>
-                        <Input v-model="injuryForm.injury" placeholder="Es. Lesione II Grado" class="h-9 text-sm" />
-                    </div>
-                    <div class="col-span-1">
-                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Inizio</label>
-                        <Input type="date" v-model="injuryForm.date"
-                            class="h-9 text-sm pr-10 appearance-none bg-background focus:ring-2" />
-                    </div>
-                    <div class="col-span-1">
-                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Rientro
-                            Stimato</label>
-                        <Input type="date" v-model="injuryForm.expectedReturnDate"
-                            class="h-9 text-sm pr-10 appearance-none bg-background focus:ring-2" />
-                    </div>
-                    <div class="col-span-1">
-                        <label
-                            class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Categoria</label>
-                        <select v-model.number="injuryForm.category"
-                            class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs">
-                            <option :value="0">Muscolare</option>
-                            <option :value="1">Articolare</option>
-                            <option :value="2">Tendineo</option>
-                            <option :value="3">Osseo</option>
-                        </select>
-                    </div>
-                    <div class="col-span-1">
-                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Gravità</label>
-                        <select v-model.number="injuryForm.severity"
-                            class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs">
-                            <option :value="0">Lieve</option>
-                            <option :value="1">Moderata</option>
-                            <option :value="2">Grave</option>
-                        </select>
-                    </div>
-                    <div class="col-span-1">
-                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Sede</label>
-                        <Input v-model="injuryForm.bodyLocation" placeholder="Es. Coscia DX" class="h-9 text-sm" />
-                    </div>
-                    <div class="col-span-1">
-                        <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">Stato</label>
-                        <select v-model.number="injuryForm.status"
-                            class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs font-bold">
-                            <option :value="0">Attivo</option>
-                            <option :value="1">Rehab</option>
-                            <option :value="2">Rientrato</option>
-                        </select>
-                    </div>
-                    <div class="col-span-2 pt-4 flex justify-end gap-2 border-t mt-2">
-                        <Button variant="ghost" size="sm" @click="isDialogOpen = false">{{ t('common.cancel')
-                            }}</Button>
-                        <Button @click="handleSave" size="sm" :disabled="isSubmitting" class="font-bold">
-                            <Loader2 v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
-                            <Save class="mr-2 h-4 w-4" /> {{ t('common.save') }}
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+        <Button @click="openDialog()" size="sm" class="font-bold uppercase tracking-wider h-9 flex items-center whitespace-nowrap sm:px-3">
+            <Plus class="h-4 w-4 mr-0 sm:mr-2" />
+            <span class="hidden sm:inline">{{ t('injuries.add_new') }}</span>
+        </Button>
     </div>
+
+    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Skeleton class="h-[160px] w-full rounded-2xl" v-for="i in 3" :key="i" />
+    </div>
+
+    <div v-else-if="injuries.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card v-for="item in injuries" :key="item.id" class="group border-primary/5 shadow-sm hover:shadow-md transition-all rounded-2xl overflow-hidden">
+            <CardHeader class="pb-2 bg-muted/5">
+                <div class="flex justify-between items-start">
+                    <div class="flex flex-col">
+                        <span class="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest">{{ item.categoryName }}</span>
+                        <CardTitle class="text-sm font-bold leading-tight mt-1">{{ item.injury }}</CardTitle>
+                    </div>
+                    <Badge variant="outline" class="text-[9px]" :class="getSeverityBadge(item.severity)">
+                        {{ item.severityName }}
+                    </Badge>
+                </div>
+            </CardHeader>
+            <CardContent class="pt-4 space-y-3">
+                <div class="flex justify-between items-center bg-muted/30 p-2.5 rounded-xl border border-primary/5">
+                    <div class="flex items-center gap-2">
+                        <component :is="getStatusIcon(item.status)" class="h-3.5 w-3.5"
+                            :class="item.status === 2 ? 'text-green-500' : 'text-orange-500'" />
+                        <span class="text-[9px] font-black uppercase">{{ t(`injuries.statuses.${item.status === 0 ? 'active' : item.status === 1 ? 'rehab' : 'returned'}`) }}</span>
+                    </div>
+                    <span class="text-[10px] font-mono font-bold">{{ new Date(item.date).toLocaleDateString() }}</span>
+                </div>
+
+                <div class="flex justify-between items-center px-1">
+                    <div class="flex flex-col">
+                        <span class="text-[8px] font-bold text-muted-foreground uppercase">{{ t('injuries.fields.location') }}</span>
+                        <span class="font-bold text-[10px]">{{ item.bodyLocation || t('injuries.fallback.notAvailable') }}</span>
+                    </div>
+                    <div class="flex flex-col text-right">
+                        <span class="text-[8px] font-bold text-muted-foreground uppercase">{{ t('injuries.fields.daysOut') }}</span>
+                        <span class="font-black text-[10px] text-primary">{{ item.daysOut }} gg</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button variant="ghost" size="icon" class="h-7 w-7 rounded-full" @click="openDialog(item)">
+                        <Edit3 class="h-3.5 w-3.5 text-muted-foreground" />
+                    </Button>
+                    <Button variant="ghost" size="icon" class="h-7 w-7 rounded-full hover:bg-red-50"
+                        @click="deleteInjury(item)">
+                        <Trash2 class="h-3.5 w-3.5 text-destructive" />
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+
+    <div v-else class="flex flex-col items-center justify-center py-16 bg-muted/5 rounded-3xl border-2 border-dashed border-muted">
+        <Info class="h-8 w-8 text-muted-foreground/20 mb-3" />
+        <h3 class="text-xs font-black uppercase text-muted-foreground/60">{{ t('injuries.no_data') }}</h3>
+    </div>
+
+    <!-- FORM DIALOG -->
+    <div v-if="isDialogOpen" class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <Card class="w-full max-w-lg shadow-2xl border-none">
+            <CardHeader class="flex flex-row items-center justify-between border-b pb-4">
+                <CardTitle class="text-lg font-black uppercase tracking-tight">
+                    {{ injuryForm.id ? t('injuries.dialog.editTitle') : t('injuries.dialog.newTitle') }}
+                </CardTitle>
+                <Button variant="ghost" size="icon" @click="isDialogOpen = false">
+                    <X class="h-5 w-5" />
+                </Button>
+            </CardHeader>
+            <CardContent class="grid grid-cols-2 gap-4 pt-6">
+                <div class="col-span-2">
+                    <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">{{ t('injuries.fields.injury') }}</label>
+                    <Input v-model="injuryForm.injury" :placeholder="t('injuries.placeholders.injury')" class="h-9 text-sm" />
+                </div>
+                <div class="col-span-1">
+                    <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">{{ t('injuries.fields.startDate') }}</label>
+                    <Input type="date" v-model="injuryForm.date" class="h-9 text-sm pr-10 appearance-none bg-background focus:ring-2" />
+                </div>
+                <div class="col-span-1">
+                    <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">{{ t('injuries.fields.expectedReturn') }}</label>
+                    <Input type="date" v-model="injuryForm.expectedReturnDate" class="h-9 text-sm pr-10 appearance-none bg-background focus:ring-2" />
+                </div>
+                <div class="col-span-1">
+                    <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">{{ t('injuries.fields.category') }}</label>
+                    <select v-model.number="injuryForm.category" class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs">
+                        <option :value="0">{{ t('injuries.categories.muscular') }}</option>
+                        <option :value="1">{{ t('injuries.categories.joint') }}</option>
+                        <option :value="2">{{ t('injuries.categories.tendon') }}</option>
+                        <option :value="3">{{ t('injuries.categories.bone') }}</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">{{ t('injuries.fields.severity') }}</label>
+                    <select v-model.number="injuryForm.severity" class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs">
+                        <option :value="0">{{ t('injuries.severities.mild') }}</option>
+                        <option :value="1">{{ t('injuries.severities.moderate') }}</option>
+                        <option :value="2">{{ t('injuries.severities.severe') }}</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">{{ t('injuries.fields.location') }}</label>
+                    <Input v-model="injuryForm.bodyLocation" :placeholder="t('injuries.placeholders.location')" class="h-9 text-sm" />
+                </div>
+                <div class="col-span-1">
+                    <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">{{ t('injuries.fields.status') }}</label>
+                    <select v-model.number="injuryForm.status" class="w-full h-9 rounded-md border border-input bg-background px-3 text-xs font-bold">
+                        <option :value="0">{{ t('injuries.statuses.active') }}</option>
+                        <option :value="1">{{ t('injuries.statuses.rehab') }}</option>
+                        <option :value="2">{{ t('injuries.statuses.returned') }}</option>
+                    </select>
+                </div>
+                <div class="col-span-2 pt-4 flex justify-end gap-2 border-t mt-2">
+                    <Button variant="ghost" size="sm" @click="isDialogOpen = false">{{ t('common.cancel') }}</Button>
+                    <Button @click="handleSave" size="sm" :disabled="isSubmitting" class="font-bold">
+                        <Loader2 v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
+                        <Save class="mr-2 h-4 w-4" /> {{ t('common.save') }}
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- DELETE DIALOG -->
+    <Dialog v-model:open="isDeleteDialogOpen">
+        <DialogContent class="max-w-md">
+            <DialogHeader>
+                <DialogTitle>{{ t('injuries.deleteConfirm') }}</DialogTitle>
+            </DialogHeader>
+            <div class="py-4">
+                <p class="text-sm">
+                    {{ t('injuries.deleteQuestion') }} <span class="font-bold text-foreground">{{ injuryToDelete?.injury }}</span>?
+                </p>
+                <p class="text-[12px] text-destructive mt-2">{{ t('injuries.deleteWarning') }}</p>
+            </div>
+            <div class="flex justify-end gap-2">
+                <Button variant="ghost" @click="isDeleteDialogOpen = false">{{ t('common.cancel') }}</Button>
+                <Button variant="destructive" @click="confirmDelete" :disabled="isSubmitting">
+                    <Loader2 v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
+                    {{ t('common.delete') }}
+                </Button>
+            </div>
+        </DialogContent>
+    </Dialog>
+</div>
 </template>

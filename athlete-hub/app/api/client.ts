@@ -1,8 +1,7 @@
-// api/axios.ts
 import axios, { type InternalAxiosRequestConfig, AxiosError } from 'axios'
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '../stores/auth'
-import type { Result, UserSignInResponse } from '../types/api'
+import type { RefreshResponse, Result, UserSignInResponse } from '../types/api'
 import config from '@/config';
 
 // Helper per la traduzione fuori dai componenti Vue
@@ -67,7 +66,7 @@ api.interceptors.response.use(
     if (isLoggingOut) return Promise.reject(error)
 
     const isAuthRoute = originalRequest.url?.includes('/Auth/refresh') ||
-                        originalRequest.url?.includes('/Auth/logout')
+      originalRequest.url?.includes('/Auth/logout')
 
     if (isAuthRoute) {
       await forceLogout(authStore)
@@ -92,15 +91,13 @@ api.interceptors.response.use(
         isRefreshing = true
 
         try {
-          const { data } = await axios.post<Result<UserSignInResponse>>(
-            `${config.apiEndpoint}/Auth/refresh`, {}, {
-              withCredentials: true,
-              headers: { 'ngrok-skip-browser-warning': 'true' } //NGROK
-            }
+          const { data } = await axios.post<Result<RefreshResponse>>(
+            `${config.apiEndpoint}/Auth/refresh`,
+            { refreshToken: authStore.refreshToken }, // invio dal Pinia store
           )
 
           if (data.isSuccess && data.value) {
-            authStore.setTokens(data.value.accessToken, data.value.refreshToken)
+            authStore.setTokens(data.value.accessToken, data.value.refreshToken) // aggiorna store
             isRefreshing = false
             processQueue(null, data.value.accessToken)
             originalRequest.headers.Authorization = `Bearer ${data.value.accessToken}`
@@ -110,7 +107,7 @@ api.interceptors.response.use(
         } catch (refreshError) {
           isRefreshing = false
           processQueue(refreshError, null)
-          toast.error(t('refreshFailed'))
+          toast.error('Sessione scaduta')
           await forceLogout(authStore)
           return Promise.reject(refreshError)
         }

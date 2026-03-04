@@ -233,7 +233,25 @@
     "tests": {
         "cmj": "CMJ (cm)",
         "squat1rm": "Squat 1RM (kg)",
-        "sprint30m": "Sprint 30m (s)"
+        "sprint30m": "Sprint 30m (s)",
+        "pageTitle": "Configurazione Test",
+        "newTest": "Nuova Definizione",
+        "editTest": "Modifica Test",
+        "testName": "Nome del Test",
+        "description": "Descrizione / Protocollo",
+        "metrics": "Metriche Associate",
+        "addMetric": "Aggiungi Metrica",
+        "metricName": "Nome Metrica (es. Salto)",
+        "unit": "Unità (es. cm, sec)",
+        "dataType": "Tipo Dato",
+        "standardValue": "Valore Standard",
+        "saveSuccess": "Test salvato con successo",
+        "deleteConfirm": "Conferma eliminazione",
+        "deleteQuestion": "Vuoi davvero eliminare il test",
+        "deleteWarning": "Questa operazione è irreversibile.",
+        "deleteSuccess": "Test eliminato con successo",
+        "validationError": "Per favore compila tutti i campi obbligatori e aggiungi almeno una metrica",
+        "configureProtocol": "Configura i protocolli e definisci le metriche di input."
     },
     "calendar": {
         "grid": {
@@ -344,7 +362,12 @@
             "dataType": "Data Type",
             "standardValue": "Standard Value",
             "saveSuccess": "Test saved successfully",
-            "deleteConfirm": "Are you sure you want to delete this test?"
+            "deleteConfirm": "Confirm deletion",
+            "deleteQuestion": "Do you really want to delete the test",
+            "deleteWarning": "This action cannot be undone.",
+            "deleteSuccess": "Test deleted successfully",
+            "validationError": "Please fill all required fields and add at least one metric",
+            "configureProtocol": "Configure protocols and define input metrics."
         },
         "toast": {
             "created": "Event created successfully",
@@ -385,7 +408,7 @@
         "back": "Back",
         "close": "Close",
         "paginationInfo": "Page {current} of {total} ({count} total records)",
-        "loadMore":"Charge Other"
+        "loadMore": "Charge Other"
     },
     "kanban": {
         "title": "Kanban Board",
@@ -588,10 +611,10 @@
         "filters": {
             "allAthletes": "All Athletes",
             "allStatuses": "All Statuses"
-         },
-         "actions": {
+        },
+        "actions": {
             "resend": "Resend Email"
-         }
+        }
     },
     "analytics": {
         "readiness_title": "Readiness State",
@@ -619,54 +642,69 @@
         "title": "Medical Center",
         "management_title": "Medical Center",
         "subtitle": "Clinical monitoring and recovery times",
-        "history_title": "Athlete Injury Log",
-        "add_new": "Add New Injury",
-        "no_data": "No injuries found",
-        "no_data_desc": "The athlete has no recorded injuries at the moment.",
-        "form": {
-            "add_title": "New Injury",
-            "edit_title": "Update Injury",
-            "description": "Diagnosis / Injury",
-            "description_placeholder": "E.g. Grade II Hamstring Strain",
-            "start_date": "Start Date",
-            "expected_return": "Estimated Return",
+        "history_title": "Athlete Injury Record",
+        "add_new": "New Injury",
+        "no_data": "No injuries recorded",
+        "no_data_desc": "The athlete has no injuries recorded at the moment.",
+        "fields": {
+            "injury": "Diagnosis / Injury",
+            "startDate": "Start Date",
+            "expectedReturn": "Expected Return",
             "category": "Category",
             "severity": "Severity",
             "location": "Body Location",
-            "location_placeholder": "E.g. Right Thigh",
             "status": "Status",
-            "categories": {
-                "muscular": "Muscular",
-                "articular": "Articular",
-                "tendon": "Tendon",
-                "bone": "Bone"
-            },
-            "severity_levels": {
-                "minor": "Minor",
-                "moderate": "Moderate",
-                "severe": "Severe"
-            },
-            "status_levels": {
-                "active": "Active (Stop)",
-                "rehab": "Rehab",
-                "returned": "Returned"
-            }
+            "daysOut": "Days Out"
+        },
+        "placeholders": {
+            "injury": "E.g., Grade II Bicep Lesion",
+            "location": "E.g., Right Thigh"
+        },
+        "categories": {
+            "muscular": "Muscular",
+            "joint": "Articular",
+            "tendon": "Tendinous",
+            "bone": "Bone"
+        },
+        "severities": {
+            "mild": "Mild",
+            "moderate": "Moderate",
+            "severe": "Severe"
+        },
+        "statuses": {
+            "active": "Active (Stop)",
+            "rehab": "In Rehabilitation",
+            "returned": "Returned"
+        },
+        "fallback": {
+            "notAvailable": "N/A"
+        },
+        "form": {
+            "add_title": "New Injury",
+            "edit_title": "Update Injury"
         },
         "card": {
-            "start": "Start",
-            "location_label": "Site",
+            "start": "Start Date",
+            "location_label": "Location",
             "stop_duration": "Total Stop"
         },
         "errors": {
             "loadAthletes": "Error loading athletes",
             "loadInjuries": "Error loading injuries",
-            "save": "Error while saving injury",
-            "delete": "Error while deleting injury"
+            "save": "Error saving injury record",
+            "delete": "Error deleting injury record"
         },
         "toast": {
-            "created": "Injury recorded successfully",
-            "updated": "Record updated correctly",
+            "created": "Injury registered successfully",
+            "updated": "Record updated successfully",
             "deleted": "Injury deleted"
+        },
+        "deleteConfirm": "Confirm Deletion",
+        "deleteQuestion": "Are you sure you want to delete this injury?",
+        "deleteWarning": "This action cannot be undone.",
+        "dialog": {
+            "editTitle": "Edit Injury",
+            "newTitle": "New Injury"
         }
     },
     "performanceDashboard": {

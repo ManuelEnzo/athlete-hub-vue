@@ -246,7 +246,12 @@
         "dataType": "Tipo Dato",
         "standardValue": "Valore Standard",
         "saveSuccess": "Test salvato con successo",
-        "deleteConfirm": "Sei sicuro di voler eliminare questo test?"
+        "deleteConfirm": "Conferma eliminazione",
+        "deleteQuestion": "Vuoi davvero eliminare il test",
+        "deleteWarning": "Questa operazione è irreversibile.",
+        "deleteSuccess": "Test eliminato con successo",
+        "validationError": "Per favore compila tutti i campi obbligatori e aggiungi almeno una metrica",
+        "configureProtocol": "Configura i protocolli e definisci le metriche di input."
     },
     "calendar": {
         "grid": {
@@ -384,7 +389,7 @@
         "back": "Indietro",
         "close": "Chiudi",
         "paginationInfo": "Pagina {current} di {total} ({count} record totali)",
-        "loadMore":"Carica altri"
+        "loadMore": "Carica altri"
     },
     "kanban": {
         "title": "Kanban Board",
@@ -581,13 +586,13 @@
         "messages": {
             "resendSuccess": "Email reinviata con successo a {email}"
         },
-        "filters":{
+        "filters": {
             "allAthletes": "Tutti gli atleti",
             "allStatuses": "Tutti gli stati"
         },
         "actions": {
             "resend": "Reinvia Email"
-         }
+        }
     },
     "analytics": {
         "readiness_title": "Stato di Prontezza",
@@ -619,34 +624,42 @@
         "add_new": "Nuovo Infortunio",
         "no_data": "Nessun infortunio",
         "no_data_desc": "L'atleta non ha infortuni registrati al momento.",
-        "form": {
-            "add_title": "Nuovo Infortunio",
-            "edit_title": "Aggiorna Infortunio",
-            "description": "Diagnosi / Infortunio",
-            "description_placeholder": "Es. Lesione II Grado Bicipite",
-            "start_date": "Data Inizio",
-            "expected_return": "Rientro Stimato",
+        "fields": {
+            "injury": "Diagnosi / Infortunio",
+            "startDate": "Data Inizio",
+            "expectedReturn": "Rientro Stimato",
             "category": "Categoria",
             "severity": "Gravità",
             "location": "Sede Corporea",
-            "location_placeholder": "Es. Coscia DX",
             "status": "Stato",
-            "categories": {
-                "muscular": "Muscolare",
-                "articular": "Articolare",
-                "tendon": "Tendineo",
-                "bone": "Osseo"
-            },
-            "severity_levels": {
-                "minor": "Lieve",
-                "moderate": "Moderata",
-                "severe": "Grave"
-            },
-            "status_levels": {
-                "active": "Attivo (Stop)",
-                "rehab": "In Recupero",
-                "returned": "Rientrato"
-            }
+            "daysOut": "Giorni di Stop"
+        },
+        "placeholders": {
+            "injury": "Es. Lesione II Grado Bicipite",
+            "location": "Es. Coscia DX"
+        },
+        "categories": {
+            "muscular": "Muscolare",
+            "joint": "Articolare",
+            "tendon": "Tendineo",
+            "bone": "Osseo"
+        },
+        "severities": {
+            "mild": "Lieve",
+            "moderate": "Moderata",
+            "severe": "Grave"
+        },
+        "statuses": {
+            "active": "Attivo (Stop)",
+            "rehab": "In Recupero",
+            "returned": "Rientrato"
+        },
+        "fallback": {
+            "notAvailable": "N/D"
+        },
+        "form": {
+            "add_title": "Nuovo Infortunio",
+            "edit_title": "Aggiorna Infortunio"
         },
         "card": {
             "start": "Inizio",
@@ -663,6 +676,13 @@
             "created": "Infortunio registrato con successo",
             "updated": "Record aggiornato correttamente",
             "deleted": "Infortunio eliminato"
+        },
+        "deleteConfirm": "Conferma eliminazione",
+        "deleteQuestion": "Sei sicuro di voler eliminare questo infortunio?",
+        "deleteWarning": "Questa azione non può essere annullata.",
+        "dialog": {
+            "editTitle": "Modifica Infortunio",
+            "newTitle": "Nuovo Infortunio"
         }
     },
     "performanceDashboard": {

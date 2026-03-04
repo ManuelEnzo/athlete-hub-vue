@@ -16,6 +16,12 @@ export interface UserSignInResponse {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface RefreshResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
 // DTO per la richiesta di registrazione
 export interface UserSignUpRequest {
   email: string
