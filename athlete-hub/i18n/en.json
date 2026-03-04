@@ -98,7 +98,8 @@
             "updated": "Measurement updated!",
             "deleted": "Deleted",
             "saveError": "Error saving measurement",
-            "deleteError": "Error deleting measurement"
+            "deleteError": "Error deleting measurement",
+            "confirmDelete": "Confirm deletion"
         },
         "card": {
             "weight": "Weight",
@@ -541,6 +542,7 @@
         "effort": "Effort (RPE)",
         "target": "Target",
         "back": "Back",
+        "historyDetail": "History Details",
         "fields": {
             "rpe": "RPE",
             "notes": "Notes (optional)",
@@ -583,7 +585,7 @@
             "4": "Moderate 😐",
             "6": "Challenging 😰",
             "8": "Hard 🥵",
-            "9.5": "Extreme 💀",
+            "9": "Extreme 💀",
             "10": "Maximal 🔥",
             "none": "None",
             "light": "Light",

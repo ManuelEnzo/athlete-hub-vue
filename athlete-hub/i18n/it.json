@@ -98,7 +98,8 @@
             "updated": "Rilevazione aggiornata!",
             "deleted": "Eliminato",
             "saveError": "Errore durante il salvataggio",
-            "deleteError": "Errore durante eliminazione"
+            "deleteError": "Errore durante eliminazione",
+            "confirmDelete": "Conferma eliminazione"
         },
         "card": {
             "weight": "Peso",
@@ -519,6 +520,7 @@
         "effort": "Sforzo (RPE)",
         "target": "Target",
         "back": "Indietro",
+        "historyDetail": "Dettagli Storico",
         "fields": {
             "rpe": "RPE",
             "notes": "Note (opzionale)",
@@ -561,7 +563,7 @@
             "4": "Moderato 😐",
             "6": "Impegnativo 😰",
             "8": "Duro 🥵",
-            "9.5": "Estremo 💀",
+            "9": "Estremo 💀",
             "10": "Massimale 🔥",
             "none": "Nessuno",
             "light": "Leggero",

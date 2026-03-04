@@ -8,47 +8,52 @@ import {
 import { toast } from 'vue-sonner'
 import { athleteApi } from '@/api/business'
 
-// UI Components
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 
-// --- STATE ---
 const { t } = useI18n()
+
+// STATE
 const isLoading = ref(false)
 const rawData = ref<any[]>([])
 const pageIndex = ref(1)
 const pageSize = ref(10)
+
+const totalItems = ref(0)
+const totalPages = ref(1)
+
 const searchQuery = ref('')
 const selectedStatus = ref<string | number>('')
 const selectedAthlete = ref<string>('')
 
-/** * Mapping Enum RpeStatus:
- * 0: Pending, 1: Processing, 2: Completed, 3: Failed
- */
+// STATUS CONFIG
 const getStatusConfig = (status: number) => {
   switch (status) {
-    case 0: // Pending
+    case 0:
       return { label: t('rpe.status.pending'), color: 'bg-amber-500/10 text-amber-600 border-amber-200/50', icon: Clock }
-    case 1: // Processing
+    case 1:
       return { label: t('rpe.status.processing'), color: 'bg-blue-500/10 text-blue-600 border-blue-200/50', icon: Loader }
-    case 2: // Completed
+    case 2:
       return { label: t('rpe.status.completed'), color: 'bg-green-500/10 text-green-600 border-green-200/50', icon: CheckCircle2 }
-    case 3: // Failed
+    case 3:
       return { label: t('rpe.status.failed'), color: 'bg-red-500/10 text-red-600 border-red-200/50', icon: AlertCircle }
     default:
       return { label: t('rpe.status.unknown'), color: 'bg-slate-500/10 text-slate-600', icon: Clock }
   }
 }
 
+// FETCH (SERVER PAGINATION)
 const fetchStatuses = async () => {
   isLoading.value = true
   try {
     const res = await athleteApi.getInfoForEmailStatus(pageIndex.value, pageSize.value)
+
     if (res.data.value) {
-      // keep raw data and let client-side filters/pagination handle presentation
       rawData.value = res.data.value.items
+      totalItems.value = res.data.value.totalCount
+      totalPages.value = res.data.value.totalPages
     }
   } catch (error) {
     toast.error(t('rpe.errors.fetch'))
@@ -57,7 +62,8 @@ const fetchStatuses = async () => {
   }
 }
 
-const handleResend = async (email: string, status?: number) => {
+// RESEND
+const handleResend = async (email: string) => {
   try {
     await athleteApi.resendRpeEmail(email)
     toast.success(t('rpe.messages.resendSuccess', { email }))
@@ -67,6 +73,7 @@ const handleResend = async (email: string, status?: number) => {
   }
 }
 
+// DATE FORMAT
 const formatDate = (date: string | null) => {
   if (!date) return '--:--'
   return new Date(date).toLocaleString('it-IT', {
@@ -74,12 +81,15 @@ const formatDate = (date: string | null) => {
   })
 }
 
+// LOAD FIRST PAGE
 onMounted(fetchStatuses)
+
+// WHEN PAGE CHANGES → REFETCH
 watch(pageIndex, () => {
-  // when changing pageIndex we don't need to refetch from API for client-side filtering
+  fetchStatuses()
 })
 
-// Derived lists and filtering
+// FILTERS
 const statusOptions = computed(() => {
   const set = new Map<number, string>()
   rawData.value.forEach(r => {
@@ -100,29 +110,26 @@ const athleteOptions = computed(() => {
 const filtered = computed(() => {
   const q = searchQuery.value?.toString().trim().toLowerCase() || ''
   return rawData.value.filter(r => {
-    // filter by athlete
     if (selectedAthlete.value && r.nomeAtleta !== selectedAthlete.value) return false
-    // filter by status
     if (selectedStatus.value !== '' && String(r.statoEmail) !== String(selectedStatus.value)) return false
-    // search across name and email
+
     if (!q) return true
-    const name = (r.nomeAtleta || '').toString().toLowerCase()
-    const email = (r.emailAtleta || '').toString().toLowerCase()
-    const statusLabel = getStatusConfig(Number(r.statoEmail)).label?.toString().toLowerCase() || ''
+
+    const name = (r.nomeAtleta || '').toLowerCase()
+    const email = (r.emailAtleta || '').toLowerCase()
+    const statusLabel = getStatusConfig(Number(r.statoEmail)).label.toLowerCase()
+
     return name.includes(q) || email.includes(q) || statusLabel.includes(q)
   })
 })
 
-const totalItems = computed(() => filtered.value.length)
-const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / pageSize.value)))
+// DISPLAYED DATA = FILTERED (NO CLIENT PAGINATION)
+const displayedData = computed(() => filtered.value)
 
-const displayedData = computed(() => {
-  const start = (pageIndex.value - 1) * pageSize.value
-  return filtered.value.slice(start, start + pageSize.value)
+// RESET PAGE WHEN FILTERS CHANGE
+watch([searchQuery, selectedStatus, selectedAthlete], () => {
+  pageIndex.value = 1
 })
-
-// reset page when filters/search change
-watch([searchQuery, selectedStatus, selectedAthlete], () => { pageIndex.value = 1 })
 </script>
 
 <template>
@@ -219,7 +226,7 @@ watch([searchQuery, selectedStatus, selectedAthlete], () => { pageIndex.value = 
                     size="icon"
                     class="h-8 w-8 opacity-0 group-hover:opacity-100 transition-all"
                     :title="t('rpe.actions.resend')"
-                    @click="handleResend(row.emailAtleta, row.statoEmail)">
+                    @click="handleResend(row.emailAtleta)">
                     <Send class="h-3.5 w-3.5" />
                   </Button>
                 </td>
@@ -301,7 +308,7 @@ watch([searchQuery, selectedStatus, selectedAthlete], () => { pageIndex.value = 
               variant="default"
               class="w-full mt-2 h-9"
               :title="t('rpe.actions.resend')"
-              @click="handleResend(row.emailAtleta, row.statoEmail)">
+              @click="handleResend(row.emailAtleta)">
               <Send class="h-3.5 w-3.5 mr-2" />
               {{ t('rpe.actions.resend') }}
             </Button>
