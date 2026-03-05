@@ -91,7 +91,11 @@ const acwrChartOptions = computed<ApexOptions>(() => ({
     stroke: { width: 3, curve: 'smooth' },
     colors: ['#6366f1'],
     fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.05 } },
-    xaxis: { categories: data.value?.acwr.map(a => a.week) ?? [] },
+    xaxis: {
+        categories: data.value?.performance.history.map(h =>
+            new Date(h.date).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' })
+        ) ?? []
+    },
     yaxis: { min: 0, max: 2, title: { text: 'ACWR' } },
     annotations: {
         yaxis: [
@@ -157,16 +161,16 @@ const recoveredInjuries = computed(() =>
 
 // Funzione per mappare lo stato sui colori
 const getInjuryBadgeClass = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "active":
-      return 'bg-red-200 text-red-800'
-    case "rehabilitation":
-      return 'bg-yellow-200 text-yellow-800'
-    case "returned":
-      return 'bg-green-200 text-green-800'
-    default:
-      return 'bg-gray-200 text-gray-800'
-  }
+    switch (status.toLowerCase()) {
+        case "active":
+            return 'bg-red-200 text-red-800'
+        case "rehabilitation":
+            return 'bg-yellow-200 text-yellow-800'
+        case "returned":
+            return 'bg-green-200 text-green-800'
+        default:
+            return 'bg-gray-200 text-gray-800'
+    }
 }
 </script>
 
@@ -324,7 +328,7 @@ const getInjuryBadgeClass = (status: string) => {
                                 class="flex justify-between items-center p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition">
                                 <span class="text-gray-700">{{ injury.injury }} ({{ new
                                     Date(injury.date).toLocaleDateString() }})</span>
-                               <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
                                     :class="getInjuryBadgeClass(injury.status)">
                                     {{ injury.status }} - {{ injury.daysOut }}d
                                 </span>
