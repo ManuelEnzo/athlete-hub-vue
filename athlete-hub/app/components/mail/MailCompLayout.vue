@@ -63,10 +63,10 @@ const fetchStatuses = async () => {
 }
 
 // RESEND
-const handleResend = async (email: string) => {
+const handleResend = async (emailId: number) => {
   try {
-    await athleteApi.resendRpeEmail(email)
-    toast.success(t('rpe.messages.resendSuccess', { email }))
+    await athleteApi.resendRpeEmail(emailId)
+    toast.success(t('rpe.messages.resendSuccess', { emailId }))
     fetchStatuses()
   } catch {
     toast.error(t('rpe.errors.resend'))
@@ -226,7 +226,7 @@ watch([searchQuery, selectedStatus, selectedAthlete], () => {
                     size="icon"
                     class="h-8 w-8 opacity-0 group-hover:opacity-100 transition-all"
                     :title="t('rpe.actions.resend')"
-                    @click="handleResend(row.emailAtleta)">
+                    @click="handleResend(row.emailId)">
                     <Send class="h-3.5 w-3.5" />
                   </Button>
                 </td>
@@ -308,7 +308,7 @@ watch([searchQuery, selectedStatus, selectedAthlete], () => {
               variant="default"
               class="w-full mt-2 h-9"
               :title="t('rpe.actions.resend')"
-              @click="handleResend(row.emailAtleta)">
+              @click="handleResend(row.emailId)">
               <Send class="h-3.5 w-3.5 mr-2" />
               {{ t('rpe.actions.resend') }}
             </Button>

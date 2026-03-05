@@ -362,6 +362,7 @@ export interface InjuriesAnalytics {
   status: string;
 }
 
+
 export interface InjuryResponseDTO {
     id: number;
     athleteId: number;
@@ -454,6 +455,7 @@ export interface DisciplineCountDto {
 }
 
 export interface RpeEmailStatus {
+  emailId: number;
   nomeAtleta: string
   emailAtleta: string
   statoEmail: number // 0: Coda, 1: Inviata, 2: Errore

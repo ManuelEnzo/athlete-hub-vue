@@ -1,27 +1,20 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-    CheckCircle, AlertTriangle, TrendingUp, TrendingDown,
-    Activity, Scale, Info, Calendar, History, Loader2, ClipboardList, Clock,
-    DivideCircle, Target, Heart, Zap
-} from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { Activity, TrendingUp, Scale, Zap } from 'lucide-vue-next'
 
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ClientOnly } from '#components'
 
 import { athleteApi } from '@/api/business'
 import type { AthleteAnalyticsDto } from '@/types/api'
+import type { ApexOptions } from 'apexcharts'
+import type { InjuriesAnalytics } from '@/types/api'
+
 
 const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'))
 
-// ---------------- Props ----------------
-// Riceviamo l'id e opzionalmente le date.
-// Se le date non sono passate, le calcoliamo noi.
 const props = defineProps<{
     athleteId: number
     from?: string
@@ -30,404 +23,324 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-// ---------------- State ----------------
 const data = ref<AthleteAnalyticsDto | null>(null)
 const loading = ref(true)
 
-// ---------------- API Actions ----------------
-// AthleteDetail.vue
+const selectedMetric = ref<string | null>(null)
 
 async function fetchAnalytics() {
     if (!props.athleteId) return
 
     loading.value = true
-    // IMPORTANTE: Resetta subito i dati per evitare "fantastmi" del vecchio atleta
     data.value = null
 
-    const dateTo = props.to || new Date().toISOString()
-    const dateFrom = props.from || (() => {
-        const d = new Date()
-        d.setDate(d.getDate() - 42)
-        return d.toISOString()
-    })()
+    const dateTo = props.to ?? new Date().toISOString()
+
+    const dateFrom =
+        props.from ??
+        (() => {
+            const d = new Date()
+            d.setDate(d.getDate() - 42)
+            return d.toISOString()
+        })()
 
     try {
-        const response = await athleteApi.getDatasForAnalytics(props.athleteId, dateFrom, dateTo)
+        const response = await athleteApi.getDatasForAnalytics(
+            props.athleteId,
+            dateFrom,
+            dateTo
+        )
 
-        // Se il backend risponde 200 ma con isSuccess: false (gestito dall'intercettore)
         if (response.data.isSuccess) {
             data.value = response.data.value ?? null
-        } else {
-            // Se isSuccess è false, data.value è già null per il reset sopra
-            console.warn("Dati non trovati (Business Logic)");
         }
-    } catch (err: any) {
-        // Se il backend risponde 404/400, Axios finisce qui
-        data.value = null // Sicurezza extra
-
-        // Estrai il messaggio se presente nella risposta d'errore
-        const errorMessage = err.response?.data?.error?.message;
-
     } finally {
         loading.value = false
     }
 }
 
-// Ricarica se l'atleta cambia
-watch(() => props.athleteId, () => fetchAnalytics())
+watch(() => props.athleteId, fetchAnalytics)
+onMounted(fetchAnalytics)
 
-onMounted(() => {
-    fetchAnalytics()
-})
-
-// ---------------- Computed ----------------
 const latestAcwr = computed(() => {
     const current = data.value?.acwr.find(a => a.week === 'Wk Corrente')
-    return current || { acwr: 0, zone: 'N/A', acute: 0, chronic: 0, week: '---' }
+
+    return (
+        current ?? {
+            acwr: 0,
+            zone: '',
+            acute: 0,
+            chronic: 0
+        }
+    )
 })
 
-const acwrStatusClass = computed(() => {
-    const val = latestAcwr.value.acwr
-    const zone = latestAcwr.value.zone
+/* ---------------- ACWR CHART ---------------- */
+const acwrChartSeries = computed(() => [
+    {
+        name: 'ACWR',
+        data: data.value?.acwr.map(a => a.acwr) ?? []
+    }
+])
 
-    // Se siamo in inizializzazione, usiamo il BLU
-    if (zone === 'Inizializzazione') return 'bg-blue-500/10 text-blue-700 border-blue-200'
+const acwrChartOptions = computed<ApexOptions>(() => ({
+    chart: {
+        type: 'area',
+        toolbar: { show: false }
+    },
+    stroke: { width: 3, curve: 'smooth' },
+    colors: ['#6366f1'],
+    fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.05 } },
+    xaxis: { categories: data.value?.acwr.map(a => a.week) ?? [] },
+    yaxis: { min: 0, max: 2, title: { text: 'ACWR' } },
+    annotations: {
+        yaxis: [
+            { y: 0.8, y2: 1.3, fillColor: '#22c55e22' },
+            { y: 1.3, y2: 1.5, fillColor: '#eab30822' },
+            { y: 1.5, y2: 2, fillColor: '#ef444422' }
+        ]
+    }
+}))
 
-    if (val > 1.5) return 'bg-red-500/10 text-red-700 border-red-200'
-    if (val >= 1.3) return 'bg-yellow-500/10 text-yellow-700 border-yellow-200'
-    return 'bg-green-500/10 text-green-700 border-green-200'
-})
-
-
-const acwrChartData = computed(() => {
-    return data.value?.acwr.map(a => ({
-        week: a.week,
-        [t('analytics.acwr')]: a.acwr
-    })) || []
-})
-
-const historyChartData = computed(() => {
+/* ---------------- METRICS ---------------- */
+const availableMetrics = computed(() => {
     if (!data.value?.performance.history) return []
-    return data.value.performance.history.map(h => {
-        const row: any = { date: h.date }
-        h.metrics.forEach(m => {
-            row[m.metricName] = m.value
-        })
-        return row
-    })
+
+    const set = new Set<string>()
+    data.value.performance.history.forEach(h =>
+        h.metrics.forEach(m => set.add(m.metricName))
+    )
+
+    return Array.from(set)
 })
 
-const historyCategories = computed(() => {
-    if (!data.value?.performance.history || data.value.performance.history.length === 0) return []
-    const categories = new Set<string>()
-    data.value.performance.history.forEach(h => {
-        h.metrics.forEach(m => categories.add(m.metricName))
-    })
-    return Array.from(categories)
+watch(availableMetrics, metrics => {
+    if (!selectedMetric.value && metrics.length > 0) {
+        selectedMetric.value = metrics[0] ?? null
+    }
 })
 
-// ApexCharts - ACWR Trend (Area Chart)
-const acwrChartOptions = computed(() => ({
-    chart: {
-        type: 'area' as const,
-        toolbar: { show: false },
-        foreColor: '#000',
-        animations: { enabled: true }
-    },
-    colors: ['#3b82f6'],
-    fill: {
-        type: 'gradient' as const,
-        gradient: {
-            shadeIntensity: 0.5,
-            opacityFrom: 0.45,
-            opacityTo: 0.05,
-            stops: [20, 100, 100, 100]
-        }
-    },
-    stroke: { curve: 'smooth' as const, width: 2 },
-    markers: { size: 5, hover: { size: 7 } },
-    xaxis: {
-        categories: data.value?.acwr.map(a => a.week) || [],
-        labels: { style: { colors: 'inherit', fontSize: '11px' } },
-        axisBorder: { show: false },
-        axisTicks: { show: false }
-    },
-    yaxis: {
-        min: 0,
-        max: 2,
-        labels: { style: { colors: 'inherit', fontSize: '11px' } },
-        axisBorder: { show: false }
-    },
-    grid: { borderColor: 'hsl(var(--muted-foreground) / 0.1)', strokeDashArray: 4, padding: { left: 5, right: 10 } },
-    tooltip: {
-        enabled: true, theme: 'dark' as const, style: { fontSize: '12px' }, custom: ({ series, seriesIndex, dataPointIndex, w }: any) => {
-            const value = series[seriesIndex][dataPointIndex]
-            return `<div class="px-2 py-1"><span class="font-bold">${value.toFixed(2)}</span></div>`
-        }
-    },
-    legend: { show: false }
-}))
+const metricChartSeries = computed(() => {
+    if (!selectedMetric.value) return []
 
-const acwrChartSeries = computed(() => [{
-    name: t('analytics.acwr'),
-    data: data.value?.acwr.map(a => a.acwr) || []
-}])
-
-// ApexCharts - Performance History (Multi-series Line)
-const performanceChartOptions = computed(() => ({
-    chart: {
-        type: 'line' as const,
-        toolbar: { show: false },
-        foreColor: '#000',
-        animations: { enabled: true }
-    },
-    colors: ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'],
-    stroke: { curve: 'smooth' as const, width: 2.5 },
-    markers: { size: 4, hover: { size: 6 } },
-    xaxis: {
-        categories: data.value?.performance.history.map(h => new Date(h.date).toLocaleDateString('it-IT', { month: 'short', day: 'numeric' })) || [],
-        labels: { style: { colors: 'inherit', fontSize: '11px' } },
-        axisBorder: { show: false },
-        axisTicks: { show: false }
-    },
-    yaxis: {
-        labels: { style: { colors: 'inherit', fontSize: '11px' } },
-        axisBorder: { show: false }
-    },
-    grid: { borderColor: 'hsl(var(--muted-foreground) / 0.1)', strokeDashArray: 4 },
-    tooltip: { enabled: true, theme: 'dark' as const, style: { fontSize: '12px' } },
-    legend: { position: 'top' as const, horizontalAlign: 'right' as const, fontSize: '12px', labels: { colors: 'inherit' } }
-}))
-
-const performanceChartSeries = computed(() => {
-    const series: any = {}
+    const values: (number | null)[] = []
     data.value?.performance.history.forEach(h => {
-        h.metrics.forEach(m => {
-            if (!series[m.metricName]) {
-                series[m.metricName] = []
-            }
-            series[m.metricName].push(m.value)
-        })
+        const metric = h.metrics.find(m => m.metricName === selectedMetric.value)
+        values.push(metric ? metric.value : null)
     })
-    return Object.entries(series).map(([name, data]) => ({ name, data }))
+
+    return [{ name: selectedMetric.value, data: values }]
 })
+
+const metricChartOptions = computed<ApexOptions>(() => ({
+    chart: { type: 'line', toolbar: { show: false } },
+    stroke: { curve: 'smooth', width: 3 },
+    colors: ['#8b5cf6'],
+    markers: { size: 5 },
+    xaxis: {
+        categories:
+            data.value?.performance.history.map(h =>
+                new Date(h.date).toLocaleDateString()
+            ) ?? []
+    }
+}))
+
+/* ---------------- INJURIES ---------------- */
+const injuries = computed<InjuriesAnalytics[]>(() => data.value?.injuries ?? [])
+const totalInjuries = computed(() => injuries.value.length)
+const activeInjuries = computed(() =>
+    injuries.value.filter(i => i.status.toLowerCase() === 'active')
+)
+const recoveredInjuries = computed(() =>
+    injuries.value.filter(i => i.status.toLowerCase() === 'returned')
+)
+
+// Funzione per mappare lo stato sui colori
+const getInjuryBadgeClass = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "active":
+      return 'bg-red-200 text-red-800'
+    case "rehabilitation":
+      return 'bg-yellow-200 text-yellow-800'
+    case "returned":
+      return 'bg-green-200 text-green-800'
+    default:
+      return 'bg-gray-200 text-gray-800'
+  }
+}
 </script>
 
 <template>
     <div class="w-full flex flex-col gap-6">
 
-        <!-- LOADING STATE -->
+        <!-- LOADING -->
         <div v-if="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Skeleton class="h-[320px] w-full rounded-xl" v-for="i in 3" :key="i" />
+            <Skeleton v-for="i in 3" :key="i" class="h-[320px] w-full rounded-xl" />
         </div>
 
-        <!-- MAIN CONTENT -->
         <template v-else-if="data && data.athlete">
 
-            <!-- HERO SECTION - Top Cards -->
+            <!-- HERO -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <!-- Readiness Card -->
-                <Card class="border border-foreground/10 shadow-md hover:shadow-lg transition-shadow">
+
+                <Card>
                     <CardContent class="p-6">
-                        <div class="flex items-start justify-between mb-4">
+                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
+                            {{ t('analytics.readiness_title') }}
+                        </p>
+                        <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{{
-                                    t('analytics.readiness_title') }}</p>
-                                <span class="text-3xl font-bold tracking-tight">{{ data.athlete.readinessScore }}</span>
+                                <span class="text-3xl font-bold">{{ data.athlete.readinessScore }}</span>
                                 <span class="text-sm text-muted-foreground">/100</span>
                             </div>
                             <Activity class="h-5 w-5 text-blue-500" />
                         </div>
-                        <Badge variant="outline" :class="[
-                            data.athlete.readinessScore > 70 ? 'bg-green-500/10 text-green-700 border-green-200' : 'bg-yellow-500/10 text-yellow-700 border-yellow-200'
-                        ]" class="text-xs">
-                            {{ data.athlete.riskLevel }}
-                        </Badge>
                     </CardContent>
                 </Card>
 
-                <!-- ACWR Card -->
-                <Card class="border border-foreground/10 shadow-md hover:shadow-lg transition-shadow">
+                <Card>
                     <CardContent class="p-6">
-                        <div class="flex items-start justify-between mb-4">
-                            <div>
-                                <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{{
-                                    t('analytics.current_acwr') }}</p>
-                                <span class="text-3xl font-bold tracking-tight">{{ latestAcwr.acwr.toFixed(2) }}</span>
-                            </div>
+                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
+                            {{ t('analytics.current_acwr') }}
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-3xl font-bold">{{ latestAcwr.acwr.toFixed(2) }}</span>
                             <Zap class="h-5 w-5" :class="latestAcwr.acwr > 1.3 ? 'text-red-500' : 'text-green-500'" />
                         </div>
-                        <Badge :class="[
-                            latestAcwr.acwr > 1.5 ? 'bg-red-500/10 text-red-700 border-red-200' :
-                                latestAcwr.acwr >= 1.3 ? 'bg-yellow-500/10 text-yellow-700 border-yellow-200' :
-                                    'bg-green-500/10 text-green-700 border-green-200',
-                            'text-[10px] sm:text-xs leading-tight text-center break-words whitespace-normal'
-                        ]" variant="outline">
-                            {{ latestAcwr.zone }}
-                        </Badge>
                     </CardContent>
                 </Card>
 
-                <!-- Acute Load -->
-                <Card class="border border-foreground/10 shadow-md hover:shadow-lg transition-shadow">
+                <Card>
                     <CardContent class="p-6">
-                        <div class="flex items-start justify-between mb-4">
-                            <div>
-                                <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Carico
-                                    Acuto</p>
-                                <span class="text-3xl font-bold tracking-tight">{{ latestAcwr.acute.toFixed(0) }}</span>
-                            </div>
-                            <TrendingUp class="h-5 w-5 text-orange-500" />
-                        </div>
-                        <p class="text-xs text-muted-foreground">Ultimi 7 giorni</p>
+                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
+                            {{ t('analytics.acute_load') }}
+                        </p>
+                        <span class="text-3xl font-bold">{{ latestAcwr.acute.toFixed(0) }}</span>
                     </CardContent>
                 </Card>
 
-                <!-- Chronic Load -->
-                <Card class="border border-foreground/10 shadow-md hover:shadow-lg transition-shadow">
+                <Card>
                     <CardContent class="p-6">
-                        <div class="flex items-start justify-between mb-4">
-                            <div>
-                                <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Carico
-                                    Cronico</p>
-                                <span class="text-3xl font-bold tracking-tight">{{ latestAcwr.chronic.toFixed(0)
-                                }}</span>
-                            </div>
-                            <Target class="h-5 w-5 text-purple-500" />
-                        </div>
-                        <p class="text-xs text-muted-foreground">Ultimi 28 giorni</p>
+                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
+                            {{ t('analytics.chronic_load') }}
+                        </p>
+                        <span class="text-3xl font-bold">{{ latestAcwr.chronic.toFixed(0) }}</span>
                     </CardContent>
                 </Card>
+
             </div>
 
-            <!-- CHARTS SECTION -->
+            <!-- CHARTS -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- ACWR Trend Chart -->
-                <Card class="border border-foreground/10 shadow-md">
-                    <CardHeader class="pb-3 bg-muted/30">
-                        <CardTitle class="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                            <TrendingUp class="h-4 w-4" /> Andamento ACWR
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase">
+                            <TrendingUp class="h-4 w-4" />
+                            {{ t('analytics.workload_trend') }}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent class="pt-6">
+                    <CardContent>
                         <ClientOnly>
-                            <VueApexCharts type="area" :options="acwrChartOptions" :series="acwrChartSeries"
-                                height="250" />
+                            <VueApexCharts type="area" height="260" :options="acwrChartOptions"
+                                :series="acwrChartSeries" />
                         </ClientOnly>
                     </CardContent>
                 </Card>
 
-                <!-- Performance History Chart -->
-                <Card class="border border-foreground/10 shadow-md">
-                    <CardHeader class="pb-3 bg-muted/30">
-                        <CardTitle class="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                            <Activity class="h-4 w-4" /> Metriche Storiche
+                <Card>
+                    <CardHeader class="flex justify-between items-center">
+                        <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase">
+                            <Activity class="h-4 w-4" />
+                            {{ t('analytics.performance_history') }}
                         </CardTitle>
+                        <select v-model="selectedMetric" class="text-xs border rounded px-2 py-1 bg-background">
+                            <option v-for="metric in availableMetrics" :key="metric" :value="metric">{{ metric }}
+                            </option>
+                        </select>
                     </CardHeader>
-                    <CardContent class="pt-6">
+                    <CardContent>
                         <ClientOnly>
-                            <VueApexCharts v-if="performanceChartSeries.length > 0" type="line"
-                                :options="performanceChartOptions" :series="performanceChartSeries" height="250" />
-                            <div v-else class="h-[250px] flex items-center justify-center text-muted-foreground">
-                                <p class="text-sm">Nessun dato storico disponibile</p>
+                            <VueApexCharts v-if="metricChartSeries.length" type="line" height="260"
+                                :options="metricChartOptions" :series="metricChartSeries" />
+                            <div v-else class="h-[260px] flex items-center justify-center text-muted-foreground">
+                                {{ t('analytics.no_history') }}
                             </div>
                         </ClientOnly>
                     </CardContent>
                 </Card>
+
             </div>
 
-            <!-- LATEST TESTS SECTION -->
-            <div class="space-y-3">
-                <h3
-                    class="text-sm font-bold uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2">
-                    <Zap class="h-4 w-4" /> Ultimi Risultati
-                </h3>
+            <!-- BODY METRICS + INJURIES STATUS AFFIANCATI -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                <div v-if="data.performance.lastTests && data.performance.lastTests.length > 0"
-                    class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                    <Card v-for="test in data.performance.lastTests" :key="test.metricName" class="... overflow-hidden">
-                        <CardContent class="p-3 sm:p-4 flex flex-col items-center justify-center text-center">
-                            <span
-                                class="text-[8px] sm:text-[9px] font-bold uppercase text-muted-foreground/70 mb-2 line-clamp-2 min-h-[20px] leading-none">
-                                {{ test.metricName }}
-                            </span>
-
-                            <div class="text-lg sm:text-xl font-bold tracking-tighter truncate w-full">
-                                {{ test.value }}<span class="text-[10px] font-semibold ml-0.5 text-muted-foreground">{{
-                                    test.unit }}</span>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-                <div v-else class="bg-muted/5 border border-foreground/10 rounded-lg p-6 text-center">
-                    <ClipboardList class="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
-                    <p class="text-xs font-semibold text-muted-foreground/60">{{ t('analytics.no_tests_registered') }}
-                    </p>
-                </div>
-            </div>
-
-            <!-- BODY & INJURIES SECTION -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Body Summary -->
-                <Card class="border border-foreground/10 shadow-md">
-                    <CardHeader class="bg-muted/30 pb-3">
-                        <CardTitle class="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                            <Scale class="h-4 w-4" /> Misure Antropometriche
+                <!-- BODY METRICS -->
+                <Card class="bg-white shadow-lg rounded-2xl border border-gray-100">
+                    <CardHeader class="bg-gray-50 px-6 py-4 rounded-t-2xl">
+                        <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase text-gray-700">
+                            <Scale class="h-5 w-5 text-purple-500" />
+                            {{ t('analytics.metrics_summary') }}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent class="pt-6 space-y-4">
-                        <div class="flex justify-between items-center pb-3 border-b border-foreground/5">
-                            <span class="text-sm text-muted-foreground font-medium">Peso</span>
-                            <span class="text-lg font-bold">{{ data.athlete.antropometrics.weight }}<span
-                                    class="text-xs text-muted-foreground ml-1">kg</span></span>
-                        </div>
-                        <div class="flex justify-between items-center pb-3 border-b border-foreground/5">
-                            <span class="text-sm text-muted-foreground font-medium">Altezza</span>
-                            <span class="text-lg font-bold">{{ data.athlete.antropometrics.height }}<span
-                                    class="text-xs text-muted-foreground ml-1">cm</span></span>
+                    <CardContent class="space-y-3 px-6 py-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-500">{{ t('analytics.weight') }}</span>
+                            <span class="font-semibold text-gray-900">{{ data.athlete.antropometrics.weight }} kg</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-muted-foreground font-medium">BMI</span>
-                            <span class="text-lg font-bold">{{ data.athlete.antropometrics.bmi }}</span>
+                            <span class="text-gray-500">{{ t('analytics.height') }}</span>
+                            <span class="font-semibold text-gray-900">{{ data.athlete.antropometrics.height }} cm</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-500">{{ t('analytics.bmi') }}</span>
+                            <span class="font-semibold text-gray-900">{{ data.athlete.antropometrics.bmi }}</span>
                         </div>
                     </CardContent>
                 </Card>
 
-                <!-- Injuries Status -->
-                <Card class="lg:col-span-2 border border-foreground/10 shadow-md">
-                    <CardHeader class="bg-muted/30 pb-3">
-                        <CardTitle class="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                            <Heart class="h-4 w-4" /> Stato Infortuni
+                <!-- INJURIES STATUS -->
+                <Card v-if="totalInjuries > 0" class="bg-white shadow-lg rounded-2xl border border-gray-100">
+                    <CardHeader class="bg-gray-50 px-6 py-4 rounded-t-2xl">
+                        <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase text-gray-700">
+                            <Zap class="h-5 w-5 text-red-500" />
+                            {{ t('analytics.injuries_status') }}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent class="pt-6">
-                        <div v-if="!data.injuries || data.injuries.length === 0"
-                            class="p-4 bg-green-500/5 rounded-lg border border-green-500/20 flex items-center gap-3">
-                            <CheckCircle class="h-5 w-5 text-green-500 flex-shrink-0" />
-                            <span class="text-sm font-bold text-green-700">{{ t('analytics.all_clear') }}</span>
+                    <CardContent class="space-y-3 px-6 py-4">
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-500">{{ t('analytics.total_injuries') }}</span>
+                            <span class="font-semibold text-gray-900">{{ totalInjuries }}</span>
                         </div>
-                        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div v-for="injury in data.injuries" :key="injury.date"
-                                class="p-3 rounded-lg border border-foreground/10 bg-muted/5">
-                                <div class="flex justify-between mb-2">
-                                    <span class="text-[10px] font-mono text-muted-foreground/60">{{ new
-                                        Date(injury.date).toLocaleDateString('it-IT') }}</span>
-                                    <Badge variant="secondary" class="text-[9px] font-bold uppercase">{{ injury.status
-                                    }}</Badge>
-                                </div>
-                                <p class="text-xs font-semibold">{{ injury.injury }}</p>
-                            </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-500">{{ t('analytics.active_injuries') }}</span>
+                            <span class="font-semibold text-gray-900">{{ activeInjuries.length }}</span>
                         </div>
+
+                        <ul class="mt-3 space-y-2 text-sm max-h-64 overflow-y-auto">
+                            <li v-for="injury in injuries" :key="injury.date + injury.injury"
+                                class="flex justify-between items-center p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition">
+                                <span class="text-gray-700">{{ injury.injury }} ({{ new
+                                    Date(injury.date).toLocaleDateString() }})</span>
+                               <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                                    :class="getInjuryBadgeClass(injury.status)">
+                                    {{ injury.status }} - {{ injury.daysOut }}d
+                                </span>
+                            </li>
+                        </ul>
+
                     </CardContent>
                 </Card>
+
             </div>
 
         </template>
 
-        <!-- EMPTY STATE -->
-        <div v-else class="py-16 text-center bg-muted/5 rounded-2xl border border-foreground/10">
-            <ClipboardList class="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
-            <h3 class="text-lg font-bold text-muted-foreground/60">{{ t('analytics.no_data_available') }}</h3>
+        <div v-else class="text-center py-16 text-muted-foreground">
+            {{ t('analytics.no_data_available') }}
         </div>
+
     </div>
 </template>

@@ -163,7 +163,7 @@ export const athleteApi = {
     params: { pageIndex, pageSize }
   }),
 
-resendRpeEmail: (email: string) =>
-  api.post(`/RpeLinkQueue/resend`, { email }),
+resendRpeEmail: (emailId: number) =>
+  api.post(`/RpeLinkQueue/resend`, { emailId }),
 }
 
