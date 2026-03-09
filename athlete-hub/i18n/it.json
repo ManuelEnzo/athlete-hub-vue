@@ -632,7 +632,8 @@
         "active_injuries"  : "Infortuni Attivi",
         "total_days_off": "Giorni Totali di Stop",
         "injury_history": "Storico Infortuni",
-        "total_injuries": "Infortuni Totali"
+        "total_injuries": "Infortuni Totali",
+        "acwr_insufficient_data": "Dati insufficienti per il calcolo dell'ACWR"
     },
     "injuries": {
         "title": "Centro Medico",

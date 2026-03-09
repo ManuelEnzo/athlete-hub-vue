@@ -654,7 +654,8 @@
         "active_injuries"  : "Active Injuries",
         "total_days_off": "Total Days Off",
         "injury_history": "Injury History",
-        "total_injuries": "Total Injuries"
+        "total_injuries": "Total Injuries",
+        "acwr_insufficient_data":"Insufficient datas for ACWR"
     },
     "injuries": {
         "title": "Medical Center",
