@@ -1,13 +1,15 @@
 import tailwindcss from '@tailwindcss/vite'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: false, // SPA puro
   devtools: { enabled: true },
   sourcemap: {
     server: true,
     client: true
   },
   css: ['~/assets/css/tailwind.css'],
+
   vite: {
     build: {
       sourcemap: true
@@ -38,14 +40,7 @@ export default defineNuxtConfig({
   ],
 
   shadcn: {
-    /**
-     * Prefix for all the imported component
-     */
     prefix: '',
-    /**
-     * Directory that the component lives in.
-     * @default "~/components/ui"
-     */
     componentDir: '~/components/ui',
   },
 
@@ -68,12 +63,11 @@ export default defineNuxtConfig({
   routeRules: {
     '/components': { redirect: '/components/accordion' },
     '/settings': { redirect: '/settings/profile' },
+    '/**': { ssr: false, static: true } // <- fallback SPA per tutte le route
   },
 
   imports: {
-    dirs: [
-      './lib',
-    ],
+    dirs: ['./lib'],
   },
 
   compatibilityDate: '2024-12-14',
