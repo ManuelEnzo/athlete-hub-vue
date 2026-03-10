@@ -1,12 +1,11 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: 'blank',
+  auth: false
+})
 import { useI18n } from 'vue-i18n'
 import { Shield, Lock, Key, AlertCircle } from 'lucide-vue-next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-definePageMeta({
-  layout: 'blank',
-  auth: false,
-  guestOnly: false
-})
 const { t } = useI18n()
 
 </script>
