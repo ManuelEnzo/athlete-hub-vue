@@ -2,9 +2,7 @@
 import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
-  Users, Activity, AlertCircle, CheckCircle, Shield, TrendingUp, UserRound, ArrowUpRight,
-  Calendar, Zap, Heart, Target, Clock, Flame, TrendingDown, Award, Radar, Percent,
-  BarChart3, RefreshCw, AlertTriangle, ThumbsUp, PieChart
+  Users, Activity, Flame, CheckCircle, BarChart3, Shield, Radar, PieChart, Calendar
 } from 'lucide-vue-next'
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
@@ -13,9 +11,9 @@ import { athleteApi } from '@/api/business'
 import type { CoachDashboardSummaryDto } from '@/types/api'
 import type { ApexOptions } from 'apexcharts'
 
-// 1. IMPORT SICURO PER SSR
+// 1️⃣ Import sicuro per SSR
 const VueApexCharts = defineAsyncComponent(() =>
-  (import.meta.client) // <--- Cambia qui
+  (import.meta.client)
     ? import('vue3-apexcharts')
     : Promise.resolve({ render: () => null }) as any
 )
@@ -26,7 +24,7 @@ const { t } = useI18n()
 const dashboardData = ref<CoachDashboardSummaryDto | null>(null)
 const loading = ref(true)
 
-// Actions
+// Fetch dashboard
 async function fetchDashboard() {
   loading.value = true
   try {
@@ -43,7 +41,8 @@ async function fetchDashboard() {
 
 onMounted(() => fetchDashboard())
 
-// CHART OPTIONS (Rimangono uguali, ma ora sono protette dal ClientOnly nel template)
+// Computed ottimizzati
+
 const workloadChartOptions = computed<ApexOptions>(() => ({
   chart: { type: 'bar', toolbar: { show: false }, fontFamily: 'system-ui'},
   colors: ['#3b82f6'],
@@ -53,50 +52,78 @@ const workloadChartOptions = computed<ApexOptions>(() => ({
     labels: { style: { fontSize: '12px', fontWeight: 500 } }
   },
   grid: { borderColor: 'hsl(var(--muted-foreground) / 0.1)', strokeDashArray: 4 },
-  tooltip: { theme: 'dark' }
+  tooltip: { theme: 'dark', y: { formatter: (val: number) => `${val} pts` } }
 }))
 
 const workloadChartSeries = computed(() => [
   { name: 'Total Workload', data: dashboardData.value?.workloadComparison?.map(d => d.value) ?? [] }
 ])
 
+// Health donut chart
 const healthChartOptions = computed<ApexOptions>(() => ({
   chart: { type: 'donut', fontFamily: 'system-ui' },
   labels: dashboardData.value?.healthDistribution?.map(h => h.status) ?? [],
-  colors: dashboardData.value?.healthDistribution?.map(h => h.color) ?? ['#10b981', '#f59e0b', '#ef4444'],
+  colors: dashboardData.value?.healthDistribution?.map(h => h.color) ?? ['#4ADE80', '#22D3EE', '#FACC15', '#F87171'],
   stroke: { width: 2, colors: ['#fff'] },
   legend: { position: 'bottom', fontSize: '12px' },
-  plotOptions: { pie: { donut: { size: '75%', labels: { show: true, name: { fontSize: '14px', fontWeight: 600 } } } } },
+  plotOptions: {
+  pie: {
+    donut: {
+      size: '75%',
+      labels: {
+        show: true,
+        name: { fontSize: '14px', fontWeight: 600 },
+        value: {
+          formatter: (val: string | number) => `${val}` // semplice per TS
+        }
+      }
+    }
+  }
+},
   dataLabels: { enabled: true }
 }))
-
 const healthChartSeries = computed(() => dashboardData.value?.healthDistribution?.map(h => h.count) ?? [])
 
+// Discipline pie chart
 const disciplineChartOptions = computed<ApexOptions>(() => ({
   chart: { type: 'pie', fontFamily: 'system-ui' },
   labels: dashboardData.value?.disciplineDistribution?.map(d => d.discipline) ?? [],
   legend: { position: 'bottom' },
-  tooltip: { theme: 'dark' }
+  tooltip: { theme: 'dark', y: { formatter: (val: number) => `${val} atleti` } }
 }))
-
 const disciplineChartSeries = computed(() => dashboardData.value?.disciplineDistribution?.map(d => d.count) ?? [])
+
+// Radar chart for Readiness vs ACWR
+const radarChartData = computed(() => {
+  if (!dashboardData.value?.athleteStatusMatrix) return { readiness: [], acwr: [] }
+  const matrix = dashboardData.value.athleteStatusMatrix
+  const maxAcwr = Math.max(...matrix.map(a => a.acwr), 1)
+  return {
+    readiness: matrix.map(a => a.readiness),
+    acwr: matrix.map(a => Math.min(100, (a.acwr / maxAcwr) * 100))
+  }
+})
 
 const radarChartOptions = computed<ApexOptions>(() => ({
   chart: { type: 'radar', fontFamily: 'system-ui', toolbar: { show: false } },
   colors: ['#3b82f6', '#ef4444'],
-  xaxis: { categories: dashboardData.value?.athleteStatusMatrix?.map(a => a.name.split(' ')[0]) ?? [] },
+  xaxis: { categories: dashboardData.value?.athleteStatusMatrix?.map(a => a.name.split(' ')[0]).filter(Boolean) ?? [] },
   yaxis: { max: 100, show: false },
-  tooltip: { theme: 'dark' }
+  tooltip: {
+    theme: 'dark',
+    y: { formatter: (val: number) => `${val}` }
+  }
 }))
 
 const radarChartSeries = computed(() => [
-  { name: 'Readiness', data: dashboardData.value?.athleteStatusMatrix?.map(a => a.readiness) ?? [] },
-  { name: 'ACWR Intensity', data: dashboardData.value?.athleteStatusMatrix?.map(a => Math.min(100, a.acwr * 40)) ?? [] }
+  { name: 'Readiness', data: radarChartData.value.readiness },
+  { name: 'ACWR Intensity', data: radarChartData.value.acwr }
 ])
 </script>
 
 <template>
   <div class="w-full min-h-screen bg-background space-y-8 font-sans pb-10">
+    <!-- Header -->
     <div class="bg-gradient-to-r from-primary/5 to-transparent border-b border-primary/10 px-4 md:px-6 py-6 md:py-8">
       <div class="flex flex-col md:flex-row md:justify-between gap-3 md:gap-0 items-start">
         <div>
@@ -111,6 +138,7 @@ const radarChartSeries = computed(() => [
     </div>
 
     <div class="px-6 space-y-8">
+      <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card class="border border-foreground/10 shadow-md">
           <CardContent class="p-6">
@@ -158,6 +186,7 @@ const radarChartSeries = computed(() => [
         </Card>
       </div>
 
+      <!-- Charts Section -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <Card class="lg:col-span-8 border border-foreground/10 shadow-md">
           <CardHeader class="pb-3 border-b">
@@ -192,6 +221,7 @@ const radarChartSeries = computed(() => [
         </Card>
       </div>
 
+      <!-- Radar + Pie + Agenda -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card class="border border-foreground/10 shadow-md">
           <CardHeader class="pb-3 border-b">
@@ -233,6 +263,7 @@ const radarChartSeries = computed(() => [
           </CardHeader>
           <CardContent class="pt-4 px-2">
             <div class="space-y-3">
+              <div v-if="!dashboardData?.upcomingAgenda?.length" class="text-center text-sm text-muted-foreground py-6">Nessuna sessione programmata</div>
               <div v-for="item in dashboardData?.upcomingAgenda" :key="item.scheduledAt"
                 class="flex flex-col sm:flex-row items-start sm:items-center p-3 border border-foreground/5 rounded-lg bg-foreground/[0.02] gap-2">
                 <div class="mr-0 sm:mr-4 mb-2 sm:mb-0 text-center sm:border-r sm:pr-4 border-foreground/10">

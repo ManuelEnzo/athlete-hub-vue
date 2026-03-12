@@ -657,7 +657,11 @@
         "total_days_off": "Total Days Off",
         "injury_history": "Injury History",
         "total_injuries": "Total Injuries",
-        "acwr_insufficient_data":"Insufficient datas for ACWR"
+        "acwr_insufficient_data":"Insufficient datas for ACWR",
+        "readiness_title_tooltip":"Readiness: average fitness score of the athlete based on recent tests and training",
+        "current_acwr_tooltip":"ACWR: ratio between acute load (7 days) and chronic load (28 days). Values > 1.3 indicate potential overloading and injury risk",
+        "acuteload_title_tooltip":"Acute Load: acute load of the last week, based on volume and intensity of training",
+        "chronicload_title_tooltip":"Chronic Load: chronic load of the last 4 weeks, represents the athlete's loading capacity"
     },
     "injuries": {
         "title": "Medical Center",

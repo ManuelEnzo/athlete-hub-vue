@@ -317,7 +317,7 @@ export interface InfoAthleteAnalytics {
   name: string;
   position: string;
   readinessScore: number;
-  riskLevel: string;
+  riskLevel: number;
   antropometrics: InfoAthleteAntropometricsAnalytics;
 }
 
@@ -333,7 +333,7 @@ export interface AcwrDetails {
   acute: number;
   chronic: number;
   acwr: number;
-  zone: string;
+  zone: number;
 }
 
 // --- Sezione Performance (Dinamica) ---

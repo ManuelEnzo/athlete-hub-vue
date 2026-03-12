@@ -2,18 +2,15 @@
 import { ref, computed, onMounted, watch, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Activity, TrendingUp, Scale, Zap } from 'lucide-vue-next'
-
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ClientOnly } from '#components'
-
 import { athleteApi } from '@/api/business'
 import type { AthleteAnalyticsDto } from '@/types/api'
 import type { ApexOptions } from 'apexcharts'
 import type { InjuriesAnalytics } from '@/types/api'
 
 const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'))
-
 const props = defineProps<{ athleteId: number; from?: string; to?: string }>()
 const { t } = useI18n()
 
@@ -21,14 +18,22 @@ const data = ref<AthleteAnalyticsDto | null>(null)
 const loading = ref(true)
 const selectedMetric = ref<string | null>(null)
 
+enum RiskManagementAction {
+    InsufficientData = 0,
+    BaselinePhase = 1,
+    LoadRising = 2,
+    DangerSpike = 3,
+    ModerateRisk = 4,
+    HighFatigue = 5,
+    Optimal = 6
+}
+
 async function fetchAnalytics() {
     if (!props.athleteId) return
     loading.value = true
     data.value = null
-
     const dateTo = props.to ?? new Date().toISOString()
     const dateFrom = props.from ?? (() => { const d = new Date(); d.setDate(d.getDate() - 42); return d.toISOString() })()
-
     try {
         const response = await athleteApi.getDatasForAnalytics(props.athleteId, dateFrom, dateTo)
         if (response.data.isSuccess) data.value = response.data.value ?? null
@@ -38,27 +43,46 @@ async function fetchAnalytics() {
 watch(() => props.athleteId, fetchAnalytics)
 onMounted(fetchAnalytics)
 
-/* ---------------- ACWR LOGIC ---------------- */
+/* ACWR */
+
 const latestAcwr = computed(() => {
     const current = data.value?.acwr.find(a => a.week === 'Wk Corrente')
-    if (!current || current.zone === "Inizializzazione (Dati insufficienti)") return null
+    if (!current || current.zone === RiskManagementAction.InsufficientData) return null
     return current
 })
 
-const acwrChartSeries = computed(() => [
-    { name: 'ACWR', data: data.value?.acwr.map(a => a.acwr) ?? [] }
-])
+function getRiskColor(zone?: number) {
+    switch (zone) {
+        case RiskManagementAction.DangerSpike: return 'text-red-500'
+        case RiskManagementAction.ModerateRisk:
+        case RiskManagementAction.LoadRising: return 'text-yellow-500'
+        case RiskManagementAction.HighFatigue: return 'text-orange-500'
+        case RiskManagementAction.Optimal: return 'text-green-500'
+        default: return 'text-gray-400'
+    }
+}
+
+function getRiskLabel(zone?: number) {
+    switch (zone) {
+        case RiskManagementAction.InsufficientData: return t('analytics.acwr_insufficient_data')
+        case RiskManagementAction.BaselinePhase: return 'Baseline'
+        case RiskManagementAction.LoadRising: return 'Load Rising'
+        case RiskManagementAction.DangerSpike: return 'Danger Spike'
+        case RiskManagementAction.ModerateRisk: return 'Moderate Risk'
+        case RiskManagementAction.HighFatigue: return 'High Fatigue'
+        case RiskManagementAction.Optimal: return 'Optimal'
+        default: return '-'
+    }
+}
+
+const acwrChartSeries = computed(() => [{ name: 'ACWR', data: data.value?.acwr.map(a => a.acwr) ?? [] }])
 
 const acwrChartOptions = computed<ApexOptions>(() => ({
     chart: { type: 'area', toolbar: { show: false } },
     stroke: { width: 3, curve: 'smooth' },
     colors: ['#6366f1'],
     fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.05 } },
-    xaxis: {
-        categories: data.value?.performance.history.map(h =>
-            new Date(h.date).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' })
-        ) ?? []
-    },
+    xaxis: { categories: data.value?.acwr.map(a => a.week) ?? [] },
     yaxis: { min: 0, max: 2, title: { text: 'ACWR' } },
     annotations: {
         yaxis: [
@@ -69,7 +93,8 @@ const acwrChartOptions = computed<ApexOptions>(() => ({
     }
 }))
 
-/* ---------------- PERFORMANCE METRICS ---------------- */
+/* PERFORMANCE */
+
 const availableMetrics = computed(() => {
     if (!data.value?.performance.history) return []
     const set = new Set<string>()
@@ -77,7 +102,9 @@ const availableMetrics = computed(() => {
     return Array.from(set)
 })
 
-watch(availableMetrics, metrics => { if (!selectedMetric.value && metrics.length > 0) selectedMetric.value = metrics[0] ?? null })
+watch(availableMetrics, m => {
+    if (!selectedMetric.value && m.length > 0) selectedMetric.value = m[0] ?? null
+})
 
 const metricChartSeries = computed(() => {
     if (!selectedMetric.value) return []
@@ -97,17 +124,17 @@ const metricChartOptions = computed<ApexOptions>(() => ({
     xaxis: { categories: data.value?.performance.history.map(h => new Date(h.date).toLocaleDateString()) ?? [] }
 }))
 
-/* ---------------- INJURIES ---------------- */
+/* INJURIES */
+
 const injuries = computed<InjuriesAnalytics[]>(() => data.value?.injuries ?? [])
 const totalInjuries = computed(() => injuries.value.length)
 const activeInjuries = computed(() => injuries.value.filter(i => i.status.toLowerCase() === 'active'))
-const recoveredInjuries = computed(() => injuries.value.filter(i => i.status.toLowerCase() === 'returned'))
 
-const getInjuryBadgeClass = (status: string) => {
+function getInjuryBadgeClass(status: string) {
     switch (status.toLowerCase()) {
-        case "active": return 'bg-red-200 text-red-800'
-        case "rehabilitation": return 'bg-yellow-200 text-yellow-800'
-        case "returned": return 'bg-green-200 text-green-800'
+        case 'active': return 'bg-red-200 text-red-800'
+        case 'rehabilitation': return 'bg-yellow-200 text-yellow-800'
+        case 'returned': return 'bg-green-200 text-green-800'
         default: return 'bg-gray-200 text-gray-800'
     }
 }
@@ -124,11 +151,11 @@ const getInjuryBadgeClass = (status: string) => {
 
             <!-- HERO -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card>
+                <Card
+                    :title="t('analytics.readiness_title_tooltip')">
                     <CardContent class="p-6">
                         <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
-                            {{ t('analytics.readiness_title') }}
-                        </p>
+                            {{ t('analytics.readiness_title') }}</p>
                         <div class="flex items-center justify-between">
                             <div>
                                 <span class="text-3xl font-bold">{{ data.athlete.readinessScore }}</span>
@@ -139,36 +166,38 @@ const getInjuryBadgeClass = (status: string) => {
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card
+                    :title="t('analytics.current_acwr_tooltip') ">
                     <CardContent class="p-6">
                         <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
-                            {{ t('analytics.current_acwr') }}
-                        </p>
+                            {{ t('analytics.current_acwr') }}</p>
                         <div class="flex items-center justify-between">
-                            <span class="text-3xl font-bold" v-if="latestAcwr">{{ latestAcwr.acwr.toFixed(2) }}</span>
-                            <span class="text-sm text-muted-foreground" v-else>
+                            <span v-if="latestAcwr" class="text-3xl font-bold">{{ latestAcwr.acwr.toFixed(2) }}</span>
+                            <span v-else class="text-sm text-muted-foreground">
                                 {{ t('analytics.acwr_insufficient_data') }}
                             </span>
-                            <Zap class="h-5 w-5"
-                                :class="latestAcwr?.acwr && latestAcwr.acwr > 1.3 ? 'text-red-500' : 'text-green-500'" />
+                            <Zap class="h-5 w-5" :class="getRiskColor(latestAcwr?.zone)" />
+                        </div>
+                        <div v-if="latestAcwr" class="text-xs text-muted-foreground mt-1">
+                            {{ getRiskLabel(latestAcwr.zone) }}
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card
+                    :title="t('analytics.acuteload_title_tooltip')">
                     <CardContent class="p-6">
-                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
-                            {{ t('analytics.acute_load') }}
-                        </p>
+                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">{{ t('analytics.acute_load')
+                            }}</p>
                         <span class="text-3xl font-bold">{{ latestAcwr?.acute ?? '-' }}</span>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card
+                    :title="t('analytics.chronicload_title_tooltip')">
                     <CardContent class="p-6">
-                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
-                            {{ t('analytics.chronic_load') }}
-                        </p>
+                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">{{ t('analytics.chronic_load')
+                            }}</p>
                         <span class="text-3xl font-bold">{{ latestAcwr?.chronic ?? '-' }}</span>
                     </CardContent>
                 </Card>
@@ -176,6 +205,7 @@ const getInjuryBadgeClass = (status: string) => {
 
             <!-- CHARTS -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
                 <Card>
                     <CardHeader>
                         <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase">
@@ -212,38 +242,34 @@ const getInjuryBadgeClass = (status: string) => {
                         </ClientOnly>
                     </CardContent>
                 </Card>
+
             </div>
 
-            <!-- BODY METRICS + INJURIES STATUS -->
+            <!-- BODY + INJURIES -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- BODY METRICS -->
+
                 <Card class="rounded-2xl border bg-card text-card-foreground shadow-lg">
-                    <CardHeader class="px-6 py-4 rounded-t-2xl">
+                    <CardHeader class="px-6 py-4">
                         <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase text-muted-foreground">
                             <Scale class="h-5 w-5 text-purple-500" />
                             {{ t('analytics.metrics_summary') }}
                         </CardTitle>
                     </CardHeader>
+
                     <CardContent class="space-y-3 px-6 py-4">
-                        <div class="flex justify-between items-center">
-                            <span class="text-muted-foreground">{{ t('analytics.weight') }}</span>
-                            <span class="font-semibold">{{ data.athlete.antropometrics.weight }} kg</span>
+                        <div class="flex justify-between"><span class="text-muted-foreground">{{ t('analytics.weight')
+                                }}</span><span class="font-semibold">{{ data.athlete.antropometrics.weight }} kg</span>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-muted-foreground">{{ t('analytics.height') }}</span>
-                            <span class="font-semibold">{{ data.athlete.antropometrics.height }} cm</span>
+                        <div class="flex justify-between"><span class="text-muted-foreground">{{ t('analytics.height')
+                                }}</span><span class="font-semibold">{{ data.athlete.antropometrics.height }} cm</span>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-muted-foreground">{{ t('analytics.bmi') }}</span>
-                            <span class="font-semibold">{{ data.athlete.antropometrics.bmi }}</span>
-                        </div>
+                        <div class="flex justify-between"><span class="text-muted-foreground">{{ t('analytics.bmi')
+                                }}</span><span class="font-semibold">{{ data.athlete.antropometrics.bmi }}</span></div>
                     </CardContent>
                 </Card>
 
-                <!-- INJURIES STATUS -->
-                <Card v-if="totalInjuries > 0"
-                    class="rounded-2xl border border-border bg-card text-card-foreground shadow-lg">
-                    <CardHeader class="px-6 py-4 rounded-t-2xl border-b border-border">
+                <Card v-if="totalInjuries > 0" class="rounded-2xl border bg-card text-card-foreground shadow-lg">
+                    <CardHeader class="px-6 py-4 border-b">
                         <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase text-muted-foreground">
                             <Zap class="h-5 w-5 text-red-500" />
                             {{ t('analytics.injuries_status') }}
@@ -251,49 +277,34 @@ const getInjuryBadgeClass = (status: string) => {
                     </CardHeader>
 
                     <CardContent class="space-y-3 px-6 py-4">
-
-                        <div class="flex justify-between items-center">
-                            <span class="text-muted-foreground">
-                                {{ t('analytics.total_injuries') }}
-                            </span>
-                            <span class="font-semibold">
-                                {{ totalInjuries }}
-                            </span>
-                        </div>
-
-                        <div class="flex justify-between items-center">
-                            <span class="text-muted-foreground">
-                                {{ t('analytics.active_injuries') }}
-                            </span>
-                            <span class="font-semibold">
-                                {{ activeInjuries.length }}
-                            </span>
-                        </div>
+                        <div class="flex justify-between"><span class="text-muted-foreground">{{
+                            t('analytics.total_injuries') }}</span><span class="font-semibold">{{ totalInjuries
+                                }}</span></div>
+                        <div class="flex justify-between"><span class="text-muted-foreground">{{
+                            t('analytics.active_injuries') }}</span><span class="font-semibold">{{
+                                    activeInjuries.length }}</span></div>
 
                         <ul class="mt-3 space-y-2 text-sm max-h-64 overflow-y-auto">
-
                             <li v-for="injury in injuries" :key="injury.date + injury.injury"
-                                class="flex justify-between items-center p-2 rounded-lg border border-border hover:bg-muted transition">
-                                <span class="text-sm">
-                                    {{ injury.injury }} ({{ new Date(injury.date).toLocaleDateString() }})
-                                </span>
-
+                                class="flex justify-between items-center p-2 rounded-lg border hover:bg-muted">
+                                <span>{{ injury.injury }} ({{ new Date(injury.date).toLocaleDateString() }})</span>
                                 <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
                                     :class="getInjuryBadgeClass(injury.status)">
                                     {{ injury.status }} - {{ injury.daysOut }}d
                                 </span>
-
                             </li>
-
                         </ul>
 
                     </CardContent>
                 </Card>
+
             </div>
+
         </template>
 
         <div v-else class="text-center py-16 text-muted-foreground">
             {{ t('analytics.no_data_available') }}
         </div>
+
     </div>
 </template>

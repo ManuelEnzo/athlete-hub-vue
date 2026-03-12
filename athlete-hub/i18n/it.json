@@ -635,7 +635,11 @@
         "total_days_off": "Giorni Totali di Stop",
         "injury_history": "Storico Infortuni",
         "total_injuries": "Infortuni Totali",
-        "acwr_insufficient_data": "Dati insufficienti per il calcolo dell'ACWR"
+        "acwr_insufficient_data": "Dati insufficienti per il calcolo dell'ACWR",
+        "readiness_title_tooltip":"Readiness: punteggio medio di prontezza fisica dell'atleta basato sugli ultimi test e allenamenti",
+        "current_acwr_tooltip":"ACWR: rapporto tra carico acuto (7 giorni) e carico cronico (28 giorni). Valori > 1.3 indicano potenziale sovraccarico e rischio infortunio",
+        "acuteload_title_tooltip":"Acute Load: carico acuto dell'ultima settimana, basato su volume e intensità dell'allenamento",
+        "chronicload_title_tooltip":"Chronic Load: carico cronico delle ultime 4 settimane, rappresenta la capacità di carico dell'atleta"
     },
     "injuries": {
         "title": "Centro Medico",
