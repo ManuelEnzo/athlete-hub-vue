@@ -114,163 +114,186 @@ const getInjuryBadgeClass = (status: string) => {
 </script>
 
 <template>
-<div class="w-full flex flex-col gap-6">
+    <div class="w-full flex flex-col gap-6">
 
-    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Skeleton v-for="i in 3" :key="i" class="h-[320px] w-full rounded-xl" />
-    </div>
-
-    <template v-else-if="data && data.athlete">
-
-        <!-- HERO -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-                <CardContent class="p-6">
-                    <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
-                        {{ t('analytics.readiness_title') }}
-                    </p>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <span class="text-3xl font-bold">{{ data.athlete.readinessScore }}</span>
-                            <span class="text-sm text-muted-foreground">/100</span>
-                        </div>
-                        <Activity class="h-5 w-5 text-blue-500" />
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardContent class="p-6">
-                    <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
-                        {{ t('analytics.current_acwr') }}
-                    </p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-3xl font-bold" v-if="latestAcwr">{{ latestAcwr.acwr.toFixed(2) }}</span>
-                        <span class="text-sm text-muted-foreground" v-else>
-                            {{ t('analytics.acwr_insufficient_data') }}
-                        </span>
-                        <Zap class="h-5 w-5" :class="latestAcwr?.acwr && latestAcwr.acwr > 1.3 ? 'text-red-500' : 'text-green-500'" />
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardContent class="p-6">
-                    <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
-                        {{ t('analytics.acute_load') }}
-                    </p>
-                    <span class="text-3xl font-bold">{{ latestAcwr?.acute ?? '-' }}</span>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardContent class="p-6">
-                    <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
-                        {{ t('analytics.chronic_load') }}
-                    </p>
-                    <span class="text-3xl font-bold">{{ latestAcwr?.chronic ?? '-' }}</span>
-                </CardContent>
-            </Card>
+        <div v-if="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Skeleton v-for="i in 3" :key="i" class="h-[320px] w-full rounded-xl" />
         </div>
 
-        <!-- CHARTS -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase">
-                        <TrendingUp class="h-4 w-4" />
-                        {{ t('analytics.workload_trend') }}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <ClientOnly>
-                        <VueApexCharts type="area" height="260" :options="acwrChartOptions" :series="acwrChartSeries" />
-                    </ClientOnly>
-                </CardContent>
-            </Card>
+        <template v-else-if="data && data.athlete">
 
-            <Card>
-                <CardHeader class="flex justify-between items-center">
-                    <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase">
-                        <Activity class="h-4 w-4" />
-                        {{ t('analytics.performance_history') }}
-                    </CardTitle>
-                    <select v-model="selectedMetric" class="text-xs border rounded px-2 py-1 bg-background">
-                        <option v-for="metric in availableMetrics" :key="metric" :value="metric">{{ metric }}</option>
-                    </select>
-                </CardHeader>
-                <CardContent>
-                    <ClientOnly>
-                        <VueApexCharts v-if="metricChartSeries.length" type="line" height="260"
-                            :options="metricChartOptions" :series="metricChartSeries" />
-                        <div v-else class="h-[260px] flex items-center justify-center text-muted-foreground">
-                            {{ t('analytics.no_history') }}
+            <!-- HERO -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card>
+                    <CardContent class="p-6">
+                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
+                            {{ t('analytics.readiness_title') }}
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-3xl font-bold">{{ data.athlete.readinessScore }}</span>
+                                <span class="text-sm text-muted-foreground">/100</span>
+                            </div>
+                            <Activity class="h-5 w-5 text-blue-500" />
                         </div>
-                    </ClientOnly>
-                </CardContent>
-            </Card>
-        </div>
+                    </CardContent>
+                </Card>
 
-        <!-- BODY METRICS + INJURIES STATUS -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- BODY METRICS -->
-            <Card class="bg-white shadow-lg rounded-2xl border border-gray-100">
-                <CardHeader class="bg-gray-50 px-6 py-4 rounded-t-2xl">
-                    <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase text-gray-700">
-                        <Scale class="h-5 w-5 text-purple-500" />
-                        {{ t('analytics.metrics_summary') }}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent class="space-y-3 px-6 py-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-500">{{ t('analytics.weight') }}</span>
-                        <span class="font-semibold text-gray-900">{{ data.athlete.antropometrics.weight }} kg</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-500">{{ t('analytics.height') }}</span>
-                        <span class="font-semibold text-gray-900">{{ data.athlete.antropometrics.height }} cm</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-500">{{ t('analytics.bmi') }}</span>
-                        <span class="font-semibold text-gray-900">{{ data.athlete.antropometrics.bmi }}</span>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <!-- INJURIES STATUS -->
-            <Card v-if="totalInjuries > 0" class="bg-white shadow-lg rounded-2xl border border-gray-100">
-                <CardHeader class="bg-gray-50 px-6 py-4 rounded-t-2xl">
-                    <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase text-gray-700">
-                        <Zap class="h-5 w-5 text-red-500" />
-                        {{ t('analytics.injuries_status') }}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent class="space-y-3 px-6 py-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-500">{{ t('analytics.total_injuries') }}</span>
-                        <span class="font-semibold text-gray-900">{{ totalInjuries }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-500">{{ t('analytics.active_injuries') }}</span>
-                        <span class="font-semibold text-gray-900">{{ activeInjuries.length }}</span>
-                    </div>
-                    <ul class="mt-3 space-y-2 text-sm max-h-64 overflow-y-auto">
-                        <li v-for="injury in injuries" :key="injury.date + injury.injury"
-                            class="flex justify-between items-center p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition">
-                            <span class="text-gray-700">{{ injury.injury }} ({{ new Date(injury.date).toLocaleDateString() }})</span>
-                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
-                                :class="getInjuryBadgeClass(injury.status)">
-                                {{ injury.status }} - {{ injury.daysOut }}d
+                <Card>
+                    <CardContent class="p-6">
+                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
+                            {{ t('analytics.current_acwr') }}
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-3xl font-bold" v-if="latestAcwr">{{ latestAcwr.acwr.toFixed(2) }}</span>
+                            <span class="text-sm text-muted-foreground" v-else>
+                                {{ t('analytics.acwr_insufficient_data') }}
                             </span>
-                        </li>
-                    </ul>
-                </CardContent>
-            </Card>
-        </div>
-    </template>
+                            <Zap class="h-5 w-5"
+                                :class="latestAcwr?.acwr && latestAcwr.acwr > 1.3 ? 'text-red-500' : 'text-green-500'" />
+                        </div>
+                    </CardContent>
+                </Card>
 
-    <div v-else class="text-center py-16 text-muted-foreground">
-        {{ t('analytics.no_data_available') }}
+                <Card>
+                    <CardContent class="p-6">
+                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
+                            {{ t('analytics.acute_load') }}
+                        </p>
+                        <span class="text-3xl font-bold">{{ latestAcwr?.acute ?? '-' }}</span>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardContent class="p-6">
+                        <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
+                            {{ t('analytics.chronic_load') }}
+                        </p>
+                        <span class="text-3xl font-bold">{{ latestAcwr?.chronic ?? '-' }}</span>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <!-- CHARTS -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase">
+                            <TrendingUp class="h-4 w-4" />
+                            {{ t('analytics.workload_trend') }}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ClientOnly>
+                            <VueApexCharts type="area" height="260" :options="acwrChartOptions"
+                                :series="acwrChartSeries" />
+                        </ClientOnly>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader class="flex justify-between items-center">
+                        <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase">
+                            <Activity class="h-4 w-4" />
+                            {{ t('analytics.performance_history') }}
+                        </CardTitle>
+                        <select v-model="selectedMetric" class="text-xs border rounded px-2 py-1 bg-background">
+                            <option v-for="metric in availableMetrics" :key="metric" :value="metric">{{ metric }}
+                            </option>
+                        </select>
+                    </CardHeader>
+                    <CardContent>
+                        <ClientOnly>
+                            <VueApexCharts v-if="metricChartSeries.length" type="line" height="260"
+                                :options="metricChartOptions" :series="metricChartSeries" />
+                            <div v-else class="h-[260px] flex items-center justify-center text-muted-foreground">
+                                {{ t('analytics.no_history') }}
+                            </div>
+                        </ClientOnly>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <!-- BODY METRICS + INJURIES STATUS -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- BODY METRICS -->
+                <Card class="rounded-2xl border bg-card text-card-foreground shadow-lg">
+                    <CardHeader class="px-6 py-4 rounded-t-2xl">
+                        <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase text-muted-foreground">
+                            <Scale class="h-5 w-5 text-purple-500" />
+                            {{ t('analytics.metrics_summary') }}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent class="space-y-3 px-6 py-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-muted-foreground">{{ t('analytics.weight') }}</span>
+                            <span class="font-semibold">{{ data.athlete.antropometrics.weight }} kg</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-muted-foreground">{{ t('analytics.height') }}</span>
+                            <span class="font-semibold">{{ data.athlete.antropometrics.height }} cm</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-muted-foreground">{{ t('analytics.bmi') }}</span>
+                            <span class="font-semibold">{{ data.athlete.antropometrics.bmi }}</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <!-- INJURIES STATUS -->
+                <Card v-if="totalInjuries > 0"
+                    class="rounded-2xl border border-border bg-card text-card-foreground shadow-lg">
+                    <CardHeader class="px-6 py-4 rounded-t-2xl border-b border-border">
+                        <CardTitle class="flex items-center gap-2 text-sm font-bold uppercase text-muted-foreground">
+                            <Zap class="h-5 w-5 text-red-500" />
+                            {{ t('analytics.injuries_status') }}
+                        </CardTitle>
+                    </CardHeader>
+
+                    <CardContent class="space-y-3 px-6 py-4">
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-muted-foreground">
+                                {{ t('analytics.total_injuries') }}
+                            </span>
+                            <span class="font-semibold">
+                                {{ totalInjuries }}
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-muted-foreground">
+                                {{ t('analytics.active_injuries') }}
+                            </span>
+                            <span class="font-semibold">
+                                {{ activeInjuries.length }}
+                            </span>
+                        </div>
+
+                        <ul class="mt-3 space-y-2 text-sm max-h-64 overflow-y-auto">
+
+                            <li v-for="injury in injuries" :key="injury.date + injury.injury"
+                                class="flex justify-between items-center p-2 rounded-lg border border-border hover:bg-muted transition">
+                                <span class="text-sm">
+                                    {{ injury.injury }} ({{ new Date(injury.date).toLocaleDateString() }})
+                                </span>
+
+                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                                    :class="getInjuryBadgeClass(injury.status)">
+                                    {{ injury.status }} - {{ injury.daysOut }}d
+                                </span>
+
+                            </li>
+
+                        </ul>
+
+                    </CardContent>
+                </Card>
+            </div>
+        </template>
+
+        <div v-else class="text-center py-16 text-muted-foreground">
+            {{ t('analytics.no_data_available') }}
+        </div>
     </div>
-</div>
 </template>

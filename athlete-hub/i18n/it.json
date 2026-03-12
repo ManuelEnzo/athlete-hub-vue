@@ -335,7 +335,8 @@
             "remove": "Rimuovi",
             "selectAthlete": "Selezione atleti",
             "completedTitle": "Sessione Completata",
-            "completedInfo": "Segna come eseguita per registrare l'RPE"
+            "completedInfo": "Segna come eseguita per registrare l'RPE",
+            "titleOnlyModify": "Solo il titolo può essere modificato"
         },
         "deleteConfirmation": "Sei sicuro di voler rimuovere questa sessione? L'atleta non riceverà notifiche automatiche.",
         "deleteTitle": "Cancellare Appuntamento",

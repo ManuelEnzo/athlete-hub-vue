@@ -336,7 +336,8 @@
             "notSpecified": "Not specified",
             "selectAthlete": "Select an athlete",
             "completedTitle": "Session Completed",
-            "completedInfo": "Mark as completed to record the RPE"
+            "completedInfo": "Mark as completed to record the RPE",
+            "titleOnlyModify": "Only the session title can be edited"
         },
         "delete": {
             "title": "Delete Session",
