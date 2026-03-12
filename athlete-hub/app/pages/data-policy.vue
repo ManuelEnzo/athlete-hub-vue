@@ -76,7 +76,7 @@ const { t } = useI18n()
         </h3>
         <div class="bg-slate-800/30 border border-slate-700 rounded-lg p-6 space-y-3">
           <p><strong>{{ t('dataPolicy.companyName') }}:</strong> Athlete Hub</p>
-          <p><strong>{{ t('dataPolicy.privacyEmail') }}:</strong> <a href="mailto:manuelenzo2000@gmail.com" class="text-blue-400 hover:underline">manuelenzo2000@gmail.com</a></p>
+          <p><strong>{{ t('dataPolicy.privacyEmail') }}:</strong> <a href="mailto:athletehub.sport@gmail.com" class="text-blue-400 hover:underline">athletehub.sport@gmail.com</a></p>
           <p><strong>{{ t('dataPolicy.dpoTitle') }}:</strong> Data Protection Officer</p>
           <p class="text-slate-400 text-sm mt-4">{{ t('dataPolicy.contactDpo') }}</p>
         </div>
@@ -594,7 +594,7 @@ const { t } = useI18n()
           </h4>
           <p class="text-sm text-slate-300">
             {{ t('dataPolicy.exerciseRightsDesc') }}
-            <a href="mailto:manuelenzo2000@gmail.com" class="text-blue-400 hover:underline font-semibold">manuelenzo2000@gmail.com</a>
+            <a href="mailto:athletehub.sport@gmail.com" class="text-blue-400 hover:underline font-semibold">athletehub.sport@gmail.com</a>
           </p>
           <p class="text-xs text-slate-400 mt-2">
             {{ t('dataPolicy.exerciseRightsNote') }}
@@ -681,7 +681,7 @@ const { t } = useI18n()
               {{ t('dataPolicy.contactPrivacy') }}
             </h4>
             <p class="text-slate-300 mb-2">{{ t('dataPolicy.contactPrivacyDesc') }}:</p>
-            <p class="text-blue-400 font-semibold">📧 <a href="mailto:manuelenzo2000@gmail.com" class="hover:underline">manuelenzo2000@gmail.com</a></p>
+            <p class="text-blue-400 font-semibold">📧 <a href="mailto:athletehub.sport@gmail.com" class="hover:underline">athletehub.sport@gmail.com</a></p>
             <p class="text-slate-400 text-sm mt-2">{{ t('dataPolicy.responseTime') }}</p>
           </div>
 

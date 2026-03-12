@@ -1027,7 +1027,7 @@ This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For support, email [manuelenzo2000@gmail.com](mailto:manuelenzo2000@gmail.com) or open an issue on GitHub.
+For support, email [athletehub.sport@gmail.com](mailto:athletehub.sport@gmail.com) or open an issue on GitHub.
 
 ---
 
