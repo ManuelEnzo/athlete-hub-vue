@@ -394,8 +394,7 @@ onMounted(async () => {
               </button>
               <div
                 class="absolute left-1/2 -translate-x-1/2 -top-14 w-60 bg-background text-sm text-foreground p-3 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity z-50 border border-purple-400 pointer-events-none">
-                Una volta inserita l'attività, se è completata, potrai aprirla in modifica tramite il tasto pennina e
-                marcarla come conclusa per inviare la RPE all'atleta.
+                {{ t('calendar.infoTooltip') }}
               </div>
             </div>
 

@@ -269,6 +269,7 @@
             "loadGrid": "Error loading test grid",
             "saveResults": "Error saving results"
         },
+        "infoTooltip":"Una volta inserita l'attività, se è completata, potrai aprirla in modifica tramite il tasto pennina e marcarla come conclusa per inviare la RPE all'atleta.",
         "title": "Sessions and Appointments",
         "months": {
             "0": "January",

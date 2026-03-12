@@ -270,6 +270,7 @@
             "saveResults": "Errore nel salvataggio dei risultati"
         },
         "title": "Sessioni e Appuntamenti",
+        "infoTooltip": "Once you've entered the activity, if it's completed, you can open it for editing using the pen button and mark it as completed to send the RPE to the athlete.",
         "months": {
             "0": "Gennaio",
             "1": "Febbraio",
