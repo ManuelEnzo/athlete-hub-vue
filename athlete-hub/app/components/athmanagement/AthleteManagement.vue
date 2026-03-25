@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 import { athleteApi } from '../../api/business'
-import type { AthleteResponse, AthleteCreateRequest } from '../../types/api'
+import type { AthleteResponse, AthleteCreateRequest, MailRequestDto } from '../../types/api'
 
 const props = defineProps<{ showForm: boolean }>()
 const emit = defineEmits(['update:showForm'])
@@ -33,7 +33,8 @@ const form = reactive({
   birthDate: '',
   weight: 0,
   height: 0,
-  gender: 'F'
+  gender: 'F',
+  tokenSleepId: ''
 })
 
 // ---------------- VALIDATION ----------------
@@ -179,7 +180,8 @@ function editAthlete(a: AthleteResponse) {
     birthDate: formattedDate,
     weight: a.weight,
     height: a.height,
-    gender: a.gender || 'F'
+    gender: a.gender || 'F',
+    tokenSleepId: a.tokenSleepId
   })
 
   emit('update:showForm', true)
@@ -223,10 +225,39 @@ function resetForm() {
     birthDate: '',
     weight: 0,
     height: 0,
-    gender: 'F'
+    gender: 'F',
+    tokenSleepId: ''
   })
 
   emit('update:showForm', false)
+}
+
+async function copyToken(token: string) {
+  if (!token) return
+  await navigator.clipboard.writeText(token)
+  toast.success(t('athlete.success.tokenCopied'))
+}
+
+const sendTokenEmail = async () => {
+  try {
+    const now = new Date().toISOString()
+
+    const mail: MailRequestDto = {
+      name: `${form.firstName} ${form.lastName}`,
+      email: form.email,
+      subject: t('athlete.email.tokenSubject'),
+      text: t('athlete.email.tokenBody', {
+        name: form.firstName,
+        token: form.tokenSleepId
+      }),
+      inseredAt: now,
+      updatedAt: now
+    }
+    await athleteApi.createNewMailAsync(mail)
+    toast.success(t('athlete.message.resendSuccess'))
+  } catch {
+    toast.error(t('athlete.message.resend'))
+  }
 }
 
 onMounted(fetchAthletes)
@@ -248,22 +279,26 @@ onMounted(fetchAthletes)
         <CardContent class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 items-end">
 
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.firstName') }}</label>
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.firstName')
+            }}</label>
             <Input v-model="form.firstName" :placeholder="t('fields.firstName')" class="h-10" />
           </div>
 
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.lastName') }}</label>
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.lastName')
+            }}</label>
             <Input v-model="form.lastName" :placeholder="t('fields.lastName')" class="h-10" />
           </div>
 
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.email') }}</label>
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.email')
+            }}</label>
             <Input v-model="form.email" type="email" :placeholder="t('fields.email')" class="h-10" />
           </div>
 
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.sportCategory') }}</label>
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{
+              t('fields.sportCategory') }}</label>
             <Input v-model="form.sportCategory" :placeholder="t('fields.sportCategoryPlaceholder')" class="h-10" />
           </div>
 
@@ -275,17 +310,36 @@ onMounted(fetchAthletes)
           </div>
 
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.weight') }} (kg)</label>
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.weight') }}
+              (kg)</label>
             <Input v-model.number="form.weight" type="number" step="0.1" class="h-10" />
           </div>
 
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.height') }} (cm)</label>
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.height') }}
+              (cm)</label>
             <Input v-model.number="form.height" type="number" class="h-10" />
           </div>
 
+          <div class="space-y-1.5 md:col-span-2 lg:col-span-2" v-if="editingId">
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">
+              Token Sleep ID
+            </label>
+
+            <div class="flex items-center gap-2">
+              <!-- readonly -->
+              <Input :model-value="form.tokenSleepId" readonly class="h-10 font-mono text-xs" />
+              <!-- copy -->
+              <Button type="button" size="icon" variant="ghost" class="h-9 w-9" @click="copyToken(form.tokenSleepId)">
+                📋 </Button>
+              <!-- email -->
+              <Button type="button" size="icon" variant="ghost" class="h-9 w-9" @click="sendTokenEmail"> ✉️ </Button>
+            </div>
+          </div>
+
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.gender') }}</label>
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.gender')
+            }}</label>
             <Select v-model="form.gender">
               <SelectTrigger class="h-10">
                 <SelectValue :placeholder="t('fields.genderPlaceholder')" />

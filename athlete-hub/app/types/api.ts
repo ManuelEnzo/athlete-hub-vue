@@ -62,6 +62,7 @@ export interface AthleteResponse {
   sportCategory?: string
   createdAt: string // Arriva come stringa ISO dal JSON,
   dateOfBirth: string // Arriva come stringa ISO dal JSON
+  tokenSleepId: string
 }
 
 export interface AthleteCreateRequest {
@@ -462,4 +463,13 @@ export interface RpeEmailStatus {
   dataInvio: string | null
   noteInserite: string | null
   dataInserimento: string | null
+}
+
+export interface MailRequestDto{
+  name: string;
+  email: string;
+  subject: string;
+  text: string;
+  inseredAt: string;
+  updatedAt: string;
 }

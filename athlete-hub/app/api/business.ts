@@ -26,7 +26,8 @@ import type {
   TestDefinitionDto,
   TestManagementCreateRequest,
   TestManagementUpdateRequest,
-  RpeEmailStatus
+  RpeEmailStatus,
+  MailRequestDto
 } from '../types/api'
 
 export const athleteApi = {
@@ -134,7 +135,7 @@ export const athleteApi = {
 
   getSummary: () => api.get<Result<CoachDashboardSummaryDto>>('/dashboard/get-data-for-dashboard'),
 
- // Recupera i lookup veloci (ID e Nome)
+  // Recupera i lookup veloci (ID e Nome)
   testDefGetAllLookups: () =>
     api.get<Result<any[]>>('/TestDefinitions'),
 
@@ -159,11 +160,15 @@ export const athleteApi = {
     api.delete<Result<boolean>>(`/TestDefinitions/${id}`),
 
   getInfoForEmailStatus: (pageIndex: number, pageSize: number) =>
-  api.get<Result<Pagination<RpeEmailStatus>>>(`/RpeLinkQueue/get-info-status-email`, {
-    params: { pageIndex, pageSize }
-  }),
+    api.get<Result<Pagination<RpeEmailStatus>>>(`/RpeLinkQueue/get-info-status-email`, {
+      params: { pageIndex, pageSize }
+    }),
 
-resendRpeEmail: (emailId: number) =>
-  api.post(`/RpeLinkQueue/resend`, { emailId }),
+  resendRpeEmail: (emailId: number) =>
+    api.post(`/RpeLinkQueue/resend`, { emailId }),
+
+  createNewMailAsync: (data: MailRequestDto) =>
+    api.post(`/Mail/create-new-mail`, data)
+
 }
 

@@ -149,6 +149,10 @@
         "deleteConfirm": "Conferma eliminazione",
         "deleteQuestion": "Eliminare?",
         "unknown": "Atleta sconosciuto",
+        "email": {
+            "tokenSubject": "Token Sleep ID",
+            "tokenBody": "Ciao {name}, il tuo Token Sleep ID è: {token}. Salvalo per utilizzarlo nell'app."
+        },
         "details": {
             "readinessTitle": "Stato di Prontezza (Readiness)",
             "acwrTitle": "📈 Acute:Chronic Workload Ratio (ACWR)",
@@ -170,7 +174,8 @@
         "success": {
             "created": "Atleta creato con successo",
             "updated": "Atleta aggiornato con successo",
-            "deleted": "Atleta eliminato"
+            "deleted": "Atleta eliminato",
+            "tokenCopied": "Token copiato negli appunti"
         },
         "errors": {
             "load": "Errore nel caricamento atleti",
@@ -188,6 +193,10 @@
             "genderInvalid": "Genere non valido",
             "birthDateInvalid": "La data di nascita non è valida",
             "birthDateRequired": "La data di nascita è obbligatoria"
+        },
+        "message": {
+            "resend": "Errore durante l'invio dell'email. Riprova.",
+            "resendSuccess": "Email di token inviata con successo"
         }
     },
     "risk": {
@@ -631,15 +640,15 @@
         "height": "Altezza",
         "bmi": "BMI",
         "injury_status": "Stato Infortuni",
-        "active_injuries"  : "Infortuni Attivi",
+        "active_injuries": "Infortuni Attivi",
         "total_days_off": "Giorni Totali di Stop",
         "injury_history": "Storico Infortuni",
         "total_injuries": "Infortuni Totali",
         "acwr_insufficient_data": "Dati insufficienti per il calcolo dell'ACWR",
-        "readiness_title_tooltip":"Readiness: punteggio medio di prontezza fisica dell'atleta basato sugli ultimi test e allenamenti",
-        "current_acwr_tooltip":"ACWR: rapporto tra carico acuto (7 giorni) e carico cronico (28 giorni). Valori > 1.3 indicano potenziale sovraccarico e rischio infortunio",
-        "acuteload_title_tooltip":"Acute Load: carico acuto dell'ultima settimana, basato su volume e intensità dell'allenamento",
-        "chronicload_title_tooltip":"Chronic Load: carico cronico delle ultime 4 settimane, rappresenta la capacità di carico dell'atleta"
+        "readiness_title_tooltip": "Readiness: punteggio medio di prontezza fisica dell'atleta basato sugli ultimi test e allenamenti",
+        "current_acwr_tooltip": "ACWR: rapporto tra carico acuto (7 giorni) e carico cronico (28 giorni). Valori > 1.3 indicano potenziale sovraccarico e rischio infortunio",
+        "acuteload_title_tooltip": "Acute Load: carico acuto dell'ultima settimana, basato su volume e intensità dell'allenamento",
+        "chronicload_title_tooltip": "Chronic Load: carico cronico delle ultime 4 settimane, rappresenta la capacità di carico dell'atleta"
     },
     "injuries": {
         "title": "Centro Medico",
@@ -989,5 +998,85 @@
         "garanteAddress": "Via di Grottarossa, 537 - 00189 Roma | gpdp.it | reclami@gpdp.it",
         "footer": "Questa informativa è legalmente vincolante. Se non accetti questi termini, non puoi utilizzare Athlete Hub.",
         "copyright": "© 2026 Athlete Hub. Tutti i diritti riservati."
+    },
+    "landingpage": {
+        "navbar": {
+            "clientLogin": "Client Log in",
+            "demo": "Prenota Demo"
+        },
+        "hero": {
+            "subtitle": "MVP 1.0.2 Open for Early Adopters",
+            "title": "DATI D'ÉLITE PER ATLETI D'ÉLITE.",
+            "description": "Athlete Hub trasforma la complessità della preparazione atletica in una dashboard intuitiva, sicura e scientificamente rigorosa.",
+            "ctaStart": "Inizia come Coach",
+            "ctaExplore": "Esplora le Funzioni"
+        },
+        "features": {
+            "precisioneACWR": "Precisione ACWR",
+            "feedbackLoop": "Feedback Loop",
+            "pianificazione": "Pianificazione",
+            "clinicalData": "Clinical Data",
+            "descPrecisioneACWR": "Monitoraggio scientifico del rapporto tra carico acuto e cronico.",
+            "descFeedbackLoop": "Automazione totale della raccolta RPE tramite email.",
+            "descPianificazione": "Gestione sessioni multi-atleta con target definiti.",
+            "descClinicalData": "Hub centralizzato per infortuni e protocolli Return To Play."
+        },
+        "dashboard": {
+            "preview": "Dashboard Preview Mode"
+        },
+        "scalability": {
+            "title": "COSTRUITO PER LA SCALABILITÀ ESTREMA.",
+            "description": "Sfruttiamo Nuxt 3 e database crittografati per garantire che i dati dei tuoi atleti siano sempre accessibili, veloci e protetti.",
+            "dataIntegrity": "Data Integrity",
+            "dataIntegrityDesc": "Backup orari automatizzati e sincronizzazione cloud.",
+            "security": "Security",
+            "securityDesc": "Crittografia 256-bit per la massima privacy."
+        },
+        "roadmap": {
+            "title": "Roadmap di Sviluppo",
+            "steps": [
+                {
+                    "title": "Wearable Sync",
+                    "date": "Q3 2026"
+                },
+                {
+                    "title": "AI Insights",
+                    "date": "Q4 2026"
+                },
+                {
+                    "title": "Mobile App",
+                    "date": "Q1 2027"
+                }
+            ]
+        },
+        "waitlist": {
+            "title": "Partecipa alla Beta",
+            "subtitle": "Posti limitati per i primi 20 coach partner.",
+            "emailLabel": "Email Professionale",
+            "submitButton": "Richiedi Accesso",
+            "submitting": "Invio in corso...",
+            "successTitle": "Richiesta Ricevuta",
+            "successMessage": "Grazie Coach. Ti contatteremo entro 48 ore per l'accesso prioritario.",
+            "sendAgain": "Invia un'altra mail"
+        },
+        "footer": {
+            "athleteHub": "Athlete Hub",
+            "privacy": "Privacy & Data Policy",
+            "github": "Github",
+            "version": "v1.0.2 // Developed by Manuel Enzo"
+        },
+        "theme": {
+            "dark": "Scuro",
+            "light": "Chiaro"
+        },
+        "alerts": {
+            "serverError": "Errore. Riprova più tardi."
+        },
+        "preview": {
+            "title": "Anteprima Funzionalità",
+            "calendar": "Calendario",
+            "details": "Dettagli Atleta",
+            "test": "Test Fitness"
+        }
     }
 }

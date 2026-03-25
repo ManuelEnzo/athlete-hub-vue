@@ -15,11 +15,6 @@ export const navMenu: NavMenu[] = [
         link: '/agenda',
       },
       {
-        title: 'Email',
-        icon: 'i-lucide-mail-search',
-        link: '/email',
-      },
-      {
         title: 'Athletes',
         icon: 'i-lucide-users',
         children: [
@@ -39,28 +34,37 @@ export const navMenu: NavMenu[] = [
             link: '/athletedetails',
           }
         ],
+      }
+    ],
+  },
+  {
+    heading: 'RPE',
+    items: [
+      {
+        title: 'RPE Monitoring',
+        icon: 'i-lucide-mail-search',
+        link: '/email',
       },
       {
-        title: 'Monitoring',
-        icon: 'i-lucide-activity',
-        children: [
-          {
-            title: 'RPE Submissions',
-            icon: 'i-lucide-bar-chart-2',
-            link: '/rpedetails',
-          },
-          {
-            title: 'Injuries Log',
-            icon: 'i-lucide-heart-pulse',
-            link: '/injuriesmanager',
-          },
-          {
-            title: 'Test Settings',
-            icon: 'i-lucide-settings-2',
-            link: '/testmanagement',
-          },
-        ]
+        title: 'RPE Submissions',
+        icon: 'i-lucide-bar-chart-2',
+        link: '/rpedetails',
       }
+    ],
+  },
+  {
+    heading: 'Monitoring',
+    items: [
+      {
+        title: 'Injuries Log',
+        icon: 'i-lucide-heart-pulse',
+        link: '/injuriesmanager',
+      },
+      {
+        title: 'Test Settings',
+        icon: 'i-lucide-settings-2',
+        link: '/testmanagement',
+      },
     ],
   },
 ]
