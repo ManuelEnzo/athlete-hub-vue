@@ -163,7 +163,7 @@ const roadmapSteps = [
             <!-- Details -->
             <div
               class="group relative overflow-hidden rounded-3xl shadow-2xl cursor-pointer transform transition-all duration-500 hover:scale-105">
-              <img src="/details.png" alt="Details Preview"
+               <img src="/dettagli.png" alt="Calendar Preview"
                 class="w-full aspect-[4/3] object-cover transition-transform duration-500 group-hover:scale-110 group-hover:brightness-110" />
               <div
                 class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-6">
