@@ -1,10 +1,9 @@
 import axios, { type InternalAxiosRequestConfig, AxiosError } from 'axios'
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '../stores/auth'
-import type { RefreshResponse, Result, UserSignInResponse } from '../types/api'
-import config from '@/config';
+import type { RefreshResponse, Result } from '../types/api'
+import config from '@/config'
 
-// Helper per la traduzione fuori dai componenti Vue
 const t = (key: string) => {
   const translations: Record<string, string> = {
     logoutInProgress: 'Logout in corso...',
@@ -13,11 +12,12 @@ const t = (key: string) => {
   }
   return translations[key] || key
 }
+
 const api = axios.create({
   baseURL: config.apiEndpoint,
   headers: {
     'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true' //NGROCK
+    'ngrok-skip-browser-warning': 'true'
   },
   withCredentials: true
 })
@@ -34,8 +34,11 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = []
 }
 
-const PUBLIC_ROUTES = ['/Auth/sign-in', '/Auth/sign-up', '/Auth/refresh', '/Auth/forgot-password']
+const PUBLIC_ROUTES = ['/Auth/sign-in', '/Auth/sign-up', '/Auth/forgot-password']
 
+// -------------------------
+// REQUEST
+// -------------------------
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (isLoggingOut && !config.url?.includes('/Auth/logout')) {
     return Promise.reject(new axios.Cancel(t('logoutInProgress')))
@@ -45,18 +48,22 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (authStore.token) {
     config.headers.Authorization = `Bearer ${authStore.token}`
   }
+
   return config
 })
 
+// -------------------------
+// RESPONSE
+// -------------------------
 api.interceptors.response.use(
   (response) => {
     const result = response.data as Result<any>
-    // Controllo successo logico della business logic
     if (result && Object.prototype.hasOwnProperty.call(result, 'isSuccess') && !result.isSuccess) {
       toast.error(result.error?.message || t('operationFailed'))
     }
     return response
   },
+
   async (error: AxiosError) => {
     if (axios.isCancel(error)) return Promise.reject(error)
 
@@ -65,7 +72,8 @@ api.interceptors.response.use(
 
     if (isLoggingOut) return Promise.reject(error)
 
-    const isAuthRoute = originalRequest.url?.includes('/Auth/refresh') ||
+    const isAuthRoute =
+      originalRequest.url?.includes('/Auth/refresh') ||
       originalRequest.url?.includes('/Auth/logout')
 
     if (isAuthRoute) {
@@ -73,19 +81,32 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
 
+    // -------------------------
+    // GESTIONE 401
+    // -------------------------
     if (error.response?.status === 401) {
       const isPublicRoute = PUBLIC_ROUTES.some(route => originalRequest.url?.includes(route))
       if (isPublicRoute) return Promise.reject(error)
 
+      // ⛔ Se non ho refresh token → logout immediato
+      if (!authStore.refreshToken) {
+        await forceLogout(authStore)
+        return Promise.reject(error)
+      }
+
+      // Se un refresh è già in corso → accoda
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
-        }).then(token => {
-          originalRequest.headers.Authorization = `Bearer ${token}`
-          return api(originalRequest)
-        }).catch(err => Promise.reject(err))
+        })
+          .then(token => {
+            originalRequest.headers.Authorization = `Bearer ${token}`
+            return api(originalRequest)
+          })
+          .catch(err => Promise.reject(err))
       }
 
+      // Primo tentativo di refresh
       if (!originalRequest._retry) {
         originalRequest._retry = true
         isRefreshing = true
@@ -93,16 +114,19 @@ api.interceptors.response.use(
         try {
           const { data } = await axios.post<Result<RefreshResponse>>(
             `${config.apiEndpoint}/Auth/refresh`,
-            { refreshToken: authStore.refreshToken }, // invio dal Pinia store
+            { refreshToken: authStore.refreshToken }
           )
 
           if (data.isSuccess && data.value) {
-            authStore.setTokens(data.value.accessToken, data.value.refreshToken) // aggiorna store
+            authStore.setTokens(data.value.accessToken, data.value.refreshToken)
+
             isRefreshing = false
             processQueue(null, data.value.accessToken)
+
             originalRequest.headers.Authorization = `Bearer ${data.value.accessToken}`
             return api(originalRequest)
           }
+
           throw new Error('Refresh failed')
         } catch (refreshError) {
           isRefreshing = false
@@ -118,19 +142,18 @@ api.interceptors.response.use(
   }
 )
 
+// -------------------------
+// LOGOUT FORZATO
+// -------------------------
 async function forceLogout(authStore: any) {
   if (isLoggingOut) return
   isLoggingOut = true
 
-  authStore.token = null
+  authStore.setTokens(null, null)
   authStore.user = null
 
-  // Pulizia rapida
   if (import.meta.client) {
     localStorage.clear()
-    // Nota: I cookie HttpOnly non possono essere cancellati da JS,
-    // ci deve pensare il backend nella rotta /logout
-
     window.location.replace('/login?reason=expired')
   }
 }

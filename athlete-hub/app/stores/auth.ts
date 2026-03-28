@@ -3,20 +3,18 @@ import { authApi } from '~/api/auth'
 import type { UserProfileResponse } from '~/types/api'
 
 export const useAuthStore = defineStore('auth', () => {
-  // Cookie gestiti fuori dallo stato
+  // Cookie veri, mutabili
   const tokenCookie = useCookie<string | null>('auth_token', { path: '/' })
   const refreshCookie = useCookie<string | null>('refresh_token', { path: '/' })
 
-  // Esposti come computed → SSR-safe
+  // Computed in sola lettura (ok)
   const token = computed(() => tokenCookie.value)
   const refreshToken = computed(() => refreshCookie.value)
 
-  // Stato serializzabile
   const user = ref<UserProfileResponse | null>(null)
 
   async function fetchProfile() {
     if (!token.value) return
-
     try {
       const response = await authApi.getProfile()
       if (response.data.isSuccess && response.data.value) {
@@ -27,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function setTokens(at: string, rt: string) {
+  function setTokens(at: string | null, rt: string | null) {
     tokenCookie.value = at
     refreshCookie.value = rt
   }
@@ -40,8 +38,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (error) {
       console.error("Errore logout:", error)
     } finally {
-      tokenCookie.value = null
-      refreshCookie.value = null
+      setTokens(null, null)
       user.value = null
       return navigateTo('/login')
     }
