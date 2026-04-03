@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T extends ZodObjectOrWrapped">
 import type { FormContext, GenericObject } from 'vee-validate'
-import type { z, ZodAny } from 'zod'
+import type { z } from 'zod'
 import type { Config, ConfigItem, Dependency, Shape } from './interface'
 import type { ZodObjectOrWrapped } from './utils'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -22,16 +22,16 @@ const emits = defineEmits<{
 }>()
 
 const { dependencies } = toRefs(props)
-provideDependencies(dependencies)
+provideDependencies(dependencies as any)
 
 const shapes = computed(() => {
   // @ts-expect-error ignore {} not assignable to object
   const val: { [key in keyof T]: Shape } = {}
   const baseSchema = getObjectFormSchema(props.schema)
-  const shape = baseSchema.shape
+  const shape = (baseSchema as any).shape
   Object.keys(shape).forEach((name) => {
-    const item = shape[name] as ZodAny
-    const baseItem = getBaseSchema(item) as ZodAny
+    const item = shape[name] as z.ZodAny
+    const baseItem = getBaseSchema(item) as z.ZodAny
     let options = (baseItem && 'values' in baseItem._def) ? baseItem._def.values as string[] : undefined
     if (!Array.isArray(options) && typeof options === 'object')
       options = Object.values(options)
@@ -40,7 +40,7 @@ const shapes = computed(() => {
       type: getBaseType(item),
       default: getDefaultValueInZodStack(item),
       options,
-      required: !['ZodOptional', 'ZodNullable'].includes(item._def.typeName),
+      required: !['ZodOptional', 'ZodNullable'].includes((item._def as any).typeName),
       schema: baseItem,
     }
   })
@@ -65,15 +65,15 @@ const formComponent = computed(() => props.form ? 'form' : Form)
 const formComponentProps = computed(() => {
   if (props.form) {
     return {
-      onSubmit: props.form.handleSubmit(val => emits('submit', val)),
+      onSubmit: (props.form as any).handleSubmit((val: any) => emits('submit', val)),
     }
   }
   else {
-    const formSchema = toTypedSchema(props.schema)
+    const formSchema = toTypedSchema(props.schema as any)
     return {
       keepValues: true,
       validationSchema: formSchema,
-      onSubmit: (val: GenericObject) => emits('submit', val),
+      onSubmit: (val: any) => emits('submit', val as any),
     }
   }
 })
@@ -87,7 +87,7 @@ const formComponentProps = computed(() => {
     <slot name="customAutoForm" :fields="fields">
       <template v-for="(shape, key) of shapes" :key="key">
         <slot
-          :shape="shape"
+          :shape="shape as any"
           :name="key.toString() as keyof z.infer<T>"
           :field-name="key.toString()"
           :config="fieldConfig?.[key as keyof typeof fieldConfig] as ConfigItem"
@@ -95,7 +95,7 @@ const formComponentProps = computed(() => {
           <AutoFormField
             :config="fieldConfig?.[key as keyof typeof fieldConfig] as ConfigItem"
             :field-name="key.toString()"
-            :shape="shape"
+            :shape="shape as any"
           />
         </slot>
       </template>

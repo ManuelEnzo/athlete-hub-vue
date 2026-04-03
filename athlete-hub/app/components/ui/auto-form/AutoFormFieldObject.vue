@@ -23,7 +23,7 @@ const shapes = computed(() => {
 
   if (!props.schema)
     return
-  const shape = getBaseSchema(props.schema)?.shape
+  const shape = (getBaseSchema(props.schema) as any)?.shape
   if (!shape)
     return
   Object.keys(shape).forEach((name) => {
@@ -37,7 +37,7 @@ const shapes = computed(() => {
       type: getBaseType(item),
       default: getDefaultValueInZodStack(item),
       options,
-      required: !['ZodOptional', 'ZodNullable'].includes(item._def.typeName),
+      required: !['ZodOptional', 'ZodNullable'].includes((item._def as any).typeName),
       schema: item,
     }
   })
@@ -66,7 +66,7 @@ provide(FieldContextKey, fieldContext)
                   :config="config?.[key as keyof typeof config] as ConfigItem"
                   :field-name="`${fieldName}.${key.toString()}`"
                   :label="key.toString()"
-                  :shape="shape"
+                  :shape="shape as any"
                 />
               </template>
             </AccordionContent>

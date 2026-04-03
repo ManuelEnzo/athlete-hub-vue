@@ -415,11 +415,11 @@ Endpoints grouped by resource:
 
 #### Athletes
 ```typescript
-athleteApi.getAll()                    // Get all athletes
-athleteApi.getById(id)                 // Get athlete by ID
-athleteApi.create(data)                // Create athlete
-athleteApi.update(id, data)            // Update athlete
-athleteApi.delete(id)                  // Delete athlete
+athleteApi.getAll() // Get all athletes
+athleteApi.getById(id) // Get athlete by ID
+athleteApi.create(data) // Create athlete
+athleteApi.update(id, data) // Update athlete
+athleteApi.delete(id) // Delete athlete
 ```
 
 #### Measurements
@@ -438,15 +438,15 @@ athleteApi.getEventsByAthlete(athleteId)
 athleteApi.createEvent(data)
 athleteApi.updateEvent(id, data)
 athleteApi.deleteEvent(id)
-athleteApi.getTestGrid(eventId)       // Get test entry grid
+athleteApi.getTestGrid(eventId) // Get test entry grid
 athleteApi.saveTestResults(eventId, results)
 ```
 
 #### RPE System
 ```typescript
-athleteApi.getLastSessionInfo()        // Last RPE session overview
+athleteApi.getLastSessionInfo() // Last RPE session overview
 athleteApi.getHistoricalAnalysis(athleteId, page, pageSize)
-athleteApi.submitRpe(data)             // Submit RPE value
+athleteApi.submitRpe(data) // Submit RPE value
 athleteApi.getAllInfoFromToken(tokenId)
 athleteApi.getInfoForEmailStatus(page, pageSize)
 athleteApi.resendRpeEmail(email)
@@ -556,7 +556,7 @@ export default defineAppConfig({
   appSettings: {
     sidebar: {
       collapsible: 'offcanvas', // 'offcanvas' | 'icon' | 'none'
-      side: 'left',  // 'left' | 'right'
+      side: 'left', // 'left' | 'right'
       variant: 'inset', // 'sidebar' | 'floating' | 'inset'
     },
     theme: {
@@ -741,12 +741,12 @@ Define how long you keep data:
 ```typescript
 // Example policy
 const retentionPolicy = {
-  athleteProfile: '5 years',        // Keep active + 3 years after departure
-  rpeData: '2 years',                // Keep for analysis/trend
-  trainingLogs: '2 years',           // Historical tracking
-  injuryRecords: '5-10 years',       // Legal requirement
-  deletedAccounts: '30 days',        // Backup retention before permanent delete
-  auditLogs: '1 year',               // Compliance tracking
+  athleteProfile: '5 years', // Keep active + 3 years after departure
+  rpeData: '2 years', // Keep for analysis/trend
+  trainingLogs: '2 years', // Historical tracking
+  injuryRecords: '5-10 years', // Legal requirement
+  deletedAccounts: '30 days', // Backup retention before permanent delete
+  auditLogs: '1 year', // Compliance tracking
 }
 ```
 
@@ -802,7 +802,7 @@ interface AuditLog {
   userId: number
   resourceType: 'ATHLETE' | 'RPE' | 'INJURY' | 'MEASUREMENT'
   resourceId: number
-  changes: Record<string, any>  // What changed
+  changes: Record<string, any> // What changed
   ipAddress: string
   userAgent: string
   consentStatus?: boolean

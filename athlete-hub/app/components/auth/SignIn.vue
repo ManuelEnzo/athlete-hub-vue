@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Loader2 } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import notifications from '@/lib/notificationService'
+import { useErrorHandler } from '~/composables/useErrorHandler'
 import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/auth'
 import { useLoadingStore } from '../../stores/loadingStore'
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const email = ref('')
 const password = ref('')
 
-/** * RECUPERO SICURO DEGLI STORE
+/**
+ * RECUPERO SICURO DEGLI STORE
  * Passando $pinia da useNuxtA pp evitiamo l'errore getActivePinia durante l'SSR
  */
 const { $pinia } = useNuxtApp()
@@ -22,27 +24,28 @@ async function onSubmit(event: Event) {
   event.preventDefault()
 
   if (!email.value || !password.value) {
-    toast.error(t('auth.errors.requiredFields'))
+    notifications.error(t('auth.errors.requiredFields'))
     return
   }
+
+  const handler = useErrorHandler({ component: 'SignIn' })
 
   try {
     const response = await authApi.signIn({
       email: email.value,
-      password: password.value
+      password: password.value,
     })
 
     const result = response.data
 
     if (result.isSuccess && result.value) {
       authStore.setTokens(result.value.accessToken, result.value.refreshToken)
-      toast.success(t('auth.login.success'))
+      notifications.success(t('auth.login.success'))
       await navigateTo('/')
     }
-  } catch (err: any) {
-    const errorMessage = err.error?.message || t('auth.errors.genericLogin')
-    console.error('[Login Error]', err)
-    toast.error(errorMessage)
+  }
+  catch (err: any) {
+    handler.handleError(err instanceof Error ? err : new Error(String(err)))
   }
 }
 </script>
@@ -65,8 +68,10 @@ async function onSubmit(event: Event) {
 
     <div class="grid gap-2">
       <Label for="email">{{ t('auth.fields.email') }}</Label>
-      <Input id="email" v-model="email" type="email" placeholder="name@example.com" :disabled="loadingStore?.isLoading"
-        auto-complete="email" />
+      <Input
+        id="email" v-model="email" type="email" :placeholder="t('auth.signup.placeholders.email')" :disabled="loadingStore?.isLoading"
+        auto-complete="email"
+      />
     </div>
 
     <div class="grid gap-2">

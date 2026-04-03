@@ -3,7 +3,8 @@ import { useLoadingStore } from '~/stores/loadingStore'
 
 export default defineNuxtPlugin(() => {
   // Se siamo sul server, non facciamo nulla
-  if (import.meta.server) return
+  if (import.meta.server)
+    return
 
   // NON chiamare useLoadingStore() qui fuori!
 
@@ -25,16 +26,20 @@ export default defineNuxtPlugin(() => {
       loadingStore.stop()
 
       if (error.response?.data?.error) {
-        return Promise.reject(error.response.data)
+        const apiErr = new Error('API response error') as any
+        apiErr.payload = error.response.data
+        return Promise.reject(apiErr)
       }
 
-      return Promise.reject({
+      const netErr = new Error('NETWORK_OR_SERVER_ERROR') as any
+      netErr.payload = {
         isSuccess: false,
         error: {
           code: 'NETWORK_OR_SERVER_ERROR',
-          message: 'Il server non risponde o si è verificato un errore imprevisto'
-        }
-      })
-    }
+          message: 'Il server non risponde o si è verificato un errore imprevisto',
+        },
+      }
+      return Promise.reject(netErr)
+    },
   )
 })

@@ -3,9 +3,9 @@ import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internati
 import { toTypedSchema } from '@vee-validate/zod'
 import { Check, ChevronsUpDown } from 'lucide-vue-next'
 import { toDate } from 'reka-ui/date'
-import { h, ref } from 'vue'
-import { toast } from 'vue-sonner'
+import { ref } from 'vue'
 import * as z from 'zod'
+import notifications from '@/lib/notificationService'
 import { cn } from '@/lib/utils'
 
 const open = ref(false)
@@ -31,9 +31,7 @@ const df = new DateFormatter('en-US', {
 
 const accountFormSchema = toTypedSchema(z.object({
   name: z
-    .string({
-      required_error: 'Required.',
-    })
+    .string()
     .min(2, {
       message: 'Name must be at least 2 characters.',
     })
@@ -47,9 +45,7 @@ const accountFormSchema = toTypedSchema(z.object({
 // https://github.com/logaretm/vee-validate/issues/3521
 // https://github.com/logaretm/vee-validate/discussions/3571
 async function onSubmit(values: any) {
-  toast('You submitted the following values:', {
-    description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-  })
+  notifications.info('You submitted the following values:', JSON.stringify(values, null, 2))
 }
 </script>
 

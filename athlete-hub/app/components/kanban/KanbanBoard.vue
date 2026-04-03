@@ -8,10 +8,10 @@ import {
   getLocalTimeZone,
   parseAbsoluteToLocal,
 } from '@internationalized/date'
+import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 import { useKanban } from '~/composables/useKanban'
 import CardFooter from '../ui/card/CardFooter.vue'
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const { board, addTask, updateTask, removeTask, setColumns, removeColumn, updateColumn } = useKanban()
@@ -239,11 +239,11 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
               ghost-class="opacity-50"
               @end="onTaskDrop"
             >
-              <template #item="{ element: t }: { element: Task }">
+              <template #item="{ element: task }: { element: Task }">
                 <div class="rounded-xl border bg-card px-3 py-2 shadow-sm hover:bg-accent/50 cursor-pointer">
                   <div class="flex items-start justify-between gap-2">
                     <div class="text-sm text-muted-foreground">
-                      {{ t.id }}
+                      {{ task.id }}
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger as-child>
@@ -252,7 +252,7 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent class="w-20" align="start">
-                        <DropdownMenuItem @click="showEditTask(col.id, t.id)">
+                        <DropdownMenuItem @click="showEditTask(col.id, task.id)">
                           <Icon name="lucide:edit-2" class="size-4" />
                           Edit
                         </DropdownMenuItem>
@@ -266,7 +266,7 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
                           Copy link
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem variant="destructive" class="text-destructive" @click="removeTask(col.id, t.id)">
+                        <DropdownMenuItem variant="destructive" class="text-destructive" @click="removeTask(col.id, task.id)">
                           <Icon name="lucide:trash-2" class="size-4" />
                           Delete
                         </DropdownMenuItem>
@@ -274,7 +274,7 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
                     </DropdownMenu>
                   </div>
                   <p class="font-medium leading-5 mt-1">
-                    {{ t.title }}
+                    {{ task.title }}
                   </p>
                   <div class="mt-3 flex items-center gap-1.5">
                     <badge variant="outline">
@@ -296,16 +296,16 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
                       </div>
                       <div class="flex items-center text-sm text-muted-foreground gap-1">
                         <Icon name="lucide:clock-fading" />
-                        <span>{{ useTimeAgo(t.dueDate ?? '', OPTIONS) }}</span>
+                        <span>{{ useTimeAgo(task.dueDate ?? '', OPTIONS) }}</span>
                       </div>
                     </div>
                     <div class="flex items-center gap-2">
                       <Tooltip>
                         <TooltipTrigger as-child>
-                          <Icon v-if="t.priority" :name="iconPriority(t.priority)" class="size-4" :class="colorPriority(t.priority)" />
+                          <Icon v-if="task.priority" :name="iconPriority(task.priority)" class="size-4" :class="colorPriority(task.priority)" />
                         </TooltipTrigger>
                         <TooltipContent class="capitalize">
-                          {{ t.priority }}
+                          {{ task.priority }}
                         </TooltipContent>
                       </Tooltip>
                       <Avatar class="size-6">
@@ -324,7 +324,7 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
             <Button size="sm" variant="ghost" class="text-muted-foreground" @click="openNewTask(col.id)">
               <Icon name="lucide:plus" />
               {{ t('kanban.addTask') }}
-            </Button> 
+            </Button>
           </CardFooter>
         </Card>
       </template>
@@ -339,13 +339,13 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
         <DialogDescription class="sr-only">
           {{ showModalTask.type === 'create' ? t('kanban.dialog.description.create') : t('kanban.dialog.description.edit') }}
         </DialogDescription>
-      </DialogHeader> 
+      </DialogHeader>
       <div class="flex flex-col gap-3">
         <div class="grid items-baseline grid-cols-1 md:grid-cols-4 md:[&>label]:col-span-1 *:col-span-3 gap-3">
           <Label>{{ t('kanban.labels.title') }}</Label>
           <Input v-model="newTask.title" :placeholder="t('kanban.labels.title')" />
           <Label>{{ t('kanban.labels.description') }}</Label>
-          <Textarea v-model="newTask.description" :placeholder="t('kanban.labels.description') + ' (' + t('common.optional') + ')'" rows="4" />
+          <Textarea v-model="newTask.description" :placeholder="`${t('kanban.labels.description')} (${t('common.optional')})`" rows="4" />
           <Label>{{ t('kanban.labels.priority') }}</Label>
           <Select v-model="newTask.priority">
             <SelectTrigger class="w-full">
@@ -363,7 +363,7 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
               </SelectItem>
             </SelectContent>
           </Select>
-          <Label>{{ t('kanban.labels.dueDate') }}</Label> 
+          <Label>{{ t('kanban.labels.dueDate') }}</Label>
           <div class="flex items-center gap-1">
             <Popover>
               <PopoverTrigger as-child>
@@ -399,7 +399,7 @@ const OPTIONS: UseTimeAgoOptions<false, UseTimeAgoUnitNamesDefault> = {
         </Button>
         <Button @click="showModalTask.type === 'create' ? createTask() : editTask()">
           {{ showModalTask.type === 'create' ? t('kanban.actions.create') : t('kanban.actions.update') }}
-        </Button> 
+        </Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

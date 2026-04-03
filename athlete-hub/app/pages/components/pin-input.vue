@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { toast } from 'vue-sonner'
+import notifications from '@/lib/notificationService'
 
 const value = ref<string[]>([])
 function handleComplete(e: string[]) {
-  toast(`PIN Input : ${e.join('')}`)
+  notifications.info(`PIN Input : ${e.join('')}`)
 }
 
 const valueSeparator = ref<string[]>([])
 
 function handleCompleteSeparator(e: string[]) {
-  toast(`PIN Input : ${e.join('')}`)
+  notifications.info(`PIN Input : ${e.join('')}`)
 }
 </script>
 

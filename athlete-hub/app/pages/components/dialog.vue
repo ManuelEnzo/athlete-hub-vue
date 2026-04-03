@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toast } from 'vue-sonner'
+import notifications from '@/lib/notificationService'
 
 const link = ref('https://shadcn-vue.com/docs/installation')
 const { text, copy, copied, isSupported } = useClipboard({ source: link })
@@ -7,14 +7,10 @@ const { text, copy, copied, isSupported } = useClipboard({ source: link })
 async function handleCopyLink() {
   await copy(link.value)
   if (isSupported.value && copied.value) {
-    toast('Text Copied', {
-      description: text.value,
-    })
+    notifications.success('Text Copied', text.value)
   }
   else {
-    toast('Copy failed', {
-      description: 'Your browser does not support Clipboard API',
-    })
+    notifications.error('Copy failed', 'Your browser does not support Clipboard API')
   }
 }
 </script>

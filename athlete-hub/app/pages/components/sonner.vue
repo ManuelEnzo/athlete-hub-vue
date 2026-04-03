@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { toast } from 'vue-sonner'
 import { useI18n } from 'vue-i18n'
+import notifications from '@/lib/notificationService'
+
 const { t } = useI18n()
 </script>
 
@@ -47,13 +48,7 @@ const { t } = useI18n()
           <div class="min-h-100px w-full flex items-center justify-center gap-4 md:min-h-200px">
             <Button
               variant="outline" @click="() => {
-                toast(t('notifications.eventCreated'), {
-                  description: 'Sunday, December 03, 2023 at 9:00 AM',
-                  action: {
-                    label: 'Undo',
-                    onClick: () => console.log('Undo'),
-                  },
-                })
+                notifications.success(t('notifications.eventCreated'), 'Sunday, December 03, 2023 at 9:00 AM')
               }"
             >
               Add to calendar

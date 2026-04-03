@@ -1,20 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { PlusCircle, Loader2 } from 'lucide-vue-next'
-import { Button } from '@/components/ui/button'
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
-import AthletesMeasurements from '~/components/athletemeasurements/AthletesMeasurements.vue'
-import { athleteApi } from '~/api/business'
 import type { AthleteMeasurementsResponse, AthleteResponse } from '~/types/api'
-import { toast } from 'vue-sonner'
+import { Loader2, PlusCircle } from 'lucide-vue-next'
+import { onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { athleteApi } from '~/api/business'
+import AthletesMeasurements from '~/components/athletemeasurements/AthletesMeasurements.vue'
+import { useErrorHandler } from '~/composables/useErrorHandler'
+import useToggle from '~/composables/useToggle'
+import { useAuthStore } from '~/stores/auth'
 
-const isFormVisible = ref(false)
+const { state: isFormVisible, toggle: _toggle } = useToggle(false)
 const selectedAthleteId = ref<number | null>(null)
 const athletes = ref<AthleteResponse[]>([])
 const loading = ref(false)
 const measurements = ref<AthleteMeasurementsResponse[]>([])
 const { t } = useI18n()
+const handler = useErrorHandler({ component: 'AthleteMeasurementsPage' })
+const auth = useAuthStore()
 
 // Carica l'elenco atleti e imposta il primo se presente
 async function fetchAthletes() {
@@ -22,14 +26,13 @@ async function fetchAthletes() {
     const res = await athleteApi.getAll()
     if (res.data.isSuccess) {
       athletes.value = res.data.value ?? []
-
-      // riga 28
       if (athletes.value.length > 0 && selectedAthleteId.value === null) {
         selectedAthleteId.value = athletes.value[0]?.id ?? null
       }
     }
-  } catch {
-    toast.error(t('measurements.toast.loadAthletesError'))
+  }
+  catch (err) {
+    handler.handleError(err instanceof Error ? err : new Error(t('measurements.toast.loadAthletesError')))
   }
 }
 
@@ -41,9 +44,11 @@ async function refreshData() {
     if (res.data.isSuccess) {
       measurements.value = res.data.value ?? []
     }
-  } catch (err) {
-    toast.error(t('measurements.toast.loadMeasurementsError'))
-  } finally {
+  }
+  catch (err) {
+    handler.handleError(err instanceof Error ? err : new Error(t('measurements.toast.loadMeasurementsError')))
+  }
+  finally {
     loading.value = false
   }
 }
@@ -55,6 +60,8 @@ watch(selectedAthleteId, () => {
 })
 
 onMounted(() => {
+  // ensure auth/profile then load
+  auth.fetchProfile().catch(e => handler.handleError(e instanceof Error ? e : new Error(String(e))))
   fetchAthletes()
   refreshData()
 })
@@ -63,7 +70,9 @@ onMounted(() => {
 <template>
   <div class="min-h-screen mx-auto">
     <div class="flex flex-wrap items-center justify-between pb-6 gap-4">
-      <h2 class="text-2xl font-bold tracking-tight">{{ t('measurements.pageTitle') }}</h2>
+      <h2 class="text-2xl font-bold tracking-tight">
+        {{ t('measurements.pageTitle') }}
+      </h2>
 
       <div class="flex flex-wrap items-center gap-2">
         <Select v-model="selectedAthleteId">
@@ -71,7 +80,9 @@ onMounted(() => {
             <SelectValue :placeholder="t('measurements.filterAll')" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem :value="null">{{ t('measurements.filterAll') }}</SelectItem>
+            <SelectItem :value="null">
+              {{ t('measurements.filterAll') }}
+            </SelectItem>
             <SelectItem v-for="a in athletes" :key="a.id" :value="a.id">
               {{ a.firstName }} {{ a.lastName }}
             </SelectItem>
@@ -90,8 +101,10 @@ onMounted(() => {
     </div>
 
     <div v-else>
-      <AthletesMeasurements v-model:showForm="isFormVisible" :selectedAthleteId="selectedAthleteId" :athletes="athletes"
-        :measurements="measurements" :loading="loading" @refresh="refreshData" />
+      <AthletesMeasurements
+        v-model:show-form="isFormVisible" :selected-athlete-id="selectedAthleteId" :athletes="athletes"
+        :measurements="measurements" :loading="loading" @refresh="refreshData"
+      />
     </div>
   </div>
 </template>

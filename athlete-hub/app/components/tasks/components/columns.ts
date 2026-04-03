@@ -13,11 +13,11 @@ export const columns: ColumnDef<Task>[] = [
     id: 'select',
     header: ({ table }) => h(Checkbox, {
       'checked': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
-      'onUpdate:checked': value => table.toggleAllPageRowsSelected(!!value),
+      'onUpdate:checked': (value: any) => table.toggleAllPageRowsSelected(!!value),
       'ariaLabel': 'Select all',
       'class': 'translate-y-0.5',
     }),
-    cell: ({ row }) => h(Checkbox, { 'checked': row.getIsSelected(), 'onUpdate:checked': value => row.toggleSelected(!!value), 'ariaLabel': 'Select row', 'class': 'translate-y-0.5' }),
+    cell: ({ row }) => h(Checkbox, { 'checked': row.getIsSelected(), 'onUpdate:checked': (value: any) => row.toggleSelected(!!value), 'ariaLabel': 'Select row', 'class': 'translate-y-0.5' }),
     enableSorting: false,
     enableHiding: false,
   },
@@ -58,7 +58,7 @@ export const columns: ColumnDef<Task>[] = [
         h('span', status.label),
       ])
     },
-    filterFn: (row, id, value) => {
+    filterFn: (row, id, value: any) => {
       return value.includes(row.getValue(id))
     },
   },
@@ -78,7 +78,7 @@ export const columns: ColumnDef<Task>[] = [
         h('span', {}, priority.label),
       ])
     },
-    filterFn: (row, id, value) => {
+    filterFn: (row, id, value: any) => {
       return value.includes(row.getValue(id))
     },
   },

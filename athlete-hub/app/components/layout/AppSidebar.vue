@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { NavGroup, NavLink, NavSectionTitle } from '~/types/nav'
-import { navMenu, navMenuBottom } from '~/constants/menus'
+import { navMenu } from '~/constants/menus'
 import { useAuthStore } from '~/stores/auth'
 
 const { sidebar } = useAppSettings()
@@ -10,8 +10,9 @@ onMounted(async () => {
   if (authStore.token && !authStore.user) {
     try {
       await authStore.fetchProfile()
-    } catch (error) {
-      console.error("Errore durante il fetch del profilo:", error)
+    }
+    catch (error) {
+      console.error('Errore durante il fetch del profilo:', error)
     }
   }
 })
@@ -20,14 +21,14 @@ onMounted(async () => {
  * 2. Mappa i dati dello store per il componente footer.
  * Usiamo un controllo preventivo per evitare crash durante l'SSR.
  */
-const userData = computed<{ name: string; email: string; avatar: string }>(() => {
+const userData = computed<{ name: string, email: string, avatar: string }>(() => {
   // Verifichiamo se siamo in un contesto dove Pinia è accessibile
   // In Nuxt, questo risolve spesso il problema del "no active Pinia"
   const nuxtApp = useNuxtApp()
   const authStore = useAuthStore(nuxtApp.$pinia)
 
   const email = authStore.user?.email || ''
-  const name = email.split("@")[0] || 'Ospite'
+  const name = email.split('@')[0] || 'Ospite'
 
   return {
     name,
@@ -37,15 +38,17 @@ const userData = computed<{ name: string; email: string; avatar: string }>(() =>
 })
 
 function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): any {
-  if ('children' in item) return resolveComponent('LayoutSidebarNavGroup')
+  if ('children' in item)
+    return resolveComponent('LayoutSidebarNavGroup')
   return resolveComponent('LayoutSidebarNavLink')
 }
 </script>
+
 <template>
   <Sidebar :collapsible="sidebar?.collapsible" :side="sidebar?.side" :variant="sidebar?.variant">
     <SidebarHeader>
       <div class="flex items-center gap-3 px-3 py-4">
-        <div class="i-lucide-dumbbell text-primary w-6 h-6"></div>
+        <div class="i-lucide-dumbbell text-primary w-6 h-6" />
         <span class="font-semibold text-lg">Athlete Hub</span>
       </div>
       <Search />

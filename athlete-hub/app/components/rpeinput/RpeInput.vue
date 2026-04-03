@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import type { RpeLinkQueueResponseDto, RpeLinkQueueSubmitRpeDto } from '../../types/api'
+import { Calendar, Loader2, Send, User } from 'lucide-vue-next'
+import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { toast } from 'vue-sonner'
-import { Loader2, User, Calendar, Send, Edit3 } from 'lucide-vue-next'
+import { useRoute, useRouter } from 'vue-router'
 
-import { Button } from '../ui/button'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../ui/card'
-import { Input } from '../ui/input'
-import { Separator } from '../ui/separator'
-import { Badge } from '../ui/badge'
-
+import notifications from '@/lib/notificationService'
 import { athleteApi } from '../../api/business'
-import type { RpeLinkQueueSubmitRpeDto, RpeLinkQueueResponseDto } from '../../types/api'
+import { Badge } from '../ui/badge'
+import { Button } from '../ui/button'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 
-const props = defineProps<{
+import { Separator } from '../ui/separator'
+
+const _props = defineProps<{
   token: string
 }>()
 
@@ -31,16 +30,22 @@ const sessionInfo = ref<RpeLinkQueueResponseDto | null>(null)
 
 const form = reactive({
   rpeValue: 1,
-  notes: ''
+  notes: '',
 })
 
 function getRpeLabel(val: number) {
-  if (val === 0) return t('rpe.labels.0')
-  if (val <= 2) return t('rpe.labels.2')
-  if (val <= 4) return t('rpe.labels.4')
-  if (val <= 6) return t('rpe.labels.6')
-  if (val <= 8) return t('rpe.labels.8')
-  if (val <= 9.5) return t('rpe.labels.9')
+  if (val === 0)
+    return t('rpe.labels.0')
+  if (val <= 2)
+    return t('rpe.labels.2')
+  if (val <= 4)
+    return t('rpe.labels.4')
+  if (val <= 6)
+    return t('rpe.labels.6')
+  if (val <= 8)
+    return t('rpe.labels.8')
+  if (val <= 9.5)
+    return t('rpe.labels.9')
   return t('rpe.labels.10')
 }
 
@@ -51,17 +56,19 @@ async function fetchSessionDetails() {
   try {
     const res = await athleteApi.getAllInfoFromToken(rpeToken)
     sessionInfo.value = res.data.value
-  } catch (err: any) {
+  }
+  catch (err: any) {
     const msg = err.error?.message || t('rpe.error.invalidToken')
-    toast.error(msg)
-  } finally {
+    notifications.error(msg)
+  }
+  finally {
     fetchingData.value = false
   }
 }
 
 async function submitRpe() {
   if (form.rpeValue < 0 || form.rpeValue > 10) {
-    toast.error(t('rpe.validation.range'))
+    notifications.error(t('rpe.validation.range'))
     return
   }
 
@@ -70,24 +77,27 @@ async function submitRpe() {
     const payload: RpeLinkQueueSubmitRpeDto = {
       tokenId: rpeToken,
       rpeValue: form.rpeValue,
-      notes: form.notes
+      notes: form.notes,
     }
     await athleteApi.submitRpe(payload)
     submitted.value = true
-    toast.success(t('rpe.success.sent'))
-  } catch (err: any) {
+    notifications.success(t('rpe.success.sent'))
+  }
+  catch (err: any) {
     const msg = err.error?.message || t('rpe.error.sending')
-    toast.error(msg)
-  } finally {
+    notifications.error(msg)
+  }
+  finally {
     loading.value = false
   }
 }
 
 onMounted(() => {
   if (!rpeToken) {
-    toast.error(t('rpe.error.invalidToken'))
+    notifications.error(t('rpe.error.invalidToken'))
     router.push('/login')
-  } else {
+  }
+  else {
     fetchSessionDetails()
   }
 })
@@ -95,10 +105,11 @@ onMounted(() => {
 
 <template>
   <div class="max-w-md mx-auto p-4 min-h-[60vh] flex items-center justify-center">
-
     <div v-if="fetchingData" class="text-center space-y-4">
       <Loader2 class="h-10 w-10 animate-spin text-primary mx-auto" />
-      <p class="text-muted-foreground animate-pulse">{{ t('common.loading') }}...</p>
+      <p class="text-muted-foreground animate-pulse">
+        {{ t('common.loading') }}...
+      </p>
     </div>
 
     <Transition name="expand">
@@ -136,12 +147,12 @@ onMounted(() => {
             </div>
 
             <input
-              type="range"
-              min="1" max="10" step="1"
               v-model.number="form.rpeValue"
+              type="range" min="1" max="10"
+              step="1"
               :disabled="submitted"
               class="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
-            />
+            >
 
             <div class="flex justify-center">
               <Badge variant="secondary" class="text-[10px] font-bold uppercase">
@@ -159,15 +170,15 @@ onMounted(() => {
               :placeholder="t('rpe.fields.notesPlaceholder')"
               :disabled="submitted"
               class="w-full min-h-[80px] p-3 rounded-md bg-background border border-input focus:ring-1 focus:ring-primary transition-all resize-none text-sm"
-            ></textarea>
+            />
           </div>
         </CardContent>
 
         <CardFooter class="flex flex-col gap-3 bg-muted/30 p-4">
           <Button
             class="w-full"
-            @click="submitRpe"
             :disabled="loading || submitted"
+            @click="submitRpe"
           >
             <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
             {{ submitted ? t('rpe.buttons.sent') : t('rpe.buttons.submit') }}
@@ -184,10 +195,13 @@ onMounted(() => {
       <div class="bg-destructive/10 p-6 rounded-full inline-block">
         <User class="h-10 w-10 text-destructive" />
       </div>
-      <h2 class="text-xl font-bold">{{ t('rpe.error.invalidToken') }}</h2>
-      <p class="text-muted-foreground text-sm">{{ t('rpe.error.contactCoach') }}</p>
+      <h2 class="text-xl font-bold">
+        {{ t('rpe.error.invalidToken') }}
+      </h2>
+      <p class="text-muted-foreground text-sm">
+        {{ t('rpe.error.contactCoach') }}
+      </p>
     </div>
-
   </div>
 </template>
 

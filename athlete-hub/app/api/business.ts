@@ -1,34 +1,34 @@
-import api from './client'
 import type {
+  AthleteAnalyticsDto,
   AthleteCreateRequest,
+  AthleteMeasurementsCreateRequest,
+  AthleteMeasurementsResponse,
+  AthleteMeasurementsUpdateRequest,
   AthleteResponse,
   AthleteUpdateRequest,
-  Result,
-  AthleteMeasurementsCreateRequest,
-  AthleteMeasurementsUpdateRequest,
-  AthleteMeasurementsResponse,
-  CalendarEventResponse,
   CalendarEventCreateRequest,
-  CalendarSessionResponse,
+  CalendarEventResponse,
   CalendarEventUpdateRequest,
-  TestResultSaveDto,
-  TestEntryGridDto,
-  RpeLinkQueueSubmitRpeDto,
-  RpeLinkQueueResponseDto,
-  RpeLastSessionOverviewDto,
-  Pagination,
-  RpeHistoricalEntryDto,
-  AthleteAnalyticsDto,
-  InjuryUpdateDTO,
-  InjuryResponseDTO,
-  InjuryCreateDTO,
+  CalendarSessionResponse,
   CoachDashboardSummaryDto,
+  InjuryCreateDTO,
+  InjuryResponseDTO,
+  InjuryUpdateDTO,
+  MailRequestDto,
+  Pagination,
+  Result,
+  RpeEmailStatus,
+  RpeHistoricalEntryDto,
+  RpeLastSessionOverviewDto,
+  RpeLinkQueueResponseDto,
+  RpeLinkQueueSubmitRpeDto,
   TestDefinitionDto,
+  TestEntryGridDto,
   TestManagementCreateRequest,
   TestManagementUpdateRequest,
-  RpeEmailStatus,
-  MailRequestDto
+  TestResultSaveDto,
 } from '../types/api'
+import api from './client-optimized'
 
 export const athleteApi = {
   // Atleti
@@ -92,12 +92,12 @@ export const athleteApi = {
   getHistoricalAnalysis: (
     athleteId: number,
     pageIndex: number,
-    pageSize: number
+    pageSize: number,
   ) => {
     const params = { params: { athleteId, pageIndex, pageSize } }
     return api.get<Result<Pagination<RpeHistoricalEntryDto>>>(
       '/RpeLinkQueue/get-historical-session-datas',
-      params
+      params,
     )
   },
   getDatasForAnalytics: (id: number, from: string, to: string) => {
@@ -105,9 +105,9 @@ export const athleteApi = {
     return api.get<Result<AthleteAnalyticsDto>>('/Athletes/get-datas-for-analytics', params)
   },
   /**
-     * Recupera lo storico infortuni di un atleta specifico
-     * @param athleteId ID dell'atleta
-     */
+   * Recupera lo storico infortuni di un atleta specifico
+   * @param athleteId ID dell'atleta
+   */
   getInjuries: (athleteId: number) =>
     api.get<Result<InjuryResponseDTO[]>>(`/Injury/athlete/${athleteId}`),
 
@@ -161,14 +161,13 @@ export const athleteApi = {
 
   getInfoForEmailStatus: (pageIndex: number, pageSize: number) =>
     api.get<Result<Pagination<RpeEmailStatus>>>(`/RpeLinkQueue/get-info-status-email`, {
-      params: { pageIndex, pageSize }
+      params: { pageIndex, pageSize },
     }),
 
   resendRpeEmail: (emailId: number) =>
     api.post(`/RpeLinkQueue/resend`, { emailId }),
 
   createNewMailAsync: (data: MailRequestDto) =>
-    api.post(`/Mail/create-new-mail`, data)
+    api.post(`/Mail/create-new-mail`, data),
 
 }
-

@@ -1,22 +1,26 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+import type { AthleteCreateRequest, AthleteResponse, MailRequestDto } from '../../types/api'
+import { Edit3, Loader2, Plus, Trash2, User } from 'lucide-vue-next'
+import { nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Trash2, Edit3, User, Plus, Loader2 } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { useErrorHandler } from '~/composables/useErrorHandler'
 
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../ui/card'
+import { useNotificationStore } from '~/stores/notificationStore'
+import { athleteApi } from '../../api/business'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
-import { Input } from '../ui/input'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
-import { athleteApi } from '../../api/business'
-import type { AthleteResponse, AthleteCreateRequest, MailRequestDto } from '../../types/api'
+import { Input } from '../ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 const props = defineProps<{ showForm: boolean }>()
 const emit = defineEmits(['update:showForm'])
 const { t } = useI18n()
+const handler = useErrorHandler({ component: 'AthleteManagement' })
+const notifications = useNotificationStore()
 
 const athletes = ref<AthleteResponse[]>([])
 const loading = ref(false)
@@ -34,40 +38,57 @@ const form = reactive({
   weight: 0,
   height: 0,
   gender: 'F',
-  tokenSleepId: ''
+  tokenSleepId: '',
 })
+
+// UI state
+const searchQuery = ref('')
+
+const displayedAthletes = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return athletes.value
+  return athletes.value.filter(a => {
+    const name = `${a.firstName} ${a.lastName}`.toLowerCase()
+    return name.includes(q) || (a.email || '').toLowerCase().includes(q) || (a.sportCategory || '').toLowerCase().includes(q)
+  })
+})
+
+function openNewAthlete() {
+  resetForm()
+  emit('update:showForm', true)
+}
 
 // ---------------- VALIDATION ----------------
 function validateForm(): boolean {
   if (!form.firstName.trim()) {
-    toast.error(t('athlete.errors.firstNameRequired'))
+    handler.handleError(new Error(t('athlete.errors.firstNameRequired')))
     return false
   }
 
   if (!form.lastName.trim()) {
-    toast.error(t('athlete.errors.lastNameRequired'))
+    handler.handleError(new Error(t('athlete.errors.lastNameRequired')))
     return false
   }
 
   if (!form.email.trim()) {
-    toast.error(t('athlete.errors.emailRequired'))
+    handler.handleError(new Error(t('athlete.errors.emailRequired')))
     return false
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/
   if (!emailRegex.test(form.email)) {
-    toast.error(t('athlete.errors.emailInvalid'))
+    handler.handleError(new Error(t('athlete.errors.emailInvalid')))
     return false
   }
 
   if (!form.birthDate) {
-    toast.error(t('athlete.errors.birthDateRequired'))
+    handler.handleError(new Error(t('athlete.errors.birthDateRequired')))
     return false
   }
 
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/
   if (!dateRegex.test(form.birthDate)) {
-    toast.error(t('athlete.errors.birthDateInvalid'))
+    handler.handleError(new Error(t('athlete.errors.birthDateInvalid')))
     return false
   }
 
@@ -79,11 +100,11 @@ function validateForm(): boolean {
   const birthDate = new Date(year, month - 1, day)
 
   if (
-    birthDate.getFullYear() !== year ||
-    birthDate.getMonth() !== month - 1 ||
-    birthDate.getDate() !== day
+    birthDate.getFullYear() !== year
+    || birthDate.getMonth() !== month - 1
+    || birthDate.getDate() !== day
   ) {
-    toast.error(t('athlete.errors.birthDateInvalid'))
+    handler.handleError(new Error(t('athlete.errors.birthDateInvalid')))
     return false
   }
 
@@ -91,22 +112,22 @@ function validateForm(): boolean {
   today.setHours(0, 0, 0, 0)
 
   if (birthDate > today) {
-    toast.error(t('athlete.errors.birthDateFuture'))
+    handler.handleError(new Error(t('athlete.errors.birthDateFuture')))
     return false
   }
 
-  if (form.weight <= 0 || isNaN(form.weight)) {
-    toast.error(t('athlete.errors.weightInvalid'))
+  if (form.weight <= 0 || Number.isNaN(form.weight)) {
+    handler.handleError(new Error(t('athlete.errors.weightInvalid')))
     return false
   }
 
-  if (form.height <= 0 || isNaN(form.height)) {
-    toast.error(t('athlete.errors.heightInvalid'))
+  if (form.height <= 0 || Number.isNaN(form.height)) {
+    handler.handleError(new Error(t('athlete.errors.heightInvalid')))
     return false
   }
 
   if (!['M', 'F', 'O'].includes(form.gender)) {
-    toast.error(t('athlete.errors.genderInvalid'))
+    handler.handleError(new Error(t('athlete.errors.genderInvalid')))
     return false
   }
 
@@ -119,48 +140,54 @@ async function fetchAthletes() {
   try {
     const res = await athleteApi.getAll()
     athletes.value = res.data.value ?? []
-  } catch (err: any) {
-    const msg = err.error?.message || t('athlete.errors.load')
-    toast.error(msg)
-  } finally {
+  }
+  catch (err: any) {
+    handler.handleError(err instanceof Error ? err : new Error(err?.error?.message || t('athlete.errors.load')))
+  }
+  finally {
     loading.value = false
   }
 }
 
 async function saveAthlete() {
-  if (!validateForm()) return
+  if (!validateForm())
+    return
 
   loading.value = true
   try {
     if (editingId.value !== null) {
       await athleteApi.update(editingId.value, form)
-      toast.success(t('athlete.success.updated'))
-    } else {
+      notifications.success('', t('athlete.success.updated'))
+    }
+    else {
       await athleteApi.create(form as AthleteCreateRequest)
-      toast.success(t('athlete.success.created'))
+      notifications.success('', t('athlete.success.created'))
     }
 
     await fetchAthletes()
     resetForm()
-  } catch (err: any) {
-    const msg = err.error?.message || t('errors.save')
-    toast.error(msg)
-  } finally {
+  }
+  catch (err: any) {
+    handler.handleError(err instanceof Error ? err : new Error(err?.error?.message || t('errors.save')))
+  }
+  finally {
     loading.value = false
   }
 }
 
 async function confirmDelete() {
-  if (!athleteToDelete.value) return
+  if (!athleteToDelete.value)
+    return
   loading.value = true
   try {
     await athleteApi.delete(athleteToDelete.value.id)
     athletes.value = athletes.value.filter(a => a.id !== athleteToDelete.value!.id)
-    toast.success(t('athlete.success.deleted'))
-  } catch (err: any) {
-    const msg = err.error?.message || t('errors.delete')
-    toast.error(msg)
-  } finally {
+    notifications.success('', t('athlete.success.deleted'))
+  }
+  catch (err: any) {
+    handler.handleError(err instanceof Error ? err : new Error(err?.error?.message || t('errors.delete')))
+  }
+  finally {
     isDeleteDialogOpen.value = false
     athleteToDelete.value = null
     loading.value = false
@@ -181,7 +208,7 @@ function editAthlete(a: AthleteResponse) {
     weight: a.weight,
     height: a.height,
     gender: a.gender || 'F',
-    tokenSleepId: a.tokenSleepId
+    tokenSleepId: a.tokenSleepId,
   })
 
   emit('update:showForm', true)
@@ -193,13 +220,15 @@ watch(
   async (val) => {
     if (val && editingId.value !== null) {
       await nextTick()
-      // scroll card into view
-      formCardRef.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // scroll card into view (support component proxy or element)
+      const el = getElementFromRef(formCardRef.value)
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       // focus first input inside the form card
-      const input = formCardRef.value?.querySelector('input') as HTMLInputElement | null
-      if (input) input.focus()
+      const input = el ? el.querySelector('input') as HTMLInputElement | null : null
+      if (input)
+        input.focus()
     }
-  }
+  },
 )
 
 // also watch editingId in case showForm already true
@@ -208,11 +237,13 @@ watch(
   async (val) => {
     if (val !== null && props.showForm) {
       await nextTick()
-      formCardRef.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      const input = formCardRef.value?.querySelector('input') as HTMLInputElement | null
-      if (input) input.focus()
+      const el = getElementFromRef(formCardRef.value)
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      const input = el ? el.querySelector('input') as HTMLInputElement | null : null
+      if (input)
+        input.focus()
     }
-  }
+  },
 )
 
 function resetForm() {
@@ -226,19 +257,37 @@ function resetForm() {
     weight: 0,
     height: 0,
     gender: 'F',
-    tokenSleepId: ''
+    tokenSleepId: '',
   })
 
   emit('update:showForm', false)
 }
 
-async function copyToken(token: string) {
-  if (!token) return
-  await navigator.clipboard.writeText(token)
-  toast.success(t('athlete.success.tokenCopied'))
+function getElementFromRef(refValue: any): HTMLElement | null {
+  if (!refValue)
+    return null
+  // If it's a native element
+  if (refValue instanceof HTMLElement)
+    return refValue
+  // If it's a Vue component proxy, try $el
+  if (typeof refValue === 'object' && '$el' in refValue && refValue.$el instanceof HTMLElement)
+    return refValue.$el as HTMLElement
+  return null
 }
 
-const sendTokenEmail = async () => {
+async function copyToken(token: string) {
+  if (!token)
+    return
+  try {
+    await navigator.clipboard.writeText(token)
+    notifications.success('', t('athlete.success.tokenCopied'))
+  }
+  catch (err) {
+    handler.handleError(err instanceof Error ? err : new Error(String(err)))
+  }
+}
+
+async function sendTokenEmail() {
   try {
     const now = new Date().toISOString()
 
@@ -248,15 +297,16 @@ const sendTokenEmail = async () => {
       subject: t('athlete.email.tokenSubject'),
       text: t('athlete.email.tokenBody', {
         name: form.firstName,
-        token: form.tokenSleepId
+        token: form.tokenSleepId,
       }),
       inseredAt: now,
-      updatedAt: now
+      updatedAt: now,
     }
     await athleteApi.createNewMailAsync(mail)
-    toast.success(t('athlete.message.resendSuccess'))
-  } catch {
-    toast.error(t('athlete.message.resend'))
+    notifications.success('', t('athlete.message.resendSuccess'))
+  }
+  catch (err) {
+    handler.handleError(err instanceof Error ? err : new Error(t('athlete.message.resend')))
   }
 }
 
@@ -265,9 +315,14 @@ onMounted(fetchAthletes)
 
 <template>
   <div class="w-full flex flex-col gap-8 mx-auto p-4 relative">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <Input v-model="searchQuery" placeholder="Search athletes, email or sport" class="w-full md:w-64" aria-label="Search athletes" />
+      </div>
+    </div>
 
     <Transition name="expand">
-      <Card ref="formCardRef" v-if="props.showForm" class="border-primary/20 shadow-lg">
+      <Card v-if="props.showForm" ref="formCardRef" class="border-primary/20 shadow-lg">
         <CardHeader>
           <CardTitle class="flex items-center gap-2 text-primary">
             <Edit3 v-if="editingId" class="h-5 w-5" />
@@ -277,7 +332,6 @@ onMounted(fetchAthletes)
         </CardHeader>
 
         <CardContent class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 items-end">
-
           <div class="space-y-1.5">
             <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.firstName')
             }}</label>
@@ -321,7 +375,7 @@ onMounted(fetchAthletes)
             <Input v-model.number="form.height" type="number" class="h-10" />
           </div>
 
-          <div class="space-y-1.5 md:col-span-2 lg:col-span-2" v-if="editingId">
+          <div v-if="editingId" class="space-y-1.5 md:col-span-2 lg:col-span-2">
             <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">
               Token Sleep ID
             </label>
@@ -331,9 +385,12 @@ onMounted(fetchAthletes)
               <Input :model-value="form.tokenSleepId" readonly class="h-10 font-mono text-xs" />
               <!-- copy -->
               <Button type="button" size="icon" variant="ghost" class="h-9 w-9" @click="copyToken(form.tokenSleepId)">
-                📋 </Button>
+                📋
+              </Button>
               <!-- email -->
-              <Button type="button" size="icon" variant="ghost" class="h-9 w-9" @click="sendTokenEmail"> ✉️ </Button>
+              <Button type="button" size="icon" variant="ghost" class="h-9 w-9" @click="sendTokenEmail">
+                ✉️
+              </Button>
             </div>
           </div>
 
@@ -345,17 +402,25 @@ onMounted(fetchAthletes)
                 <SelectValue :placeholder="t('fields.genderPlaceholder')" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="M">{{ t('genders.male') }}</SelectItem>
-                <SelectItem value="F">{{ t('genders.female') }}</SelectItem>
-                <SelectItem value="O">{{ t('genders.other') }}</SelectItem>
+                <SelectItem value="M">
+                  {{ t('genders.male') }}
+                </SelectItem>
+                <SelectItem value="F">
+                  {{ t('genders.female') }}
+                </SelectItem>
+                <SelectItem value="O">
+                  {{ t('genders.other') }}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardContent>
 
         <CardFooter class="flex justify-end gap-2 bg-muted/50 p-4 mt-2">
-          <Button variant="ghost" @click="resetForm">{{ t('common.cancel') }}</Button>
-          <Button @click="saveAthlete" :disabled="loading">
+          <Button variant="ghost" @click="resetForm">
+            {{ t('common.cancel') }}
+          </Button>
+          <Button :disabled="loading" @click="saveAthlete">
             <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
             {{ editingId ? t('common.update') : t('common.create') }}
           </Button>
@@ -368,12 +433,16 @@ onMounted(fetchAthletes)
     </div>
 
     <TransitionGroup tag="div" name="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <Card v-for="athlete in athletes" :key="athlete.id"
-        class="group relative overflow-hidden border-muted/40 hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-md">
+      <Card
+        v-for="athlete in displayedAthletes" :key="athlete.id"
+        class="group relative overflow-hidden border-muted/40 hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-md card-interactive"
+        role="listitem"
+      >
         <CardContent class="p-0">
           <div class="flex items-center gap-4 p-5">
             <div
-              class="h-14 w-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/10 flex items-center justify-center text-primary shadow-inner">
+              class="h-14 w-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/10 flex items-center justify-center text-primary shadow-inner"
+            >
               <User class="h-7 w-7" />
             </div>
             <div class="flex-1 min-w-0">
@@ -393,41 +462,64 @@ onMounted(fetchAthletes)
 
           <div class="grid grid-cols-3 border-t border-muted/30 bg-muted/5 py-3 text-center">
             <div>
-              <p class="text-[10px] text-muted-foreground uppercase">{{ t('fields.age') }}</p>
-              <p class="text-sm font-semibold">{{ athlete.age || '-' }}</p>
+              <p class="text-[10px] text-muted-foreground uppercase">
+                {{ t('fields.age') }}
+              </p>
+              <p class="text-sm font-semibold">
+                {{ athlete.age || '-' }}
+              </p>
             </div>
             <div class="border-x border-muted/30">
-              <p class="text-[10px] text-muted-foreground uppercase">{{ t('fields.weightShort') }}</p>
-              <p class="text-sm font-semibold">{{ athlete.weight }} kg</p>
+              <p class="text-[10px] text-muted-foreground uppercase">
+                {{ t('fields.weightShort') }}
+              </p>
+              <p class="text-sm font-semibold">
+                {{ athlete.weight }} kg
+              </p>
             </div>
             <div>
-              <p class="text-[10px] text-muted-foreground uppercase">{{ t('fields.heightShort') }}</p>
-              <p class="text-sm font-semibold">{{ athlete.height }} cm</p>
+              <p class="text-[10px] text-muted-foreground uppercase">
+                {{ t('fields.heightShort') }}
+              </p>
+              <p class="text-sm font-semibold">
+                {{ athlete.height }} cm
+              </p>
             </div>
           </div>
         </CardContent>
 
         <div class="absolute top-3 right-3 actions-overlay">
-          <Button variant="ghost" size="icon"
+          <Button
+            variant="ghost" size="icon"
             class="h-9 w-9 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-            @click="editAthlete(athlete)">
+            @click="editAthlete(athlete)"
+            :aria-label="t('common.edit')"
+            title="{{ t('common.edit') }}"
+          >
             <Edit3 class="h-4 w-4" />
           </Button>
 
-          <Button variant="ghost" size="icon" class="h-9 w-9 rounded-full text-destructive"
-            @click="athleteToDelete = athlete; isDeleteDialogOpen = true">
+          <Button
+            variant="ghost" size="icon" class="h-9 w-9 rounded-full text-destructive"
+            @click="athleteToDelete = athlete; isDeleteDialogOpen = true"
+            :aria-label="t('common.delete')"
+            title="{{ t('common.delete') }}"
+          >
             <Trash2 class="h-4 w-4" />
           </Button>
         </div>
       </Card>
     </TransitionGroup>
 
-    <div v-if="!loading && athletes.length === 0"
-      class="text-center py-20 bg-muted/20 rounded-xl border-2 border-dashed">
+    <div
+      v-if="!loading && athletes.length === 0"
+      class="text-center py-20 bg-muted/20 rounded-xl border-2 border-dashed"
+    >
       <User class="h-12 w-12 mx-auto text-muted-foreground opacity-50 mb-4" />
-      <p class="text-muted-foreground">{{ t('athlete.noData') }}</p>
+      <p class="text-muted-foreground">
+        {{ t('athlete.noData') }}
+      </p>
     </div>
-
   </div>
 
   <Dialog v-model:open="isDeleteDialogOpen">
@@ -441,11 +533,15 @@ onMounted(fetchAthletes)
           <span class="font-bold text-foreground">{{ athleteToDelete?.firstName }} {{ athleteToDelete?.lastName
           }}</span>?
         </p>
-        <p class="text-[12px] text-destructive mt-2">{{ t('athlete.deleteWarning') }}</p>
+        <p class="text-[12px] text-destructive mt-2">
+          {{ t('athlete.deleteWarning') }}
+        </p>
       </div>
       <div class="flex justify-end gap-2">
-        <Button variant="ghost" @click="isDeleteDialogOpen = false">{{ t('common.cancel') }}</Button>
-        <Button variant="destructive" @click="confirmDelete" :disabled="loading">
+        <Button variant="ghost" @click="isDeleteDialogOpen = false">
+          {{ t('common.cancel') }}
+        </Button>
+        <Button variant="destructive" :disabled="loading" @click="confirmDelete">
           <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
           {{ t('common.delete') }}
         </Button>
@@ -486,4 +582,7 @@ input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+.card-interactive:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(2,6,23,0.08); }
+.card-interactive:focus-within { outline: 2px solid rgba(99,102,241,0.12); }
 </style>

@@ -1,20 +1,14 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import { h } from 'vue'
-import { toast } from 'vue-sonner'
 import * as z from 'zod'
+import notifications from '@/lib/notificationService'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '~/components/ui/button'
 
 const appearanceFormSchema = toTypedSchema(z.object({
-  theme: z.enum(['light', 'dark'], {
-    required_error: 'Please select a theme.',
-  }),
-  font: z.enum(['inter', 'manrope', 'system'], {
-    invalid_type_error: 'Select a font',
-    required_error: 'Please select a font.',
-  }),
+  theme: z.enum(['light', 'dark'] as const),
+  font: z.enum(['inter', 'manrope', 'system'] as const),
 }))
 
 const { handleSubmit } = useForm({
@@ -28,9 +22,7 @@ const { handleSubmit } = useForm({
 const color = useColorMode()
 
 const onSubmit = handleSubmit((values) => {
-  toast('You submitted the following values:', {
-    description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-  })
+  notifications.info('You submitted the following values:', JSON.stringify(values, null, 2))
   if (values.theme === 'dark') {
     color.preference = 'dark'
   }

@@ -1,47 +1,47 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+import type {
+  TestDefinitionDto,
+  TestManagementCreateRequest,
+} from '~/types/api'
 import {
-  PlusCircle,
+  Hash,
   Loader2,
-  Trash2,
   Pencil,
+  PlusCircle,
   Ruler,
   Save,
-  Hash,
-  Type
+  Trash2,
+  Type,
 } from 'lucide-vue-next'
+import { onMounted, ref } from 'vue'
 
+import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Card,
+  CardContent,
   CardHeader,
   CardTitle,
-  CardContent
 } from '@/components/ui/card'
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
-} from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+import { Textarea } from '@/components/ui/textarea'
+import notifications from '@/lib/notificationService'
 
 import { athleteApi } from '~/api/business'
-import type {
-  TestDefinitionDto,
-  TestManagementCreateRequest
-} from '~/types/api'
-
-import { toast } from 'vue-sonner'
 
 const { t } = useI18n()
 
@@ -58,7 +58,7 @@ const isDeleteDialogOpen = ref(false)
 const form = ref<TestManagementCreateRequest>({
   name: '',
   description: '',
-  metrics: []
+  metrics: [],
 })
 
 // ---------------- FETCH ----------------
@@ -69,9 +69,11 @@ async function fetchTests() {
     if (res.data.isSuccess) {
       tests.value = res.data.value ?? []
     }
-  } catch {
-    toast.error(t('common.error'))
-  } finally {
+  }
+  catch {
+    notifications.error(t('common.error'))
+  }
+  finally {
     loading.value = false
   }
 }
@@ -85,7 +87,7 @@ function addMetric() {
     dataType: 0,
     standardValue: null,
     normativeDataRef: '',
-    formula: ''
+    formula: '',
   })
 }
 
@@ -102,7 +104,7 @@ function resetForm() {
 
 async function saveTest() {
   if (!form.value.name || form.value.metrics.length === 0) {
-    toast.error(t('tests.validationError'))
+    notifications.error(t('tests.validationError'))
     return
   }
 
@@ -110,17 +112,19 @@ async function saveTest() {
     let res
     if (editingId.value) {
       res = await athleteApi.testDefUpdate(editingId.value, form.value)
-    } else {
+    }
+    else {
       res = await athleteApi.testDefCreate(form.value)
     }
 
     if (res.data.isSuccess) {
-      toast.success(t('tests.saveSuccess'))
+      notifications.success(t('tests.saveSuccess'))
       resetForm()
       fetchTests()
     }
-  } catch {
-    toast.error(t('common.error'))
+  }
+  catch {
+    notifications.error(t('common.error'))
   }
 }
 
@@ -129,28 +133,31 @@ function editTest(test: TestDefinitionDto) {
   form.value = {
     name: test.name,
     description: test.description ?? '',
-    metrics: test.metrics.map(m => ({ ...m }))
+    metrics: test.metrics.map(m => ({ ...m })),
   }
   isFormVisible.value = true
 }
 
 // ---------------- DELETE ----------------
 async function confirmDelete() {
-  if (!testToDelete.value) return
+  if (!testToDelete.value)
+    return
 
   loading.value = true
   try {
     const res = await athleteApi.testDefDelete(testToDelete.value.id)
 
     if (res.data.isSuccess) {
-      toast.success(t('tests.deleteSuccess'))
+      notifications.success(t('tests.deleteSuccess'))
       tests.value = tests.value.filter(
-        t => t.id !== testToDelete.value!.id
+        t => t.id !== testToDelete.value!.id,
       )
     }
-  } catch {
-    toast.error(t('common.error'))
-  } finally {
+  }
+  catch {
+    notifications.error(t('common.error'))
+  }
+  finally {
     isDeleteDialogOpen.value = false
     testToDelete.value = null
     loading.value = false
@@ -162,7 +169,6 @@ onMounted(fetchTests)
 
 <template>
   <div class="min-h-screen">
-
     <!-- HEADER -->
     <div class="flex flex-wrap items-center justify-between pb-6 gap-4">
       <div>
@@ -174,8 +180,10 @@ onMounted(fetchTests)
         </p>
       </div>
 
-      <Button :variant="isFormVisible ? 'secondary' : 'default'"
-        @click="isFormVisible ? resetForm() : isFormVisible = true">
+      <Button
+        :variant="isFormVisible ? 'secondary' : 'default'"
+        @click="isFormVisible ? resetForm() : isFormVisible = true"
+      >
         <PlusCircle v-if="!isFormVisible" class="h-4 w-4 mr-2" />
         {{ isFormVisible ? t('common.cancel') : t('tests.newTest') }}
       </Button>
@@ -191,7 +199,6 @@ onMounted(fetchTests)
         </CardHeader>
 
         <CardContent class="space-y-6">
-
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <label class="text-xs font-bold uppercase text-muted-foreground">
@@ -210,7 +217,6 @@ onMounted(fetchTests)
 
           <!-- METRICS -->
           <div class="space-y-4 pt-4 border-t">
-
             <div class="flex items-center justify-between">
               <h3 class="text-md font-semibold flex items-center gap-2">
                 <Ruler class="h-4 w-4" />
@@ -223,13 +229,17 @@ onMounted(fetchTests)
               </Button>
             </div>
 
-            <div v-if="form.metrics.length === 0"
-              class="text-center py-6 border rounded-lg bg-muted/10 text-muted-foreground text-sm">
+            <div
+              v-if="form.metrics.length === 0"
+              class="text-center py-6 border rounded-lg bg-muted/10 text-muted-foreground text-sm"
+            >
               Nessuna metrica definita.
             </div>
 
-            <div v-for="(metric, index) in form.metrics" :key="index"
-              class="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 border rounded-lg bg-card items-end shadow-sm">
+            <div
+              v-for="(metric, index) in form.metrics" :key="index"
+              class="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 border rounded-lg bg-card items-end shadow-sm"
+            >
               <div class="md:col-span-3 space-y-1">
                 <label class="text-[10px] font-bold uppercase text-muted-foreground">
                   {{ t('tests.metricName') }}
@@ -275,13 +285,14 @@ onMounted(fetchTests)
               </div>
 
               <div class="md:col-span-1 flex justify-end">
-                <Button variant="ghost" size="icon"
-                  class="h-9 w-9 rounded-full text-destructive hover:bg-destructive/10" @click="removeMetric(index)">
+                <Button
+                  variant="ghost" size="icon"
+                  class="h-9 w-9 rounded-full text-destructive hover:bg-destructive/10" @click="removeMetric(index)"
+                >
                   <Trash2 class="h-4 w-4" />
                 </Button>
               </div>
             </div>
-
           </div>
 
           <div class="flex justify-end gap-2 pt-4">
@@ -294,7 +305,6 @@ onMounted(fetchTests)
               {{ t('common.save') }}
             </Button>
           </div>
-
         </CardContent>
       </Card>
     </div>
@@ -317,8 +327,10 @@ onMounted(fetchTests)
               <Pencil class="h-4 w-4" />
             </Button>
 
-            <Button variant="ghost" size="icon" class="h-9 w-9 rounded-full text-destructive hover:bg-destructive/10"
-              @click="testToDelete = test; isDeleteDialogOpen = true">
+            <Button
+              variant="ghost" size="icon" class="h-9 w-9 rounded-full text-destructive hover:bg-destructive/10"
+              @click="testToDelete = test; isDeleteDialogOpen = true"
+            >
               <Trash2 class="h-4 w-4" />
             </Button>
           </div>
@@ -330,8 +342,10 @@ onMounted(fetchTests)
           </p>
 
           <div class="flex flex-wrap gap-1.5">
-            <span v-for="m in test.metrics" :key="m.id"
-              class="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold uppercase border border-primary/20">
+            <span
+              v-for="m in test.metrics" :key="m.id"
+              class="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold uppercase border border-primary/20"
+            >
               {{ m.name }} ({{ m.unit }})
             </span>
           </div>
@@ -366,13 +380,12 @@ onMounted(fetchTests)
             {{ t('common.cancel') }}
           </Button>
 
-          <Button variant="destructive" @click="confirmDelete" :disabled="loading">
+          <Button variant="destructive" :disabled="loading" @click="confirmDelete">
             <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
             {{ t('common.delete') }}
           </Button>
         </div>
       </DialogContent>
     </Dialog>
-
   </div>
 </template>

@@ -10,6 +10,6 @@ export const useLoadingStore = defineStore('loading', {
     },
     stop() {
       this.isLoading = false
-    }
-  }
+    },
+  },
 })

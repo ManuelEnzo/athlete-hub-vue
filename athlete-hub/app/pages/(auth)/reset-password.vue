@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { Loader2, CheckCircle2, ShieldAlert } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
-import { authApi } from '~/api/auth'
+import { CheckCircle2, Loader2, ShieldAlert } from 'lucide-vue-next'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
+import notifications from '@/lib/notificationService'
+import { authApi } from '~/api/auth'
 
 // --- CONFIG ---
 definePageMeta({
   layout: 'blank',
   auth: false,
-  guestOnly: true
+  guestOnly: true,
 })
 
 const { t } = useI18n()
@@ -29,31 +29,34 @@ onMounted(() => {
   // Estrae il token dall'URL: ?token=75E4944FF...
   token.value = route.query.token as string
   if (!token.value) {
-    toast.error(t('auth.errors.invalidToken'))
+    notifications.error(t('auth.errors.invalidToken'))
   }
 })
 
 async function onResetSubmit() {
   if (newPassword.value !== confirmPassword.value) {
-    return toast.error(t('auth.signup.validation.passwordMismatch'))
+    return notifications.error(t('auth.signup.validation.passwordMismatch'))
   }
 
   loadingStore.start()
   try {
     const response = await authApi.resetPasswordExecution({
       token: token.value,
-      newPassword: newPassword.value
+      newPassword: newPassword.value,
     })
 
     if (response.data.isSuccess) {
       isFinished.value = true
-      toast.success(t('auth.reset.success'))
-    } else {
-      toast.error(response.data.error?.message || t('auth.signup.errors.general'))
+      notifications.success(t('auth.reset.success'))
     }
-  } catch (err: any) {
-    toast.error(t('auth.errors.expiredLink'))
-  } finally {
+    else {
+      notifications.error(response.data.error?.message || t('auth.signup.errors.general'))
+    }
+  }
+  catch {
+    notifications.error(t('auth.errors.expiredLink'))
+  }
+  finally {
     loadingStore.stop()
   }
 }
@@ -62,7 +65,6 @@ async function onResetSubmit() {
 <template>
   <LayoutAuth reverse>
     <div class="grid mx-auto max-w-sm gap-6">
-
       <div v-if="!isFinished" class="grid gap-2 text-center">
         <h1 class="text-2xl font-semibold tracking-tight">
           {{ t('auth.reset.title') }}
@@ -73,7 +75,7 @@ async function onResetSubmit() {
       </div>
 
       <div v-if="!isFinished" class="grid gap-6">
-        <form @submit.prevent="onResetSubmit" class="grid gap-4">
+        <form class="grid gap-4" @submit.prevent="onResetSubmit">
           <div class="grid gap-2">
             <Label for="new-password">{{ t('auth.fields.newPassword') }}</Label>
             <PasswordInput
@@ -111,7 +113,9 @@ async function onResetSubmit() {
           <CheckCircle2 class="h-6 w-6 text-primary" />
         </div>
         <div class="text-center space-y-2">
-          <h2 class="text-xl font-semibold tracking-tight">{{ t('auth.reset.done') }}</h2>
+          <h2 class="text-xl font-semibold tracking-tight">
+            {{ t('auth.reset.done') }}
+          </h2>
           <p class="text-sm text-muted-foreground">
             {{ t('auth.reset.successMessage') }}
           </p>
@@ -120,7 +124,6 @@ async function onResetSubmit() {
           {{ t('auth.login.backToLogin') }}
         </Button>
       </div>
-
     </div>
   </LayoutAuth>
 </template>

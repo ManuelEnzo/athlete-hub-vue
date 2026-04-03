@@ -1,19 +1,48 @@
 <script setup lang="ts">
-import KanbanBoard from '~/components/kanban/KanbanBoard.vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { Button } from '@/components/ui/button'
+import Dialog from '@/components/ui/dialog/Dialog.vue'
+import Input from '@/components/ui/input/Input.vue'
+import KanbanBoard from '~/components/kanban/KanbanBoard.vue'
+import { useErrorHandler } from '~/composables/useErrorHandler'
+import { useKanban } from '~/composables/useKanban'
+import useToggle from '~/composables/useToggle'
+import { useAuthStore } from '~/stores/auth'
 
 const { t } = useI18n()
-const { addColumn } = useKanban()
-
-const showNewColumn = ref(false)
+const { state: showNewColumn, set: setShow } = useToggle(false)
 const newColumnTitle = ref('')
+const { addColumn } = useKanban()
+const auth = useAuthStore()
+const handler = useErrorHandler({ component: 'KanbanPage' })
+
+// Basic auth check
+if (!auth.user) {
+  auth.fetchProfile().catch(err => handler.handleError(err instanceof Error ? err : new Error(String(err))))
+}
+
+function resetForm() {
+  newColumnTitle.value = ''
+  setShow(false)
+}
 
 function createColumn() {
-  if (!newColumnTitle.value.trim())
-    return
-  addColumn(newColumnTitle.value.trim())
-  newColumnTitle.value = ''
-  showNewColumn.value = false
+  try {
+    const title = newColumnTitle.value.trim()
+    if (!title)
+      return
+    // sanitize minimal: strip control chars (remove C0 control range and DEL)
+    const safeTitle = Array.from(title).filter((ch) => {
+      const c = ch.charCodeAt(0)
+      return !(c >= 0 && c <= 31) && c !== 127
+    }).join('')
+    addColumn(safeTitle)
+    resetForm()
+  }
+  catch (err) {
+    handler.handleError(err instanceof Error ? err : new Error(String(err)))
+  }
 }
 </script>
 
@@ -29,10 +58,9 @@ function createColumn() {
             {{ t('kanban.description') }}
           </p>
         </div>
-        <Button size="sm" @click="showNewColumn = true">
-          <Icon name="lucide:plus" />
+        <Button size="sm" @click="setShow(true)">
           {{ t('kanban.addColumn') }}
-        </Button> 
+        </Button>
       </div>
       <KanbanBoard />
     </div>
@@ -56,7 +84,7 @@ function createColumn() {
           <Button type="submit" form="newColumnForm" @click="createColumn">
             {{ t('common.create') }}
           </Button>
-        </DialogFooter> 
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   </div>

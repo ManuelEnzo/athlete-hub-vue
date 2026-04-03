@@ -1,11 +1,13 @@
+import type { UserProfileResponse } from '~/types/api'
 import { defineStore } from 'pinia'
 import { authApi } from '~/api/auth'
-import type { UserProfileResponse } from '~/types/api'
+import { useErrorHandler } from '~/composables/useErrorHandler'
 
 export const useAuthStore = defineStore('auth', () => {
   // Cookie veri, mutabili
-  const tokenCookie = useCookie<string | null>('auth_token', { path: '/' })
-  const refreshCookie = useCookie<string | null>('refresh_token', { path: '/' })
+  const cookieOptions = { path: '/', sameSite: 'lax' as const, secure: import.meta.env.PROD }
+  const tokenCookie = useCookie<string | null>('auth_token', cookieOptions)
+  const refreshCookie = useCookie<string | null>('refresh_token', cookieOptions)
 
   // Computed in sola lettura (ok)
   const token = computed(() => tokenCookie.value)
@@ -14,14 +16,19 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserProfileResponse | null>(null)
 
   async function fetchProfile() {
-    if (!token.value) return
+    if (!token.value) {
+      return
+    }
+
     try {
       const response = await authApi.getProfile()
       if (response.data.isSuccess && response.data.value) {
         user.value = response.data.value
       }
-    } catch (error) {
-      console.error("Errore fetchProfile:", error)
+    }
+    catch (error) {
+      const handler = useErrorHandler({ component: 'AuthStore' })
+      handler.handleError(error instanceof Error ? error : new Error(String(error)))
     }
   }
 
@@ -31,15 +38,36 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout() {
+    let shouldNavigate = false
+
     try {
       if (token.value) {
         await authApi.logout()
       }
-    } catch (error) {
-      console.error("Errore logout:", error)
-    } finally {
+      shouldNavigate = true
+    }
+    catch (error) {
+      const handler = useErrorHandler({ component: 'AuthStore' })
+      handler.handleError(error instanceof Error ? error : new Error(String(error)))
+      shouldNavigate = true
+    }
+    finally {
       setTokens(null, null)
       user.value = null
+
+      // Remove only auth-related localStorage keys
+      try {
+        if (import.meta.client) {
+          localStorage.removeItem('auth_token')
+          localStorage.removeItem('refresh_token')
+        }
+      }
+      catch {
+        // ignore storage errors
+      }
+    }
+
+    if (shouldNavigate) {
       return navigateTo('/login')
     }
   }
@@ -50,6 +78,6 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     fetchProfile,
     setTokens,
-    logout
+    logout,
   }
 })

@@ -32,9 +32,9 @@ export const navMenu: NavMenu[] = [
             title: 'Details',
             icon: 'i-lucide-biceps-flexed',
             link: '/athletedetails',
-          }
+          },
         ],
-      }
+      },
     ],
   },
   {
@@ -49,7 +49,7 @@ export const navMenu: NavMenu[] = [
         title: 'RPE Submissions',
         icon: 'i-lucide-bar-chart-2',
         link: '/rpedetails',
-      }
+      },
     ],
   },
   {

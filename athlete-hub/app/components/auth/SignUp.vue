@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Loader2 } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import notifications from '@/lib/notificationService'
+import { cn } from '@/lib/utils'
 import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/auth'
-import { useI18n } from 'vue-i18n'
-import { cn } from '@/lib/utils'
 
 const { t } = useI18n()
 
 // ENV FLAG (VITE_REQUIRE_INVITATION_CODE=true/false)
-const isInvitationCodeRequired =
-  import.meta.env.VITE_REQUIRE_INVITATION_CODE === 'true'
+const isInvitationCodeRequired
+  = import.meta.env.VITE_REQUIRE_INVITATION_CODE === 'true'
 
 // State
 const email = ref('')
@@ -24,8 +24,8 @@ const authStore = useAuthStore()
 
 // GUID validation (compatibile con ASP.NET Guid)
 function isValidGuid(value: string): boolean {
-  const guidRegex =
-    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/
+  const guidRegex
+    = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
   return guidRegex.test(value)
 }
 
@@ -34,24 +34,24 @@ async function onSubmit(event: Event) {
 
   // Validazione base
   if (!email.value || !password.value || !confirmPassword.value) {
-    toast.error(t('auth.errors.requiredFields'))
+    notifications.error(t('auth.errors.requiredFields'))
     return
   }
 
   if (password.value !== confirmPassword.value) {
-    toast.error(t('auth.errors.passwordMismatch'))
+    notifications.error(t('auth.errors.passwordMismatch'))
     return
   }
 
   // Validazione codice se richiesto da ENV
   if (isInvitationCodeRequired) {
     if (!code.value) {
-      toast.error(t('auth.errors.codeRequired'))
+      notifications.error(t('auth.errors.codeRequired'))
       return
     }
 
     if (!isValidGuid(code.value)) {
-      toast.error(t('auth.errors.invalidCode'))
+      notifications.error(t('auth.errors.invalidCode'))
       return
     }
   }
@@ -62,7 +62,7 @@ async function onSubmit(event: Event) {
     const response = await authApi.signUp({
       email: email.value,
       password: password.value,
-      codeId: isInvitationCodeRequired ? code.value : null
+      codeId: isInvitationCodeRequired ? code.value : null,
     })
 
     const result = response.data
@@ -70,22 +70,24 @@ async function onSubmit(event: Event) {
     if (result?.value) {
       authStore.setTokens(
         result.value.accessToken,
-        result.value.refreshToken
+        result.value.refreshToken,
       )
     }
 
-    toast.success(t('auth.signup.success'))
+    notifications.success(t('auth.signup.success'))
     await navigateTo('/')
-
-  } catch (error: any) {
+  }
+  catch (error: any) {
     const serverMessage = error?.error?.message
 
     if (serverMessage) {
-      toast.error(serverMessage)
-    } else {
-      toast.error(t('auth.signup.networkError'))
+      notifications.error(serverMessage)
     }
-  } finally {
+    else {
+      notifications.error(t('auth.signup.networkError'))
+    }
+  }
+  finally {
     isLoading.value = false
   }
 }
@@ -95,7 +97,6 @@ async function onSubmit(event: Event) {
   <div :class="cn('grid gap-6', $attrs.class ?? '')">
     <form @submit="onSubmit">
       <div class="grid gap-4">
-
         <!-- EMAIL -->
         <div class="grid gap-2">
           <Label for="email">
@@ -162,7 +163,6 @@ async function onSubmit(event: Event) {
           />
           {{ t('auth.signup.submit') }}
         </Button>
-
       </div>
     </form>
   </div>

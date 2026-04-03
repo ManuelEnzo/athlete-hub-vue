@@ -1,11 +1,11 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: 'blank',
-  auth: false
-})
-
 import { useRoute } from 'vue-router'
 import RpeForm from '@/components/rpeinput/RpeInput.vue'
+
+definePageMeta({
+  layout: 'blank',
+  auth: false,
+})
 
 const route = useRoute()
 const token = route.params.token as string

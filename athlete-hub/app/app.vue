@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ConfigProvider } from 'reka-ui'
-import 'vue-sonner/style.css'
-import { Toaster } from 'vue-sonner'
 import { useI18n } from 'vue-i18n'
-import config from '@/config';
+import { Toaster } from 'vue-sonner'
+import config from '@/config'
+import 'vue-sonner/style.css'
 
 const { locale } = useI18n()
 const colorMode = useColorMode()
@@ -65,7 +65,7 @@ const dir = computed(() => textDirection.value === 'rtl' ? 'rtl' : 'ltr')
         <AppSettings />
       </div>
 
-     <Toaster position="top-right" richColors closeButton  />
+      <Toaster position="top-right" rich-colors close-button />
     </ConfigProvider>
   </Body>
 </template>

@@ -6,16 +6,16 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   sourcemap: {
     server: true,
-    client: true
+    client: true,
   },
   css: ['~/assets/css/tailwind.css'],
 
   vite: {
     build: {
-      sourcemap: true
+      sourcemap: true,
     },
     css: {
-      devSourcemap: true
+      devSourcemap: true,
     },
     plugins: [
       tailwindcss() as any,
@@ -63,7 +63,7 @@ export default defineNuxtConfig({
   routeRules: {
     '/components': { redirect: '/components/accordion' },
     '/settings': { redirect: '/settings/profile' },
-    '/**': { ssr: false, static: true } // <- fallback SPA per tutte le route
+    '/**': { ssr: false, static: true }, // <- fallback SPA per tutte le route
   },
 
   imports: {

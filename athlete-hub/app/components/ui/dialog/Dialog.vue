@@ -11,6 +11,8 @@ const forwarded = useForwardPropsEmits(props, emits)
 <template>
   <DialogRoot
     data-slot="dialog"
+    role="dialog"
+    aria-modal="true"
     v-bind="forwarded"
   >
     <slot />

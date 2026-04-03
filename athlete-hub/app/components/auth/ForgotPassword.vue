@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Loader2 } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
-import { useLoadingStore } from '~/stores/loadingStore'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import notifications from '@/lib/notificationService'
 import { authApi } from '~/api/auth'
+import { useErrorHandler } from '~/composables/useErrorHandler'
+import { useLoadingStore } from '~/stores/loadingStore'
 
 const { t } = useI18n()
 const email = ref('')
@@ -16,7 +17,7 @@ async function onSubmit(event: Event) {
   event.preventDefault()
 
   if (!email.value) {
-    toast.error(t('auth.errors.emailRequired'))
+    notifications.error(t('auth.errors.emailRequired'))
     return
   }
 
@@ -26,16 +27,19 @@ async function onSubmit(event: Event) {
     const response = await authApi.forgotPassword(email.value)
 
     if (response.data.isSuccess) {
-      toast.success(t('auth.forgotPassword.successMsg'))
+      notifications.success(t('auth.forgotPassword.successMsg'))
       email.value = ''
-    } else {
-      const errorMessage = response.data.error?.message || t('auth.errors.generic')
-      toast.error(errorMessage)
     }
-  } catch (err: any) {
-    console.error('[Forgot Password Error]', err)
-    toast.error(t('auth.errors.generic'))
-  } finally {
+    else {
+      const errorMessage = response.data.error?.message || t('auth.errors.generic')
+      notifications.error(errorMessage)
+    }
+  }
+  catch (err: any) {
+    const handler = useErrorHandler({ component: 'ForgotPassword' })
+    handler.handleError(err instanceof Error ? err : new Error(String(err)))
+  }
+  finally {
     loadingStore.stop()
   }
 }
@@ -51,7 +55,7 @@ async function onSubmit(event: Event) {
         id="email"
         v-model="email"
         type="email"
-        placeholder="name@example.com"
+        :placeholder="t('auth.signup.placeholders.email')"
         :disabled="loadingStore.isLoading"
         auto-complete="email"
         required

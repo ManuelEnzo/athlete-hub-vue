@@ -1,1082 +1,1388 @@
 {
-    "dashboard": {
-        "title": "Athlete Hub Dashboard",
-        "export": "Esporta Dati",
-        "athletes_monitored": "Atleti Monitorati",
-        "average_readiness": "Readiness Media",
-        "acwr_alerts": "Allerte ACWR",
-        "rpe_missing": "RPE Mancanti",
-        "monitored": "In Monitoraggio",
-        "athletes_at_risk": "Atleti A Rischio",
-        "reports_to_complete": "Report da Completare",
-        "acwr_controlled": "ACWR Controllato",
-        "safe_zone": "Safe Zone",
-        "actions_required": "Azioni Richieste",
-        "readiness_distribution": "Distribuzione Readiness",
-        "athlete_profile": "Profilo Atleti (Top 5)",
-        "performance_matrix": "Matrice Performance",
-        "team_status": "Stato Team",
-        "athlete_details": "Dettaglio Atleti",
-        "readiness_label": "Readiness",
-        "acwr_label": "ACWR",
-        "monitoring_title": "Atleti in Monitoraggio",
-        "safe_system": "Sistema Sicuro",
-        "no_critical_athletes": "Nessun Atleta in Zona Critica",
-        "high_acwr": "ACWR Alto"
+  "dashboard": {
+    "title": "Athlete Hub Dashboard",
+    "export": "Esporta Dati",
+    "athletes_monitored": "Atleti Monitorati",
+    "average_readiness": "Readiness Media",
+    "acwr_alerts": "Allerte ACWR",
+    "rpe_missing": "RPE Mancanti",
+    "monitored": "In Monitoraggio",
+    "athletes_at_risk": "Atleti A Rischio",
+    "reports_to_complete": "Report da Completare",
+    "acwr_controlled": "ACWR Controllato",
+    "safe_zone": "Safe Zone",
+    "actions_required": "Azioni Richieste",
+    "readiness_distribution": "Distribuzione Readiness",
+    "athlete_profile": "Profilo Atleti (Top 5)",
+    "performance_matrix": "Matrice Performance",
+    "team_status": "Stato Team",
+    "athlete_details": "Dettaglio Atleti",
+    "readiness_label": "Readiness",
+    "acwr_label": "ACWR",
+    "monitoring_title": "Atleti in Monitoraggio",
+    "safe_system": "Sistema Sicuro",
+    "no_critical_athletes": "Nessun Atleta in Zona Critica",
+    "high_acwr": "ACWR Alto",
+    "advancedFilter": "Filtro avanzato",
+    "filters": {
+      "apply": "Applica",
+      "athletes": "Atleti",
+      "dateRange": "Intervallo date",
+      "days": "Giorni",
+      "deselectAll": "Deseleziona tutto",
+      "fatigue": "Fatica",
+      "from": "Da",
+      "metrics": "Metriche",
+      "presetNamePlaceholder": "Nome preset",
+      "presets": "Preset",
+      "readiness": "Readiness",
+      "reset": "Reimposta",
+      "save": "Salva",
+      "selectAll": "Seleziona tutto",
+      "soreness": "Dolore",
+      "title": "Filtro",
+      "to": "A",
+      "workload": "Carico"
     },
+    "health": {
+      "title": "Salute del Team",
+      "athlete": "Atleta",
+      "fatigue": "Fatica",
+      "readiness": "Readiness",
+      "soreness": "Dolore",
+      "acwrHighRisk": "ACWR Alto",
+      "acwrOptimal": "ACWR Ottimale",
+      "noData": "Nessun dato",
+      "status": {
+        "healthy": "Sano"
+      },
+      "workload": "workload"
+    },
+    "lastUpdated": "last Updated",
+    "loadData": "load Data",
     "metrics": {
-        "totalLoad": "Carico Totale Settimanale",
-        "avgRPE": "RPE Medio (Percezione Sforzo)",
-        "monitoredAthletes": "Atleti Monitorati",
-        "unavailabilityRate": "Tasso di Indisponibilità"
+      "avgFatigue": "Fatica Media",
+      "avgSoreness": "Dolore Medio",
+      "teamReadiness": "Readiness Squadra",
+      "teamWorkload": "Carico Squadra",
+      "totalMonitoredAthletes": "Atleti Monitorati",
+      "averageReadinessScore": "Readiness Media",
+      "criticalAcwrCount": "ACWR Critici",
+      "missingReportsToday": "Report Mancanti Oggi"
     },
-    "charts": {
-        "weeklyLoad": "📈 Andamento Carico Settimanale & ACWR",
-        "physiological": "❤️ Monitoraggio Fisiologico (HR & RPE)",
-        "athleteDistribution": "🧑‍🤝‍🧑 Distribuzione Atleti per Disciplina",
-        "readiness": "✅ Stato di Prontezza (Readiness)"
-    },
-    "alerts": {
-        "highLoadTitle": "Allerte Carico Alto (ACWR > 1.3)",
-        "highLoadDescription": "Atleti a rischio infortunio o affaticamento eccessivo.",
-        "noAlerts": "Nessuna allerta ACWR. Carico ben gestito.",
-        "acwr": "ACWR",
-        "week": "Settimana",
-        "highRisk": "⚠️ Alcuni atleti sono in alto rischio! Controlla carichi e recupero.",
-        "noRisk": "✅ Nessun atleta in alto rischio."
-    },
-    "sessions": {
-        "title": "Sessioni in Programma",
-        "description": "Prossimi impegni con focus e intensità target.",
-        "focus": "Focus",
-        "targetRPE": "RPE Target"
-    },
-    "measurements": {
-        "noData": "Nessuna misurazione disponibile. Per favore aggiungi nuove misurazioni.",
-        "pageTitle": "Stato Salute Atleti",
-        "filterAthlete": "Seleziona atleta per filtrare",
-        "filterAll": "Tutti gli atleti",
-        "listTitle": "Ultime Misurazioni",
-        "newMeasurement": "Inserisci Nuove Misure",
-        "editMeasurement": "Modifica Rilevazione",
-        "analysisTitle": "Analisi Progressi",
-        "analysis": {
-            "description": "Variazione dei parametri nel tempo"
-        },
-        "form": {
-            "athlete": "Atleta",
-            "selectAthlete": "Seleziona...",
-            "weight": "Peso (kg)",
-            "height": "Altezza (cm)",
-            "chest": "Torace",
-            "waist": "Vita",
-            "hip": "Fianchi",
-            "thigh": "Coscia",
-            "arm": "Braccio",
-            "calf": "Polpaccio",
-            "forearm": "Avambraccio",
-            "neck": "Collo",
-            "notes": "Note",
-            "notesPlaceholder": "Annotazioni opzionali...",
-            "cancel": "Annulla",
-            "create": "Salva",
-            "update": "Aggiorna"
-        },
-        "validation": {
-            "selectAthlete": "Seleziona un atleta",
-            "weightLow": "Peso troppo basso",
-            "heightLow": "Altezza troppo bassa",
-            "chestLow": "Torace troppo piccolo",
-            "waistLow": "Vita troppo piccola",
-            "hipLow": "Fianchi troppo piccoli"
-        },
-        "toast": {
-            "loadAthletesError": "Errore caricamento atleti",
-            "loadMeasurementsError": "Errore caricamento misurazioni",
-            "communicationError": "Errore di comunicazione",
-            "created": "Nuova rilevazione salvata!",
-            "updated": "Rilevazione aggiornata!",
-            "deleted": "Eliminato",
-            "saveError": "Errore durante il salvataggio",
-            "deleteError": "Errore durante eliminazione",
-            "confirmDelete": "Conferma eliminazione"
-        },
-        "card": {
-            "weight": "Peso",
-            "height": "Altezza",
-            "chest": "Torace",
-            "waist": "Vita",
-            "hip": "Fianchi"
-        },
-        "dialog": {
-            "deleteTitle": "Conferma eliminazione",
-            "deleteText": "Eliminare la misurazione?"
-        },
-        "actions": {
-            "edit": "Modifica misurazione",
-            "delete": "Elimina",
-            "create": "Crea",
-            "update": "Aggiorna",
-            "cancel": "Annulla"
-        }
-    },
-    "fields": {
-        "firstName": "Nome",
-        "lastName": "Cognome",
-        "email": "Email",
-        "discipline": "Disciplina",
-        "birthDate": "Data di nascita",
-        "weight": "Peso",
-        "height": "Altezza",
-        "age": "Età",
-        "athlete": "Atleta",
-        "status": "Stato",
-        "readiness": "Readiness",
-        "gender": "Sesso",
-        "genderPlaceholder": "Seleziona sesso",
-        "weightShort": "Peso",
-        "heightShort": "Altezza",
-        "sportCategory": "Categoria Sportiva",
-        "sportCategoryPlaceholder": "Seleziona categoria sportiva"
-    },
-    "athlete": {
-        "deleteWarning": "Questa azione eliminerà in modo permanente l'atleta e tutti i suoi dati associati. Sei sicuro di voler procedere?",
-        "noData": "Nessun atleta disponibile. Per favore aggiungi nuovi atleti.",
-        "pageTitle": "Dati Atleti",
-        "visualizer": "Visualizzatore Atleta",
-        "new": "Nuovo Atleta",
-        "edit": "Modifica Atleta",
-        "deleteConfirm": "Conferma eliminazione",
-        "deleteQuestion": "Eliminare?",
-        "unknown": "Atleta sconosciuto",
-        "email": {
-            "tokenSubject": "Token Sleep ID",
-            "tokenBody": "Ciao {name}, il tuo Token Sleep ID è: {token}. Salvalo per utilizzarlo nell'app."
-        },
-        "details": {
-            "readinessTitle": "Stato di Prontezza (Readiness)",
-            "acwrTitle": "📈 Acute:Chronic Workload Ratio (ACWR)",
-            "acwrDescription": "Andamento del rapporto Carico Acuto (7 giorni) vs Carico Cronico (28 giorni). Obiettivo: 0.8 - 1.3",
-            "benchmarkTitle": "Benchmark Prestazioni (vs Team)",
-            "benchmarkDescription": "Risultati ultimi test ({date}) a confronto con la media del Team.",
-            "table": {
-                "metric": "Metrica",
-                "athlete": "Atleta",
-                "team": "Media Team",
-                "diff": "Diff (%)"
-            },
-            "status": {
-                "high": "Alto Rischio (Overload)",
-                "medium": "Rischio Medio (Attenzione)",
-                "low": "Basso Rischio"
-            }
-        },
-        "success": {
-            "created": "Atleta creato con successo",
-            "updated": "Atleta aggiornato con successo",
-            "deleted": "Atleta eliminato",
-            "tokenCopied": "Token copiato negli appunti"
-        },
-        "errors": {
-            "load": "Errore nel caricamento atleti",
-            "required": "Compila tutti i campi obbligatori",
-            "server": "Si è verificato un errore del server",
-            "save": "Errore durante il salvataggio dei dati",
-            "emailInUse": "Email già in uso",
-            "firstNameRequired": "Il nome è obbligatorio",
-            "lastNameRequired": "Il cognome è obbligatorio",
-            "emailRequired": "L'email è obbligatoria",
-            "emailInvalid": "Formato email non valido",
-            "birthDateFuture": "La data di nascita non può essere futura",
-            "weightInvalid": "Il peso deve essere maggiore di 0",
-            "heightInvalid": "L'altezza deve essere maggiore di 0",
-            "genderInvalid": "Genere non valido",
-            "birthDateInvalid": "La data di nascita non è valida",
-            "birthDateRequired": "La data di nascita è obbligatoria"
-        },
-        "message": {
-            "resend": "Errore durante l'invio dell'email. Riprova.",
-            "resendSuccess": "Email di token inviata con successo"
-        }
-    },
+    "noData": "no Data",
+    "pageTitle": "Dashboard",
+    "subtitle": "Monitoraggio e insight del team",
     "risk": {
-        "optimal": "✅ Ottimale",
-        "moderate": "⚡ Moderato",
-        "high": "⚠️ Alto Rischio",
-        "low": "Basso Rischio",
-        "medium": "Rischio Medio"
+      "title": "Valutazione Rischio",
+      "critical": "Critico",
+      "loading": "Caricamento",
+      "safe": "Sicuro",
+      "noRisks": "Nessun rischio",
+      "recommendedAction": "Azione consigliata",
+      "riskFactors": "Fattori di rischio",
+      "riskFactorsHeader": "Fattori di rischio",
+      "updated": "updated",
+      "warning": "warning"
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "advanced": "Avanzate",
+      "alerts": "Avvisi",
+      "display": "Visualizzazione",
+      "autoRefresh": "Aggiornamento automatico",
+      "compactLayout": "Layout compatto",
+      "darkMode": "Tema scuro",
+      "defaultTimeRange": "Intervallo predefinito",
+      "enableNotifications": "Abilita notifiche",
+      "enableSounds": "Abilita suoni",
+      "exportSettings": "Esporta impostazioni",
+      "resetToDefaults": "Ripristina impostazioni",
+      "showMetricCards": "Mostra schede metriche",
+      "visibleWidgets": "Widget visibili",
+      "interval": {
+        "disabled": "Disabilitato",
+        "1m": "1 minuto",
+        "5m": "5 minuti",
+        "10m": "10 minuti",
+        "30m": "30 minuti"
+      }
+    },
+    "widget": {
+      "readiness": "Panoramica Readiness",
+      "aiInsights": "AI Insights",
+      "healthAssessment": "Valutazione Salute",
+      "performanceTrends": "Andamento Performance",
+      "riskAssessment": "Valutazione Rischio",
+      "teamComparison": "Confronto Team",
+      "workloadAnalysis": "Analisi Carico"
     },
     "team": {
-        "individualStatus": "Stato Individuale Atleti",
-        "sortByAcwr": "Ordina per ACWR",
-        "averages": "Medie Squadra",
-        "riskDistribution": "Distribuzione Rischio",
-        "alerts": "Alert Squadra",
-        "lastUpdate": "Ultimo Aggiornamento",
-        "updatedAt": "Aggiornato alle {time} del {date}"
+      "comparing": "Confronto atleti...",
+      "average": "Media",
+      "variance": "Varianza",
+      "range": "Range"
     },
-    "stats": {
-        "avgAcwr": "ACWR Medio",
-        "readiness": "Readiness",
-        "hooper": "Fatica Hooper",
-        "sleep": "Sonno Medio",
-        "stress": "Stress Medio"
+    "workload": {
+      "title": "Carico",
+      "loading": "Caricamento...",
+      "acwrOptimal": "ACWR Ottimale",
+      "acwrStatus": "Stato ACWR",
+      "averageWorkload": "Carico medio",
+      "individualStatus": "Stato individuale",
+      "peakWorkload": "Carico massimo",
+      "spikesDetected": "Picchi rilevati",
+      "weeklyTrend": "Andamento settimanale",
+      "fromLastWeek": "rispetto alla settimana scorsa",
+      "byPeakAthlete": "di {name}",
+      "spikeIncrease": "{name}: incremento {value}%",
+      "acwrValue": "ACWR: {value}"
     },
-    "readiness": {
-        "title": "Stato di Prontezza",
-        "score": "Punteggio di Recupero",
-        "statuses": {
-            "good": "Ottima Prontezza",
-            "slowRecover": "Recupero Lento",
-            "injured": "Infortunato/Malato"
-        }
+    "athletes": "athletes",
+    "autoRefresh": {
+      "auto": "auto",
+      "manual": "manual"
     },
-    "acwr": {
-        "current": "ACWR corrente (Settimana: {week})"
+    "performance": {
+      "fatigue": "Fatica",
+      "performance": "Prestazione",
+      "readiness": "Readiness",
+      "title": "Prestazioni",
+      "selectMetric": "Seleziona metrica",
+      "calculating": "Calcolo trend...",
+      "currentAndAverage": "Attuale: {current}% | Media: {average}%",
+      "forecastTitle": "Previsione 7 giorni",
+      "expectedIn3Days": "Previsto in 3 giorni",
+      "expectedIn7Days": "Previsto in 7 giorni",
+      "confidence": "Confidenza: {value}%",
+      "topImprovers": "Miglioramenti principali",
+      "needAttention": "Richiede attenzione",
+      "distributionTitle": "Distribuzione Prestazioni",
+      "athletesCount": "{count} atleti"
     },
-    "anthropometrics": {
-        "title": "Dati Antropometrici",
-        "weight": "Peso: {value} kg",
-        "height": "Altezza: {value} m",
-        "bmi": "BMI: {value}"
+    "status": {
+      "error": "error",
+      "healthy": "healthy",
+      "warning": "warning"
     },
-    "tests": {
-        "cmj": "CMJ (cm)",
-        "squat1rm": "Squat 1RM (kg)",
-        "sprint30m": "Sprint 30m (s)",
-        "pageTitle": "Configurazione Test",
-        "newTest": "Nuova Definizione",
-        "editTest": "Modifica Test",
-        "testName": "Nome del Test",
-        "description": "Descrizione / Protocollo",
-        "metrics": "Metriche Associate",
-        "addMetric": "Aggiungi Metrica",
-        "metricName": "Nome Metrica (es. Salto)",
-        "unit": "Unità (es. cm, sec)",
-        "dataType": "Tipo Dato",
-        "standardValue": "Valore Standard",
-        "saveSuccess": "Test salvato con successo",
-        "deleteConfirm": "Conferma eliminazione",
-        "deleteQuestion": "Vuoi davvero eliminare il test",
-        "deleteWarning": "Questa operazione è irreversibile.",
-        "deleteSuccess": "Test eliminato con successo",
-        "validationError": "Per favore compila tutti i campi obbligatori e aggiungi almeno una metrica",
-        "configureProtocol": "Configura i protocolli e definisci le metriche di input."
-    },
-    "calendar": {
-        "grid": {
-            "athlete": "Atleta",
-            "helpTime": "Formato: MM:SS.cc",
-            "helpLevel": "Livello.Navetta (es: 16.3)"
-        },
-        "editSession": "Modifica Sessione",
-        "testGridSub": "Inserimento dati protocollo test",
-        "errors": {
-            "fetchEvents": "Impossibile caricare il calendario",
-            "saveEvent": "Errore durante il salvataggio dell'evento",
-            "deleteEvent": "Errore durante l'eliminazione",
-            "loadGrid": "Errore nel caricamento della griglia test",
-            "saveResults": "Errore nel salvataggio dei risultati"
-        },
-        "title": "Sessioni e Appuntamenti",
-        "infoTooltip": "Once you've entered the activity, if it's completed, you can open it for editing using the pen button and mark it as completed to send the RPE to the athlete.",
-        "months": {
-            "0": "Gennaio",
-            "1": "Febbraio",
-            "2": "Marzo",
-            "3": "Aprile",
-            "4": "Maggio",
-            "5": "Giugno",
-            "6": "Luglio",
-            "7": "Agosto",
-            "8": "Settembre",
-            "9": "Ottobre",
-            "10": "Novembre",
-            "11": "Dicembre"
-        },
-        "days": [
-            "Lun",
-            "Mar",
-            "Mer",
-            "Gio",
-            "Ven",
-            "Sab",
-            "Dom"
-        ],
-        "lockedTitle": "Modifiche limitate",
-        "lockedMessage": "Non è possibile cambiare tipologia o protocollo perché sono già presenti risultati salvati per questa sessione.",
-        "deleteLocked": "Non è possibile eliminare la sessione perché sono già presenti risultati salvati per questa sessione.",
-        "agendaTitle": "Agenda",
-        "addEvent": "Aggiungi Evento",
-        "noEvents": "Nessun evento pianificato.",
-        "scheduledCount": "{count} attività pianificate",
-        "addNow": "Aggiungi ora!",
-        "eventDetails": "Dettagli per {date}",
-        "saveError": "Errore salvataggio",
-        "createEvent": "Crea Evento",
-        "gridDescription": "Inserimento dati massivo per la sessione di test",
-        "form": {
-            "title": "Titolo",
-            "athletes": "Atleti",
-            "date": "Data",
-            "time": "Ora",
-            "type": "Tipo Evento",
-            "description": "Descrizione",
-            "cancel": "Annulla",
-            "create": "Crea",
-            "update": "Aggiorna",
-            "titlePlaceholder": "Titolo evento",
-            "descriptionPlaceholder": "Dettagli evento...",
-            "validationError": "Per favore compila tutti i campi obbligatori",
-            "titleLabel": "Titolo Sessione",
-            "participants": "Partecipanti",
-            "dateLabel": "Data",
-            "timeLabel": "Ora Inizio",
-            "categoryLabel": "Categoria",
-            "protocolLabel": "Protocollo Performance",
-            "protocolSelect": "Seleziona protocollo...",
-            "targetRPE": "RPE Target",
-            "intensityPlaceholder": "Intensità prevista (1-10)",
-            "targetRPEInfo": "Intensità prevista",
-            "duration": "Durata (minuti)",
-            "durationValue": "{minutes} minuti",
-            "notSpecified": "Non indicata",
-            "active": "Attiva",
-            "remove": "Rimuovi",
-            "selectAthlete": "Selezione atleti",
-            "completedTitle": "Sessione Completata",
-            "completedInfo": "Segna come eseguita per registrare l'RPE",
-            "titleOnlyModify": "Solo il titolo può essere modificato"
-        },
-        "deleteConfirmation": "Sei sicuro di voler rimuovere questa sessione? L'atleta non riceverà notifiche automatiche.",
-        "deleteTitle": "Cancellare Appuntamento",
-        "newSession": "Nuova Sessione",
-        "toast": {
-            "created": "Evento creato con successo",
-            "updated": "Evento aggiornato con successo",
-            "deleted": "Evento eliminato con successo",
-            "resultsSaved": "Risultati salvati con successo"
-        },
-        "delete": {
-            "title": "Elimina Sessione",
-            "description": "Sei sicuro? Questa azione non può essere annullata."
-        },
-        "test": {
-            "gridDescription": "Inserimento dati massivo per la sessione di test",
-            "athleteHeader": "Atleta",
-            "quickEntryActive": "Modalità inserimento rapido attiva",
-            "exitWithoutSave": "Esci senza salvare",
-            "saveResults": "Salva Sessione"
-        },
-        "validation": {
-            "noResults": "Inserisci almeno un risultato prima di salvare",
-            "selectAthlete": "Seleziona almeno un atleta",
-            "validationError": "Per favore compila tutti i campi visualizzati"
-        },
-        "blocked": "Proprietà bloccate",
-        "resultPresent": " Sono presenti risultati per questo test. Non è possibile cambiare il tipo o il protocollo."
-    },
-    "common": {
-        "cancel": "Annulla",
-        "confirm": "Conferma",
-        "create": "Crea",
-        "update": "Aggiorna",
-        "save": "Salva",
-        "delete": "Elimina",
-        "details": "Dettagli",
-        "optional": "Opzionale",
-        "loading": "Caricamento...",
-        "active": "Attivo",
-        "remove": "Rimuovi",
-        "noRecords": "Nessun record trovato",
-        "prev": "Precedente",
-        "next": "Successiva",
-        "search": "Cerca",
-        "filter": "Filtra",
-        "actions": "Azioni",
-        "error": "Errore",
-        "success": "Successo",
-        "refresh": "Aggiorna",
-        "all": "Tutti",
-        "back": "Indietro",
-        "close": "Chiudi",
-        "paginationInfo": "Pagina {current} di {total} ({count} record totali)",
-        "loadMore": "Carica altri"
-    },
-    "kanban": {
-        "title": "Kanban Board",
-        "description": "Ecco l'elenco delle tue attività per questo mese!",
-        "addColumn": "Aggiungi Colonna",
-        "newColumnPlaceholder": "Titolo colonna",
-        "dialog": {
-            "title": "Aggiungi Nuova Colonna",
-            "description": "Aggiungi una nuova colonna alla board"
-        }
-    },
-    "auth": {
-        "signup": {
-            "success": "Registrazione avvenuta con successo",
-            "networkError": "Errore di rete durante la registrazione",
-            "validation": {
-                "fillAll": "Compila tutti i campi",
-                "passwordMismatch": "Le password non coincidono"
-            },
-            "errors": {
-                "general": "Errore durante la registrazione"
-            },
-            "email": "Email",
-            "password": "Password",
-            "confirmPassword": "Conferma Password",
-            "createAccount": "Crea Account",
-            "placeholders": {
-                "email": "name@example.com"
-            },
-            "orContinue": "O continua con",
-            "submit": "Registrati"
-        },
-        "errors": {
-            "requiredFields": "Tutti i campi sono obbligatori",
-            "invalidToken": "Token mancante o scaduto. Richiedi un nuovo link.",
-            "passwordsDoNotMatch": "Le password non coincidono",
-            "expiredLink": "Il link è scaduto, riprova la procedura",
-            "genericLogin": "Credenziali non valide",
-            "emailRequired": "Inserisci un indirizzo email valido",
-            "invalidCode": "Codice invito non valido"
-        },
-        "fields": {
-            "email": "Email",
-            "password": "Password",
-            "newPassword": "Nuova Password",
-            "confirmPassword": "Conferma Password",
-            "invitationCode": "Codice Invito"
-        },
-        "login": {
-            "withApple": "Login with Apple",
-            "withGoogle": "Login with Google",
-            "submit": "Accedi",
-            "noAccount": "Non hai un account?",
-            "signUpLink": "Registrati qui",
-            "success": "Login avvenuto con successo",
-            "forgotPassword": "Hai dimenticato la password?",
-            "alreadyHaveAccount": "Hai già un account?",
-            "backToLogin": "Torna al login",
-            "title": "Bentornato"
-        },
-        "forgotPassword": {
-            "title": "Recupero Credenziali",
-            "description": "Inserisci la tua email per ricevere le istruzioni di reset",
-            "submit": "Invia link di reset",
-            "backToLogin": "Torna al login",
-            "successMsg": "Controlla la tua casella email"
-        },
-        "reset": {
-            "title": "Imposta Nuova Password",
-            "description": "Definisci le tue nuove credenziali",
-            "submit": "Reset Password",
-            "done": "Fatto!",
-            "success": "Password aggiornata con successo",
-            "successMessage": "Credenziali aggiornate. Sei pronto a ripartire."
-        }
-    },
-    "tasks": {
-        "title": "Attività",
-        "description": "Ecco l'elenco delle tue attività per questo mese!"
-    },
-    "eventTypes": {
-        "Strength": "Forza",
-        "Forza": "Forza",
-        "Endurance": "Resistenza",
-        "Resistenza": "Resistenza",
-        "Test": "Test",
-        "Recovery": "Recupero",
-        "Recupero": "Recupero",
-        "Visit": "Visita",
-        "Running": "Corsa",
-        "Corsa": "Corsa",
-        "Team Sport": "Sport di Squadra",
-        "Sport di Squadra": "Sport di Squadra",
-        "Checkup": "Controllo",
-        "Conditioning": "Condizionamento",
-        "Match": "Partita",
-        "Technical": "Tecnico"
-    },
-    "genders": {
-        "genderPlaceholder": "Seleziona sesso",
-        "male": "Maschio",
-        "female": "Femmina",
-        "other": "Altro"
-    },
-    "refreshFailed": "Aggiornamento token non riuscito",
-    "logoutInProgress": "Logout in corso...",
-    "operationFailed": "Operazione fallita",
-    "errors": {
-        "load": "Errore nel caricamento atleti",
-        "required": "Compila tutti i campi obbligatori",
-        "server": "Si è verificato un errore del server",
-        "save": "Errore durante il salvataggio dei dati"
-    },
-    "rpe": {
-        "title": "Invia il tuo RPE",
-        "description": "Inserisci il tuo RPE per la sessione. Valori da 0 (nessuna fatica) a 10 (massimo sforzo).",
-        "pageTitle": "Monitoraggio Invii RPE",
-        "pageDescription": "Gestisci e monitora lo stato delle richieste RPE inviate agli atleti in tempo reale.",
-        "searchPlaceholder": "Cerca atleta o email...",
-        "dashboardTitle": "RPE Dashboard",
-        "legendTitle": "Legenda RPE:",
-        "lastSession": "Ultima sessione",
-        "historyTitle": "Storico RPE",
-        "sessionName": "Nome Sessione",
-        "activityType": "Tipo Attività",
-        "date": "Data",
-        "effort": "Sforzo (RPE)",
-        "target": "Target",
-        "back": "Indietro",
-        "historyDetail": "Dettagli Storico",
-        "fields": {
-            "rpe": "RPE",
-            "notes": "Note (opzionale)",
-            "notesPlaceholder": "Aggiungi eventuali note..."
-        },
-        "buttons": {
-            "submit": "Invia",
-            "sent": "Inviato",
-            "resend": "Reinvia Email"
-        },
-        "table": {
-            "athlete": "Atleta",
-            "emailStatus": "Stato Email",
-            "lastSent": "Ultimo Invio",
-            "submission": "Compilazione RPE"
-        },
-        "status": {
-            "pending": "In Coda",
-            "processing": "In Invio...",
-            "completed": "Inviata",
-            "failed": "Errore Invio",
-            "unknown": "Sconosciuto",
-            "waiting": "In attesa di compilazione"
-        },
-        "validation": {
-            "range": "L'RPE deve essere compreso tra 1 e 10"
-        },
-        "success": {
-            "sent": "RPE inviato con successo!",
-            "details": "Grazie! I tuoi dati sono stati registrati correttamente."
-        },
-        "error": {
-            "sending": "Errore durante l’invio",
-            "invalidToken": "Link non valido o scaduto",
-            "contactCoach": "Contatta il tuo allenatore per ricevere un nuovo link di inserimento."
-        },
-        "labels": {
-            "0": "Nessuno sforzo 😴",
-            "2": "Molto leggero 🙂",
-            "4": "Moderato 😐",
-            "6": "Impegnativo 😰",
-            "8": "Duro 🥵",
-            "9": "Estremo 💀",
-            "10": "Massimale 🔥",
-            "none": "Nessuno",
-            "light": "Leggero",
-            "moderate": "Moderato",
-            "challenging": "Impegnativo",
-            "hard": "Duro",
-            "maximal": "Massimale"
-        },
-        "pagination": {
-            "prev": "Prev",
-            "next": "Next",
-            "pageInfo": "Pagina {current} / {total}",
-            "paginationInfo": "Pagina {current} di {total} ({count} record totali)",
-            "chargeother": "Carica altri"
-        },
-        "errors": {
-            "loadOverview": "Errore nel caricamento overview",
-            "loadHistory": "Errore nel caricamento dello storico",
-            "fetch": "Errore nel caricamento degli stati email",
-            "resend": "Errore nel reinvio dell'email"
-        },
-        "messages": {
-            "resendSuccess": "Email reinviata con successo a {email}"
-        },
-        "filters": {
-            "allAthletes": "Tutti gli atleti",
-            "allStatuses": "Tutti gli stati"
-        },
-        "actions": {
-            "resend": "Reinvia Email"
-        }
-    },
-    "analytics": {
-        "readiness_title": "Stato di Prontezza",
-        "readiness_label": "Punteggio Recupero",
-        "current_acwr": "ACWR Corrente",
-        "workload_trend": "Andamento Carico Acuto:Cronico (ACWR)",
-        "latest_results": "Ultimi Risultati Test",
-        "performance_history": "Trend Storico Prestazioni",
-        "injuries_status": "Storico Infortuni e Assenze",
-        "all_clear": "Tutto Ok - Nessun Infortunio",
-        "days_off": "Giorni",
-        "no_history": "Nessuno storico prestazioni disponibile per questo periodo",
-        "acwr": "Rapporto ACWR",
-        "error_loading": "Errore nel caricamento dei dati analitici",
-        "no_data_title": "Nessun dato disponibile",
-        "no_data_description": "Controlla il periodo selezionato o i record dell'atleta",
-        "no_tests_title": "Nessun Test Registrato",
-        "no_tests_description": "Non sono stati eseguiti test atletici nel periodo selezionato.",
-        "metrics_summary": "Riepilogo Misure Corporee",
-        "load_summary": "Dettaglio Carichi Settimanali",
-        "no_data_available": "Dati insufficienti per generare l'analisi. Assicurati che l'atleta abbia sessioni completate con RPE e test registrati.",
-        "no_tests_registered": "Nessun risultato di test disponibile per questo periodo. Esegui test atletici per monitorare i progressi e identificare aree di miglioramento",
-        "acute_load": "Carico Acuto",
-        "chronic_load": "Carico Cronico",
-        "last_7_days": "Ultimi 7 giorni",
-        "last_28_days": "Ultimi 28 giorni",
-        "acwr_trend": "Andamento ACWR",
-        "historical_metrics": "Metriche Storiche",
-        "no_historical_data": "Nessun dato storico disponibile",
-        "anthropometric_measures": "Misure Antropometriche",
-        "weight": "Peso",
-        "height": "Altezza",
-        "bmi": "BMI",
-        "injury_status": "Stato Infortuni",
-        "active_injuries": "Infortuni Attivi",
-        "total_days_off": "Giorni Totali di Stop",
-        "injury_history": "Storico Infortuni",
-        "total_injuries": "Infortuni Totali",
-        "acwr_insufficient_data": "Dati insufficienti per il calcolo dell'ACWR",
-        "readiness_title_tooltip": "Readiness: punteggio medio di prontezza fisica dell'atleta basato sugli ultimi test e allenamenti",
-        "current_acwr_tooltip": "ACWR: rapporto tra carico acuto (7 giorni) e carico cronico (28 giorni). Valori > 1.3 indicano potenziale sovraccarico e rischio infortunio",
-        "acuteload_title_tooltip": "Acute Load: carico acuto dell'ultima settimana, basato su volume e intensità dell'allenamento",
-        "chronicload_title_tooltip": "Chronic Load: carico cronico delle ultime 4 settimane, rappresenta la capacità di carico dell'atleta"
-    },
-    "injuries": {
-        "title": "Centro Medico",
-        "management_title": "Centro Medico",
-        "subtitle": "Monitoraggio clinico e tempi di recupero",
-        "history_title": "Registro Infortuni Atleta",
-        "add_new": "Nuovo Infortunio",
-        "no_data": "Nessun infortunio",
-        "no_data_desc": "L'atleta non ha infortuni registrati al momento.",
-        "fields": {
-            "injury": "Diagnosi / Infortunio",
-            "startDate": "Data Inizio",
-            "expectedReturn": "Rientro Stimato",
-            "category": "Categoria",
-            "severity": "Gravità",
-            "location": "Sede Corporea",
-            "status": "Stato",
-            "daysOut": "Giorni di Stop"
-        },
-        "placeholders": {
-            "injury": "Es. Lesione II Grado Bicipite",
-            "location": "Es. Coscia DX"
-        },
-        "categories": {
-            "muscular": "Muscolare",
-            "joint": "Articolare",
-            "tendon": "Tendineo",
-            "bone": "Osseo"
-        },
-        "severities": {
-            "mild": "Lieve",
-            "moderate": "Moderata",
-            "severe": "Grave"
-        },
-        "statuses": {
-            "active": "Attivo (Stop)",
-            "rehab": "In Recupero",
-            "returned": "Rientrato"
-        },
-        "fallback": {
-            "notAvailable": "N/D"
-        },
-        "form": {
-            "add_title": "Nuovo Infortunio",
-            "edit_title": "Aggiorna Infortunio"
-        },
-        "card": {
-            "start": "Inizio",
-            "location_label": "Sede",
-            "stop_duration": "Stop Totale"
-        },
-        "errors": {
-            "loadAthletes": "Errore nel caricamento degli atleti",
-            "loadInjuries": "Errore nel caricamento degli infortuni",
-            "save": "Errore durante il salvataggio dell'infortunio",
-            "delete": "Errore durante l'eliminazione dell'infortunio"
-        },
-        "toast": {
-            "created": "Infortunio registrato con successo",
-            "updated": "Record aggiornato correttamente",
-            "deleted": "Infortunio eliminato"
-        },
-        "deleteConfirm": "Conferma eliminazione",
-        "deleteQuestion": "Sei sicuro di voler eliminare questo infortunio?",
-        "deleteWarning": "Questa azione non può essere annullata.",
-        "dialog": {
-            "editTitle": "Modifica Infortunio",
-            "newTitle": "Nuovo Infortunio"
-        }
-    },
-    "performanceDashboard": {
-        "pageTitle": "Performance Dashboard",
-        "subtitle": "Monitoraggio Real-Time Atleti & Carichi di Lavoro",
-        "lastUpdated": "Aggiornamento",
-        "teamSize": "Team Size",
-        "athletesMonitored": "Atleti monitorati",
-        "avgReadiness": "Readiness Media",
-        "avgAcwr": "ACWR Medio",
-        "rpeSurveyStatus": "Compliance RPE",
-        "atleti": "atleti",
-        "atRisk": "A Rischio",
-        "requireAttention": "Richiedono attenzione",
-        "readinessTrend": "Andamento Readiness",
-        "complianceRate": "Tasso di Compliance",
-        "workloadAcwrDistribution": "Distribuzione Carico ACWR",
-        "teamHealthDistribution": "Distribuzione Salute Team",
-        "readinessVsAcwrComparison": "Confronto Readiness vs Sicurezza ACWR",
-        "missingSessions": "Allerta Sessioni Mancanti",
-        "allAthletesCompliant": "Tutti gli Atleti Compliant",
-        "noMissingSessions": "Nessuna sessione mancante",
-        "quickInsights": "Insights Rapidi",
-        "teamStatus": "Stato Team",
-        "athletesInSafeZone": "atleti in zona sicura",
-        "averageLoad": "Carico Medio",
-        "optimal": "Ottimale",
-        "monitor": "Monitora",
-        "readyToday": "% pronti oggi",
-        "individualPerformanceMatrix": "Matrice Performance Individuale",
-        "readiness": "Readiness",
-        "dashboardAutoUpdated": "Dashboard aggiornato automaticamente",
-        "performanceIntelligence": "Intelligenza Performance",
-        "critical": "Critico",
-        "warning": "Avvertenza",
-        "safe": "Sicuro",
-        "chartLegends": {
-            "readinessTrend": "Mostra la percentuale di readiness degli atleti nel tempo. Valori più alti indicano migliore recupero e prontezza mentale.",
-            "complianceRate": "Percentuale di atleti che hanno completato i report RPE. Essenziale per il tracciamento del carico e la prevenzione degli infortuni.",
-            "acwrDistribution": "Valori ACWR (Rapporto Carico Acuto:Cronico). Verde < 1.3 = Sicuro, Giallo 1.3-1.5 = Attenzione, Rosso > 1.5 = Rischio infortunio critico.",
-            "teamHealth": "Distribuzione dello stato di salute degli atleti. Sicuro = Basso rischio infortunio, Attenzione = Monitoraggio richiesto.",
-            "radarComparison": "Linea blu = % Readiness, Linea rossa = Punteggio Sicurezza ACWR. Una forma più ampia indica una migliore condizione generale dell'atleta."
-        }
-    },
-    "profile": {
-        "title": "Il Mio Profilo",
-        "subtitle": "Gestione account Athlete-Hub",
-        "accountInfo": "Dati Account",
-        "username": "Username",
-        "role": "Livello Accesso",
-        "memberSince": "Membro dal",
-        "settingsTitle": "Impostazioni",
-        "settingsDesc": "Modifica le tue informazioni e le credenziali di accesso.",
-        "emailLabel": "Indirizzo Email",
-        "passwordSection": "Cambio Password",
-        "newPassword": "Nuova Password",
-        "confirmPassword": "Ripeti Password",
-        "confirmMod": "Conferma Modifiche",
-        "currentPassPlaceholder": "Inserisci password attuale",
-        "saveBtn": "Aggiorna Profilo",
-        "errors": {
-            "emailInvalid": "Inserisci un indirizzo email valido",
-            "currentPasswordRequired": "Inserisci la password attuale per salvare",
-            "passwordTooShort": "La nuova password deve avere almeno 8 caratteri",
-            "passwordsDontMatch": "Le password non coincidono"
-        },
-        "toast": {
-            "success": "Profilo aggiornato con successo",
-            "error": "Errore durante il salvataggio dei dati"
-        }
-    },
-    "dataPolicy": {
-        "backHome": "Torna alla Home",
-        "title": "Athlete Hub - Informativa sulla Privacy",
-        "privacyMatters": "La Tua Privacy è Importante",
-        "introduction": "Questa informativa spiega come Athlete Hub raccoglie, utilizza e protegge i tuoi dati personali e sensibili. Siamo trasparenti su ogni aspetto del trattamento dei dati, includendo l'uso della tecnologia JWT per l'autenticazione sicura.",
-        "lastUpdated": "Ultimo aggiornamento",
-        "encryption": "Crittografia",
-        "encryptionDesc": "Tutti i dati sono crittografati in transito e a riposo",
-        "jwtSecure": "JWT Sicuro",
-        "jwtSecureDesc": "Token firmati e con scadenza temporale breve",
-        "gdprCompliance": "Conformità GDPR",
-        "gdprComplianceDesc": "Rispettiamo il GDPR e le leggi sulla privacy",
-        "dataController": "Titolare del Trattamento",
-        "companyName": "Nome Azienda",
-        "privacyEmail": "Email Privacy",
-        "dpoTitle": "Responsabile della Privacy",
-        "contactDpo": "Puoi contattarci per qualsiasi domanda riguardante la privacy o per esercitare i tuoi diritti.",
-        "dataCollected": "Quali Dati Raccogliamo",
-        "authentication": "Dati di Autenticazione",
-        "authDesc": "Utilizzata per login e comunicazioni",
-        "email": "Email",
-        "emailDesc": "Utilizzata per login e comunicazioni",
-        "password": "Password",
-        "passwordDesc": "Hash con Argon2 (mai in chiaro)",
-        "phone": "Numero di Telefono",
-        "phoneDesc": "Per verifica (facoltativo)",
-        "personalData": "Dati Personali E Profilo",
-        "personalDataDesc": "Per personalizzare la tua esperienza e mostrarti dati rilevanti per il tuo sport",
-        "fullName": "Nome e Cognome",
-        "fullNameDesc": "Identificarti nel sistema",
-        "dateOfBirth": "Data di Nascita",
-        "dateOfBirthDesc": "Calcolare l'età",
-        "gender": "Genere",
-        "genderDesc": "Statistiche e personalizzazione",
-        "sportTeam": "Sport e Squadra",
-        "sportTeamDesc": "Categorizzazione contenuti",
-        "avatar": "Avatar/Foto Profilo",
-        "avatarDesc": "Solo se scelto da te",
-        "healthData": "Dati Sanitari e Performance",
-        "healthDataDesc": "Questi sono dati particolari protetti da normative speciali",
-        "healthWarning": "Dati Sensibili",
-        "rpe": "RPE (Rate of Perceived Exertion)",
-        "rpeDesc": "Valutazione soggettiva dell'intensità dell'allenamento",
-        "athleticTests": "Test Atletici",
-        "athleticTestsDesc": "Risultati di test di performance (salti, velocità, etc.)",
-        "bodyMeasures": "Misure Corporee",
-        "bodyMeasuresDesc": "Peso, altezza, composizione corporea, circonferenze",
-        "injuryData": "Dati di Infortunio",
-        "injuryDataDesc": "Tipo, gravità, data e durata di infortuni",
-        "healthStatus": "Stato di Salute",
-        "healthStatusDesc": "Condizioni mediche che comunichi volontariamente",
-        "trainingSchedule": "Agenda Allenamenti",
-        "trainingScheduleDesc": "Programmi e risultati degli allenamenti",
-        "specialConsent": "Consenso Spediale",
-        "specialConsentDesc": "Hai dato il tuo esplicito consenso al trattamento di questi dati sensibili durante la registrazione",
-        "usageData": "Dati di Utilizzo e Log",
-        "usageDataDesc": "Per migliorare la sicurezza, debugare problemi e comprendere come usi la piattaforma",
-        "ipAddress": "Indirizzo IP",
-        "ipAddressDesc": "Per scopi di sicurezza e rilevamento frodi",
-        "userAgent": "User Agent",
-        "userAgentDesc": "Tipo di browser e dispositivo utilizzato",
-        "timestamp": "Timestamp",
-        "timestampDesc": "Data e ora dei tuoi accessi e azioni",
-        "pagesVisited": "Pagine Visitate",
-        "pagesVisitedDesc": "Quali sezioni della app utilizzi",
-        "actionsPerformed": "Azioni Eseguite",
-        "actionsPerformedDesc": "Creazione, modifica, cancellazione di dati",
-        "authenticationTitle": "Come Funziona l'Autenticazione JWT",
-        "jwtExplanation": "JWT (JSON Web Token) è uno standard di sicurezza internazionale che usiamo per verificare la tua identità senza memorizzare la password nella sessione.",
-        "loginProcess": "Il Processo di Login",
-        "step1": "Tu invia email e password",
-        "step1Desc": "Il browser invia le credenziali al server in modo crittografato (HTTPS)",
-        "step2": "Verifica della password",
-        "step2Desc": "Il server controlla se la password corrisponde all'hash memorizzato (non vede mai la password)",
-        "step3": "Generazione JWT",
-        "step3Desc": "Se corretta, il server crea un JWT firmato digitalmente con una scadenza (15 minuti)",
-        "step4": "Token inviato",
-        "step4Desc": "Il JWT viene inviato al browser e memorizzato in localStorage",
-        "step5": "Utilizzo nei successivi richieste",
-        "step5Desc": "Ogni richiesta include il JWT nell'header Authorization",
-        "accessToken": "Access Token (JWT)",
-        "accessTokenExpiry": "Scadenza: 15 minuti",
-        "accessTokenUsage": "Utilizzo: Accesso alle risorse protette",
-        "accessTokenContains": "Contiene: ID utente, email, permessi",
-        "accessTokenPlacement": "Posizionamento: Header Authorization",
-        "refreshToken": "Refresh Token",
-        "refreshTokenExpiry": "Scadenza: 7 giorni",
-        "refreshTokenUsage": "Utilizzo: Rinnovare l'Access Token",
-        "refreshTokenContains": "Contiene: Identificatore univoco",
-        "refreshTokenPlacement": "Posizionamento: HttpOnly Cookie",
-        "jwtBenefits": "Vantaggi di JWT",
-        "jwtBenefitsDesc": "Stateless (il server non deve memorizzare le sessioni), sicuro (firmato digitalmente), scalabile (funziona bene in ambienti distribuiti) e lo standard dei per modern web applications",
-        "dataUsage": "Come Usiamo i Tuoi Dati",
-        "serviceDelivery": "Fornire il Servizio",
-        "serviceDeliveryDesc": "Memorizziamo e organizziamo i tuoi dati di allenamento, performance e salute per permetterti di traccare i tuoi progressi nel tempo.",
-        "analyticsTitle": "Analisi e Miglioramenti",
-        "analyticsDesc": "Usiamo dati aggregati e anonimi per identificare trend, migliorare le funzionalità e creare migliori piani di allenamento.",
-        "securityTitle": "Sicurezza e Frodi",
-        "securityDesc": "Monitoriamo i log di accesso per rilevare attività sospette, hackeraggi e usi non autorizzati della tua conta.",
-        "communicationsTitle": "Comunicazioni (se acconsentito)",
-        "communicationsDesc": "Se hai optato per ricevere newsletter o notifiche, usiamo i tuoi dati per inviarti aggiornamenti rilevanti e consigli personalizzati.",
-        "legalTitle": "Conformità Legale",
-        "legalDesc": "Se richiesto per legge, possiamo rivelare i tuoi dati alle autorità competenti (ad es. richieste di polizia judizaria).",
-        "dataProtection": "Protezione dei Dati",
-        "securityMeasures": "Misure di Sicurezza Implementate",
-        "https": "HTTPS/TLS 1.3",
-        "httpsDesc": "Tutti i dati in transito sono crittografati end-to-end",
-        "encryptionAtRest": "Crittografia a Riposo",
-        "encryptionAtRestDesc": "I dati sensibili nel database sono crittografati",
-        "passwordHashing": "Hashing delle Password",
-        "passwordHashingDesc": "Usiamo Argon2 (algoritmo resistente ai brute force)",
-        "jwtSigned": "JWT Firmati",
-        "jwtSignedDesc": "I token JWT sono firmati digitalmente e non possono essere alterati",
-        "httpOnlyCookies": "HttpOnly Cookies",
-        "httpOnlyCookiesDesc": "Il Refresh Token è memorizzato in cookie HttpOnly (inaccessibile da JavaScript)",
-        "corsConfigured": "CORS Configurato",
-        "corsConfiguredDesc": "Solo i domini autorizzati possono accedere alle API",
-        "rateLimiting": "Rate Limiting",
-        "rateLimitingDesc": "Protezione contro attacchi brute force e DoS",
-        "auditLogging": "Audit Logging",
-        "auditLoggingDesc": "Tutti gli accessi importanti sono registrati per verifiche di sicurezza",
-        "monitoring": "Monitoraggio 24/7",
-        "monitoringDesc": "Sistemi automatici monitorano attività sospette in tempo reale",
-        "responsibility": "La tua responsabilità",
-        "responsibilityDesc": "Non condividere la tua password con nessuno. Se sospetti un accesso non autorizzato, cambia immediatamente la password o contattaci.",
-        "legalBasis": "Base Legale per il Trattamento",
-        "gdprArticle6": "Articolo 6 GDPR - Dati Comuni",
-        "gdprArticle6a": "6(1)(a): Consenso esplicito dell'interessato",
-        "gdprArticle6b": "6(1)(b): Necessità per esecuzione di contratto (servizio di tracking)",
-        "gdprArticle9": "Articolo 9 GDPR - Dati Sanitari",
-        "gdprArticle9a": "9(2)(a): Consenso esplicito del soggetto interessato (hai acconsentito durante la registrazione)",
-        "gdprArticle9h": "9(2)(h): Gestione della salute in contesto sportivo",
-        "dataRetention": "Quanto Tempo Conserviamo i Dati",
-        "dataType": "Tipo di Dato",
-        "retentionPeriod": "Periodo di Conservazione",
-        "reason": "Motivo",
-        "jwtRetention": "JWT e Token di Sessione",
-        "jwtRetentionPeriod": "15 min (Access) / 7 gg (Refresh)",
-        "jwtRetentionReason": "Scadenza standard di sicurezza",
-        "credentialsRetention": "Credenziali (email, password)",
-        "credentialsRetentionPeriod": "Fino alla cancellazione account",
-        "credentialsRetentionReason": "Necessarie per il servizio",
-        "profileRetention": "Profilo Personale",
-        "profileRetentionPeriod": "Fino alla cancellazione account",
-        "profileRetentionReason": "Fornire il servizio",
-        "trainingDataRetention": "Dati di Allenamento (RPE, misure, test)",
-        "trainingDataRetentionPeriod": "2 anni dopo la cancellazione",
-        "trainingDataRetentionReason": "Conservazione di backup, conformità",
-        "injuryRecordsRetention": "Registri di Infortuni",
-        "injuryRecordsRetentionPeriod": "5 anni",
-        "injuryRecordsRetentionReason": "Obbligo legale nel contesto medico-sportivo",
-        "logsRetention": "Log di Accesso (IP, timestamp, azioni)",
-        "logsRetentionPeriod": "1 anno",
-        "logsRetentionReason": "Sicurezza e auditing",
-        "backupRetention": "Backup Completi",
-        "backupRetentionPeriod": "1 anno (per ripristino)",
-        "backupRetentionReason": "Disaster recovery",
-        "retentionNote": "Quando cancelli il tuo account, i tuoi dati personali vengono eliminati immediatamente, ma i backup per motivi di sicurezza potrebbero conservare dati cifrati temporaneamente.",
-        "userRights": "I Tuoi Diritti",
-        "userRightsIntro": "In base al GDPR Europeo e alle leggi sulla privacy, hai i seguenti diritti",
-        "rightOfAccess": "Diritto di Accesso (Art. 15 GDPR)",
-        "rightOfAccessDesc": "Puoi richiedere una copia di tutti i dati in nostro possesso. Ti invieremo un file CSV con tutte le tue informazioni entro 30 giorni.",
-        "rightOfRectification": "Diritto di Rettifica (Art. 16 GDPR)",
-        "rightOfRectificationDesc": "Se i tuoi dati sono inesatti o incompleti, puoi richiederne la correzione. Puoi anche correggere molti dati direttamente nel tuo profilo.",
-        "rightToBeForget": "Diritto all'Oblio / Cancellazione (Art. 17 GDPR)",
-        "rightToBeForgetDesc": "Puoi richiedere la completa cancellazione del tuo account e di tutti i dati personali. Questo avverrà entro 30 giorni, salvo obblighi legali di conservazione.",
-        "rightToPortability": "Diritto di Portabilità (Art. 20 GDPR)",
-        "rightToPortabilityDesc": "Puoi richiedere che i tuoi dati ti siano forniti in un formato standard (es. JSON o CSV) per trasferirli ad un'altra piattaforma.",
-        "rightToRestriction": "Diritto di Limitazione del Trattamento (Art. 18 GDPR)",
-        "rightToRestrictionDesc": "Puoi richiedere che limitiamo il trattamento dei tuoi dati mentre verifichiamo una disputa o contestazione.",
-        "rightToObject": "Diritto di Opposizione (Art. 21 GDPR)",
-        "rightToObjectDesc": "Puoi opporti al trattamento dei tuoi dati, specialmente per marketing e comunicazioni. Puoi gestire le preferenze nel tuo profilo.",
-        "rightToAutomatedDecisions": "Diritti Relativi alle Decisioni Automatizzate (Art. 22 GDPR)",
-        "rightToAutomatedDecisionsDesc": "Non utilizziamo algoritmi di machine learning per prendere decisioni significative su di te. Qualsiasi analisi è informatora, non vincolante.",
-        "howToExerciseRights": "Come Esercitare i Tuoi Diritti",
-        "exerciseRightsDesc": "Invia una richiesta scritta al nostro DPO (Data Protection Officer) all'indirizzo email",
-        "exerciseRightsNote": "Specifiche chiaramente il diritto che desideri esercitare (accesso, rettifica, cancellazione, ecc.) e fornisci identificativi per verificare la tua identità.",
-        "dataSharing": "Condivisione dei Dati con Terzi",
-        "dataSharingIntro": "I tuoi dati NON vengono venduti a terze parti. Li condividiamo solo quando strettamente necessario",
-        "serviceProviders": "Fornitori di Servizi (Data Processors)",
-        "hosting": "Hosting",
-        "hostingDesc": "Vercel, AWS (per memorizzare i dati in modo sicuro)",
-        "payments": "Pagamenti",
-        "paymentsDesc": "Stripe (se implementato)",
-        "cdn": "CDN",
-        "cdnDesc": "Cloudflare (per velocizzare il sito)",
-        "dpaNoteTitle": "Data Processing Agreements",
-        "dpaNoteDesc": "Abbiamo Data Processing Agreements (DPA) con tutti i fornitori per garantire che non usino i tuoi dati per scopi propri.",
-        "sharingWithoutConsent": "Quando Condividiamo Senza Consenso",
-        "legalOrder": "Per ordine legale (avviso legale, procedimento giudiziale)",
-        "protectRights": "Per proteggere diritti, privacy e sicurezza di persone e risorse",
-        "acquisition": "In caso di acquisizione aziendale (trasferimento dati al nuovo proprietario)",
-        "cookiesTracking": "Cookie e Tracciamento",
-        "cookiesUsed": "Cookie Utilizzati",
-        "authTokenCookie": "Token di Autenticazione (Refresh Token)",
-        "authTokenCookieDesc": "HttpOnly, Secure, SameSite=Strict - Necessario per mantenerti loggato",
-        "themeCookie": "Preferenze Tema",
-        "themeCookieDesc": "localStorage - Ricorda se preferisci tema scuro o chiaro",
-        "noTracking": "Non utilizziamo",
-        "noTrackingDesc": "Pixel di tracciamento, Google Analytics, o sistemi di retargeting. Crediamo nella privacy dei nostri utenti.",
-        "contactsComplaints": "Contatti e Reclami",
-        "contactPrivacy": "Contattaci per Privacy",
-        "contactPrivacyDesc": "Se hai domande su questa policy o sulla privacy",
-        "responseTime": "Risponderemo entro 5 giorni lavorativi.",
-        "complaintToAuthority": "Reclamo all'Autorità Competente",
-        "complaintToAuthorityDesc": "Se ritieni che la privacy non sia rispettata, hai diritto a presentare reclamo all'autorità competente (Garante della Privacy ITalia)",
-        "garante": "Garante per la Protezione dei Dati Personali",
-        "garanteAddress": "Via di Grottarossa, 537 - 00189 Roma | gpdp.it | reclami@gpdp.it",
-        "footer": "Questa informativa è legalmente vincolante. Se non accetti questi termini, non puoi utilizzare Athlete Hub.",
-        "copyright": "© 2026 Athlete Hub. Tutti i diritti riservati."
-    },
-    "landingpage": {
-        "navbar": {
-            "clientLogin": "Client Log in",
-            "demo": "Prenota Demo"
-        },
-        "hero": {
-            "subtitle": "MVP 1.0.2 Open for Early Adopters",
-            "title": "DATI D'ÉLITE PER ATLETI D'ÉLITE.",
-            "description": "Athlete Hub trasforma la complessità della preparazione atletica in una dashboard intuitiva, sicura e scientificamente rigorosa.",
-            "ctaStart": "Inizia come Coach",
-            "ctaExplore": "Esplora le Funzioni"
-        },
-        "features": {
-            "precisioneACWR": "Precisione ACWR",
-            "feedbackLoop": "Feedback Loop",
-            "pianificazione": "Pianificazione",
-            "clinicalData": "Clinical Data",
-            "descPrecisioneACWR": "Monitoraggio scientifico del rapporto tra carico acuto e cronico.",
-            "descFeedbackLoop": "Automazione totale della raccolta RPE tramite email.",
-            "descPianificazione": "Gestione sessioni multi-atleta con target definiti.",
-            "descClinicalData": "Hub centralizzato per infortuni e protocolli Return To Play."
-        },
-        "dashboard": {
-            "preview": "Dashboard Preview Mode"
-        },
-        "scalability": {
-            "title": "COSTRUITO PER LA SCALABILITÀ ESTREMA.",
-            "description": "Sfruttiamo Nuxt 3 e database crittografati per garantire che i dati dei tuoi atleti siano sempre accessibili, veloci e protetti.",
-            "dataIntegrity": "Data Integrity",
-            "dataIntegrityDesc": "Backup orari automatizzati e sincronizzazione cloud.",
-            "security": "Security",
-            "securityDesc": "Crittografia 256-bit per la massima privacy."
-        },
-        "roadmap": {
-            "title": "Roadmap di Sviluppo",
-            "steps": [
-                {
-                    "title": "Wearable Sync",
-                    "date": "Q3 2026"
-                },
-                {
-                    "title": "AI Insights",
-                    "date": "Q4 2026"
-                },
-                {
-                    "title": "Mobile App",
-                    "date": "Q1 2027"
-                }
-            ]
-        },
-        "waitlist": {
-            "title": "Partecipa alla Beta",
-            "subtitle": "Posti limitati per i primi 20 coach partner.",
-            "emailLabel": "Email Professionale",
-            "submitButton": "Richiedi Accesso",
-            "submitting": "Invio in corso...",
-            "successTitle": "Richiesta Ricevuta",
-            "successMessage": "Grazie Coach. Ti contatteremo entro 48 ore per l'accesso prioritario.",
-            "sendAgain": "Invia un'altra mail"
-        },
-        "footer": {
-            "athleteHub": "Athlete Hub",
-            "privacy": "Privacy & Data Policy",
-            "github": "Github",
-            "version": "v1.0.2 // Developed by Manuel Enzo"
-        },
-        "theme": {
-            "dark": "Scuro",
-            "light": "Chiaro"
-        },
-        "alerts": {
-            "serverError": "Errore. Riprova più tardi."
-        },
-        "preview": {
-            "title": "Anteprima Funzionalità",
-            "calendar": "Calendario",
-            "details": "Dettagli Atleta",
-            "test": "Test Fitness"
-        }
+    "timeRange": {
+      "1d": "1d",
+      "30d": "30d",
+      "7d": "7d",
+      "90d": "90d"
     }
+  },
+  "metrics": {
+    "totalLoad": "Carico Totale Settimanale",
+    "avgRPE": "RPE Medio (Percezione Sforzo)",
+    "monitoredAthletes": "Atleti Monitorati",
+    "unavailabilityRate": "Tasso di Indisponibilità"
+  },
+  "charts": {
+    "weeklyLoad": "📈 Andamento Carico Settimanale & ACWR",
+    "physiological": "❤️ Monitoraggio Fisiologico (HR & RPE)",
+    "athleteDistribution": "🧑‍🤝‍🧑 Distribuzione Atleti per Disciplina",
+    "readiness": "✅ Stato di Prontezza (Readiness)"
+  },
+  "alerts": {
+    "highLoadTitle": "Allerte Carico Alto (ACWR > 1.3)",
+    "highLoadDescription": "Atleti a rischio infortunio o affaticamento eccessivo.",
+    "noAlerts": "Nessuna allerta ACWR. Carico ben gestito.",
+    "week": "Settimana",
+    "highRisk": "⚠️ Alcuni atleti sono in alto rischio! Controlla carichi e recupero.",
+    "noRisk": "✅ Nessun atleta in alto rischio.",
+    "acwr": "acwr"
+  },
+  "sessions": {
+    "title": "Sessioni in Programma",
+    "description": "Prossimi impegni con focus e intensità target.",
+    "targetRPE": "RPE Target"
+  },
+  "measurements": {
+    "noData": "Nessuna misurazione disponibile. Per favore aggiungi nuove misurazioni.",
+    "pageTitle": "Stato Salute Atleti",
+    "filterAthlete": "Seleziona atleta per filtrare",
+    "filterAll": "Tutti gli atleti",
+    "listTitle": "Ultime Misurazioni",
+    "newMeasurement": "Inserisci Nuove Misure",
+    "editMeasurement": "Modifica Rilevazione",
+    "analysisTitle": "Analisi Progressi",
+    "analysis": {
+      "description": "Variazione dei parametri nel tempo"
+    },
+    "form": {
+      "athlete": "Atleta",
+      "selectAthlete": "Seleziona...",
+      "weight": "Peso (kg)",
+      "height": "Altezza (cm)",
+      "chest": "Torace",
+      "waist": "Vita",
+      "hip": "Fianchi",
+      "thigh": "Coscia",
+      "arm": "Braccio",
+      "calf": "Polpaccio",
+      "forearm": "Avambraccio",
+      "neck": "Collo",
+      "notes": "Note",
+      "notesPlaceholder": "Annotazioni opzionali...",
+      "cancel": "Annulla",
+      "create": "Salva",
+      "update": "Aggiorna"
+    },
+    "validation": {
+      "selectAthlete": "Seleziona un atleta",
+      "weightLow": "Peso troppo basso",
+      "heightLow": "Altezza troppo bassa",
+      "chestLow": "Torace troppo piccolo",
+      "waistLow": "Vita troppo piccola",
+      "hipLow": "Fianchi troppo piccoli"
+    },
+    "toast": {
+      "loadAthletesError": "Errore caricamento atleti",
+      "loadMeasurementsError": "Errore caricamento misurazioni",
+      "communicationError": "Errore di comunicazione",
+      "created": "Nuova rilevazione salvata!",
+      "updated": "Rilevazione aggiornata!",
+      "deleted": "Eliminato",
+      "saveError": "Errore durante il salvataggio",
+      "deleteError": "Errore durante eliminazione",
+      "confirmDelete": "Conferma eliminazione"
+    },
+    "card": {
+      "weight": "Peso",
+      "height": "Altezza",
+      "chest": "Torace",
+      "waist": "Vita",
+      "hip": "Fianchi"
+    },
+    "dialog": {
+      "deleteTitle": "Conferma eliminazione",
+      "deleteText": "Eliminare la misurazione?"
+    },
+    "actions": {
+      "edit": "Modifica misurazione",
+      "delete": "Elimina",
+      "create": "Crea",
+      "update": "Aggiorna",
+      "cancel": "Annulla"
+    }
+  },
+  "fields": {
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "discipline": "Disciplina",
+    "birthDate": "Data di nascita",
+    "weight": "Peso",
+    "height": "Altezza",
+    "age": "Età",
+    "athlete": "Atleta",
+    "status": "Stato",
+    "gender": "Sesso",
+    "genderPlaceholder": "Seleziona sesso",
+    "weightShort": "Peso",
+    "heightShort": "Altezza",
+    "sportCategory": "Categoria Sportiva",
+    "sportCategoryPlaceholder": "Seleziona categoria sportiva",
+    "email": "email",
+    "readiness": "readiness"
+  },
+  "athlete": {
+    "deleteWarning": "Questa azione eliminerà in modo permanente l'atleta e tutti i suoi dati associati. Sei sicuro di voler procedere?",
+    "noData": "Nessun atleta disponibile. Per favore aggiungi nuovi atleti.",
+    "pageTitle": "Dati Atleti",
+    "visualizer": "Visualizzatore Atleta",
+    "new": "Nuovo Atleta",
+    "edit": "Modifica Atleta",
+    "deleteConfirm": "Conferma eliminazione",
+    "deleteQuestion": "Eliminare?",
+    "unknown": "Atleta sconosciuto",
+    "email": {
+      "tokenSubject": "Token Sleep ID",
+      "tokenBody": "Ciao {name}, il tuo Token Sleep ID è: {token}. Salvalo per utilizzarlo nell'app."
+    },
+    "details": {
+      "readinessTitle": "Stato di Prontezza (Readiness)",
+      "acwrTitle": "📈 Acute:Chronic Workload Ratio (ACWR)",
+      "acwrDescription": "Andamento del rapporto Carico Acuto (7 giorni) vs Carico Cronico (28 giorni). Obiettivo: 0.8 - 1.3",
+      "benchmarkTitle": "Benchmark Prestazioni (vs Team)",
+      "benchmarkDescription": "Risultati ultimi test ({date}) a confronto con la media del Team.",
+      "table": {
+        "metric": "Metrica",
+        "athlete": "Atleta",
+        "team": "Media Team",
+        "diff": "Diff (%)"
+      },
+      "status": {
+        "high": "Alto Rischio (Overload)",
+        "medium": "Rischio Medio (Attenzione)",
+        "low": "Basso Rischio"
+      }
+    },
+    "success": {
+      "created": "Atleta creato con successo",
+      "updated": "Atleta aggiornato con successo",
+      "deleted": "Atleta eliminato",
+      "tokenCopied": "Token copiato negli appunti"
+    },
+    "errors": {
+      "load": "Errore nel caricamento atleti",
+      "required": "Compila tutti i campi obbligatori",
+      "server": "Si è verificato un errore del server",
+      "save": "Errore durante il salvataggio dei dati",
+      "emailInUse": "Email già in uso",
+      "firstNameRequired": "Il nome è obbligatorio",
+      "lastNameRequired": "Il cognome è obbligatorio",
+      "emailRequired": "L'email è obbligatoria",
+      "emailInvalid": "Formato email non valido",
+      "birthDateFuture": "La data di nascita non può essere futura",
+      "weightInvalid": "Il peso deve essere maggiore di 0",
+      "heightInvalid": "L'altezza deve essere maggiore di 0",
+      "genderInvalid": "Genere non valido",
+      "birthDateInvalid": "La data di nascita non è valida",
+      "birthDateRequired": "La data di nascita è obbligatoria"
+    },
+    "message": {
+      "resend": "Errore durante l'invio dell'email. Riprova.",
+      "resendSuccess": "Email di token inviata con successo"
+    }
+  },
+  "risk": {
+    "optimal": "✅ Ottimale",
+    "moderate": "⚡ Moderato",
+    "high": "⚠️ Alto Rischio",
+    "low": "Basso Rischio",
+    "medium": "Rischio Medio"
+  },
+  "team": {
+    "individualStatus": "Stato Individuale Atleti",
+    "sortByAcwr": "Ordina per ACWR",
+    "averages": "Medie Squadra",
+    "riskDistribution": "Distribuzione Rischio",
+    "alerts": "Alert Squadra",
+    "lastUpdate": "Ultimo Aggiornamento",
+    "updatedAt": "Aggiornato alle {time} del {date}"
+  },
+  "stats": {
+    "avgAcwr": "ACWR Medio",
+    "hooper": "Fatica Hooper",
+    "sleep": "Sonno Medio",
+    "stress": "Stress Medio",
+    "readiness": "readiness"
+  },
+  "readiness": {
+    "title": "Stato di Prontezza",
+    "score": "Punteggio di Recupero",
+    "statuses": {
+      "good": "Ottima Prontezza",
+      "slowRecover": "Recupero Lento",
+      "injured": "Infortunato/Malato"
+    }
+  },
+  "acwr": {
+    "current": "ACWR corrente (Settimana: {week})"
+  },
+  "anthropometrics": {
+    "title": "Dati Antropometrici",
+    "weight": "Peso: {value} kg",
+    "height": "Altezza: {value} m",
+    "bmi": "BMI: {value}"
+  },
+  "tests": {
+    "cmj": "CMJ (cm)",
+    "squat1rm": "Squat 1RM (kg)",
+    "sprint30m": "Sprint 30m (s)",
+    "pageTitle": "Configurazione Test",
+    "newTest": "Nuova Definizione",
+    "editTest": "Modifica Test",
+    "testName": "Nome del Test",
+    "description": "Descrizione / Protocollo",
+    "metrics": "Metriche Associate",
+    "addMetric": "Aggiungi Metrica",
+    "metricName": "Nome Metrica (es. Salto)",
+    "unit": "Unità (es. cm, sec)",
+    "dataType": "Tipo Dato",
+    "standardValue": "Valore Standard",
+    "saveSuccess": "Test salvato con successo",
+    "deleteConfirm": "Conferma eliminazione",
+    "deleteQuestion": "Vuoi davvero eliminare il test",
+    "deleteWarning": "Questa operazione è irreversibile.",
+    "deleteSuccess": "Test eliminato con successo",
+    "validationError": "Per favore compila tutti i campi obbligatori e aggiungi almeno una metrica",
+    "configureProtocol": "Configura i protocolli e definisci le metriche di input."
+  },
+  "calendar": {
+    "grid": {
+      "athlete": "Atleta",
+      "helpTime": "Formato: MM:SS.cc",
+      "helpLevel": "Livello.Navetta (es: 16.3)"
+    },
+    "editSession": "Modifica Sessione",
+    "testGridSub": "Inserimento dati protocollo test",
+    "errors": {
+      "fetchEvents": "Impossibile caricare il calendario",
+      "saveEvent": "Errore durante il salvataggio dell'evento",
+      "deleteEvent": "Errore durante l'eliminazione",
+      "loadGrid": "Errore nel caricamento della griglia test",
+      "saveResults": "Errore nel salvataggio dei risultati"
+    },
+    "title": "Sessioni e Appuntamenti",
+    "infoTooltip": "Una volta inserita l'attività, se è completata, potrai aprirla in modifica tramite il tasto pennina e marcarla come conclusa per inviare la RPE all'atleta.",
+    "placeholders": {
+      "timeFormat": "00:00.00",
+      "level": "LV.SH",
+      "empty": "--"
+    },
+    "info": "Informazioni",
+    "months": {
+      "0": "Gennaio",
+      "1": "Febbraio",
+      "2": "Marzo",
+      "3": "Aprile",
+      "4": "Maggio",
+      "5": "Giugno",
+      "6": "Luglio",
+      "7": "Agosto",
+      "8": "Settembre",
+      "9": "Ottobre",
+      "10": "Novembre",
+      "11": "Dicembre"
+    },
+    "kpi": {
+      "events": "Eventi"
+    },
+    "days": [
+      "Lun",
+      "Mar",
+      "Mer",
+      "Gio",
+      "Ven",
+      "Sab",
+      "Dom"
+    ],
+    "lockedTitle": "Modifiche limitate",
+    "lockedMessage": "Non è possibile cambiare tipologia o protocollo perché sono già presenti risultati salvati per questa sessione.",
+    "deleteLocked": "Non è possibile eliminare la sessione perché sono già presenti risultati salvati per questa sessione.",
+    "agendaTitle": "Agenda",
+    "addEvent": "Aggiungi Evento",
+    "noEvents": "Nessun evento pianificato.",
+    "scheduledCount": "{count} attività pianificate",
+    "addNow": "Aggiungi ora!",
+    "eventDetails": "Dettagli per {date}",
+    "saveError": "Errore salvataggio",
+    "createEvent": "Crea Evento",
+    "gridDescription": "Inserimento dati massivo per la sessione di test",
+    "form": {
+      "title": "Titolo",
+      "athletes": "Atleti",
+      "date": "Data",
+      "time": "Ora",
+      "type": "Tipo Evento",
+      "description": "Descrizione",
+      "cancel": "Annulla",
+      "create": "Crea",
+      "update": "Aggiorna",
+      "titlePlaceholder": "Titolo evento",
+      "descriptionPlaceholder": "Dettagli evento...",
+      "validationError": "Per favore compila tutti i campi obbligatori",
+      "titleLabel": "Titolo Sessione",
+      "participants": "Partecipanti",
+      "dateLabel": "Data",
+      "timeLabel": "Ora Inizio",
+      "categoryLabel": "Categoria",
+      "protocolLabel": "Protocollo Performance",
+      "protocolSelect": "Seleziona protocollo...",
+      "targetRPE": "RPE Target",
+      "intensityPlaceholder": "Intensità prevista (1-10)",
+      "targetRPEInfo": "Intensità prevista",
+      "duration": "Durata (minuti)",
+      "durationValue": "{minutes} minuti",
+      "notSpecified": "Non indicata",
+      "active": "Attiva",
+      "remove": "Rimuovi",
+      "selectAthlete": "Selezione atleti",
+      "completedTitle": "Sessione Completata",
+      "completedInfo": "Segna come eseguita per registrare l'RPE",
+      "titleOnlyModify": "Solo il titolo può essere modificato"
+    },
+    "deleteConfirmation": "Sei sicuro di voler rimuovere questa sessione? L'atleta non riceverà notifiche automatiche.",
+    "deleteTitle": "Cancellare Appuntamento",
+    "newSession": "Nuova Sessione",
+    "toast": {
+      "created": "Evento creato con successo",
+      "updated": "Evento aggiornato con successo",
+      "deleted": "Evento eliminato con successo",
+      "resultsSaved": "Risultati salvati con successo"
+    },
+    "delete": {
+      "title": "Elimina Sessione",
+      "description": "Sei sicuro? Questa azione non può essere annullata."
+    },
+    "test": {
+      "gridDescription": "Inserimento dati massivo per la sessione di test",
+      "athleteHeader": "Atleta",
+      "quickEntryActive": "Modalità inserimento rapido attiva",
+      "exitWithoutSave": "Esci senza salvare",
+      "saveResults": "Salva Sessione"
+    },
+    "validation": {
+      "noResults": "Inserisci almeno un risultato prima di salvare",
+      "selectAthlete": "Seleziona almeno un atleta",
+      "validationError": "Per favore compila tutti i campi visualizzati"
+    },
+    "blocked": "Proprietà bloccate",
+    "resultPresent": " Sono presenti risultati per questo test. Non è possibile cambiare il tipo o il protocollo.",
+    "deleteEvent": "delete Event",
+    "editEvent": "edit Event",
+    "nextMonth": "next Month",
+    "openTestGrid": "open Test Grid",
+    "previousMonth": "previous Month"
+  },
+  "common": {
+    "cancel": "Annulla",
+    "confirm": "Conferma",
+    "create": "Crea",
+    "update": "Aggiorna",
+    "save": "Salva",
+    "delete": "Elimina",
+    "details": "Dettagli",
+    "optional": "Opzionale",
+    "loading": "Caricamento...",
+    "active": "Attivo",
+    "remove": "Rimuovi",
+    "noRecords": "Nessun record trovato",
+    "prev": "Precedente",
+    "next": "Successiva",
+    "search": "Cerca",
+    "filter": "Filtra",
+    "actions": "Azioni",
+    "error": "Errore",
+    "success": "Successo",
+    "refresh": "Aggiorna",
+    "all": "Tutti",
+    "back": "Indietro",
+    "close": "Chiudi",
+    "paginationInfo": "Pagina {current} di {total} ({count} record totali)",
+    "loadMore": "Carica altri",
+    "kg": "kg",
+    "cm": "cm",
+    "days_short": "gg",
+    "validation": {
+      "requiredFields": "required Fields"
+    },
+    "notSpecified": "not Specified",
+    "out_of_100": "out of 100",
+    "out_of_2": "out of 2"
+    ,"more": "Altro",
+    "edit": "Modifica",
+    "export": "Esporta",
+    "message": "Messaggio",
+    "other": "Altro"
+  },
+  "kanban": {
+    "title": "Kanban Board",
+    "description": "Ecco l'elenco delle tue attività per questo mese!",
+    "addColumn": "Aggiungi Colonna",
+    "newColumnPlaceholder": "Titolo colonna",
+    "addTask": "add Task",
+    "labels": {
+      "dueDate": "due Date",
+      "pickDate": "pick Date",
+      "selectPriority": "select Priority",
+      "description": "description",
+      "priority": "priority",
+      "priorityOptions": {
+        "high": "high",
+        "low": "low",
+        "medium": "medium"
+      },
+      "title": "title"
+    },
+    "actions": {
+      "create": "create",
+      "update": "update"
+    },
+    "dialog": {
+      "description": {
+        "create": "create",
+        "edit": "edit"
+      },
+      "title": {
+        "create": "create",
+        "edit": "edit"
+      }
+    }
+  },
+  "auth": {
+    "signup": {
+      "success": "Registrazione avvenuta con successo",
+      "networkError": "Errore di rete durante la registrazione",
+      "validation": {
+        "fillAll": "Compila tutti i campi",
+        "passwordMismatch": "Le password non coincidono"
+      },
+      "errors": {
+        "general": "Errore durante la registrazione"
+      },
+      "confirmPassword": "Conferma Password",
+      "createAccount": "Crea Account",
+      "placeholders": {
+        "email": "name@example.com"
+      },
+      "orContinue": "O continua con",
+      "submit": "Registrati"
+    },
+    "errors": {
+      "requiredFields": "Tutti i campi sono obbligatori",
+      "invalidToken": "Token mancante o scaduto. Richiedi un nuovo link.",
+      "passwordsDoNotMatch": "Le password non coincidono",
+      "expiredLink": "Il link è scaduto, riprova la procedura",
+      "genericLogin": "Credenziali non valide",
+      "emailRequired": "Inserisci un indirizzo email valido",
+      "invalidCode": "Codice invito non valido",
+      "codeRequired": "code Required",
+      "passwordMismatch": "password Mismatch",
+      "generic": "generic"
+    },
+    "fields": {
+      "newPassword": "Nuova Password",
+      "confirmPassword": "Conferma Password",
+      "invitationCode": "Codice Invito",
+      "email": "email",
+      "password": "password"
+    },
+    "login": {
+      "withApple": "Login with Apple",
+      "withGoogle": "Login with Google",
+      "submit": "Accedi",
+      "noAccount": "Non hai un account?",
+      "signUpLink": "Registrati qui",
+      "success": "Login avvenuto con successo",
+      "forgotPassword": "Hai dimenticato la password?",
+      "alreadyHaveAccount": "Hai già un account?",
+      "backToLogin": "Torna al login",
+      "title": "Bentornato"
+    },
+    "forgotPassword": {
+      "title": "Recupero Credenziali",
+      "description": "Inserisci la tua email per ricevere le istruzioni di reset",
+      "submit": "Invia link di reset",
+      "backToLogin": "Torna al login",
+      "successMsg": "Controlla la tua casella email"
+    },
+    "reset": {
+      "title": "Imposta Nuova Password",
+      "description": "Definisci le tue nuove credenziali",
+      "submit": "Reset Password",
+      "done": "Fatto!",
+      "success": "Password aggiornata con successo",
+      "successMessage": "Credenziali aggiornate. Sei pronto a ripartire."
+    }
+  },
+  "tasks": {
+    "title": "Attività",
+    "description": "Ecco l'elenco delle tue attività per questo mese!"
+  },
+  "eventTypes": {
+    "Strength": "Forza",
+    "Endurance": "Resistenza",
+    "Recovery": "Recupero",
+    "Visit": "Visita",
+    "Running": "Corsa",
+    "Team Sport": "Sport di Squadra",
+    "Checkup": "Controllo",
+    "Conditioning": "Condizionamento",
+    "Match": "Partita",
+    "Technical": "Tecnico"
+  },
+  "genders": {
+    "genderPlaceholder": "Seleziona sesso",
+    "male": "Maschio",
+    "female": "Femmina",
+    "other": "Altro"
+  },
+  "refreshFailed": "Aggiornamento token non riuscito",
+  "logoutInProgress": "Logout in corso...",
+  "operationFailed": "Operazione fallita",
+  "errorTitles": {
+    "network": "Connessione non disponibile",
+    "unauthorized": "Sessione scaduta",
+    "notFound": "Non trovato",
+    "validation": "Validazione fallita",
+    "api": "Errore del server",
+    "unknown": "Errore sconosciuto"
+  },
+  "errorMessages": {
+    "network": "Verifica la tua connessione internet",
+    "networkRecovery": "Riprova quando sei online",
+    "throttled": "Troppe richieste. Attendere...",
+    "timeout": "Timeout - riprova tra poco",
+    "unauthorized": "La tua sessione è scaduta",
+    "unauthorizedRecovery": "Accedi di nuovo",
+    "notFound": "La risorsa richiesta non esiste",
+    "notFoundRecovery": "Torna alla pagina precedente",
+    "validationRecovery": "Controlla i dati inseriti",
+    "api": "Qualcosa è andato storto",
+    "apiRecovery": "Riprova tra poco",
+    "unknown": "Qualcosa è andato storto",
+    "unknownRecovery": "Riprova"
+  },
+  "errors": {
+    "load": "Errore nel caricamento atleti",
+    "restoreNotificationsTitle": "Ripristino notifiche fallito",
+    "restoreNotificationsMessage": "Impossibile ripristinare le notifiche salvate",
+    "required": "Compila tutti i campi obbligatori",
+    "server": "Si è verificato un errore del server",
+    "save": "Errore durante il salvataggio dei dati",
+    "delete": "delete"
+  },
+  "rpe": {
+    "title": "Invia il tuo RPE",
+    "description": "Inserisci il tuo RPE per la sessione. Valori da 0 (nessuna fatica) a 10 (massimo sforzo).",
+    "pageTitle": "Monitoraggio Invii RPE",
+    "pageDescription": "Gestisci e monitora lo stato delle richieste RPE inviate agli atleti in tempo reale.",
+    "searchPlaceholder": "Cerca atleta o email...",
+    "dashboardTitle": "RPE Dashboard",
+    "legendTitle": "Legenda RPE:",
+    "lastSession": "Ultima sessione",
+    "historyTitle": "Storico RPE",
+    "sessionName": "Nome Sessione",
+    "activityType": "Tipo Attività",
+    "date": "Data",
+    "effort": "Sforzo (RPE)",
+    "back": "Indietro",
+    "historyDetail": "Dettagli Storico",
+    "fields": {
+      "notes": "Note (opzionale)",
+      "notesPlaceholder": "Aggiungi eventuali note...",
+      "rpe": "rpe"
+    },
+    "buttons": {
+      "submit": "Invia",
+      "sent": "Inviato",
+      "resend": "Reinvia Email"
+    },
+    "table": {
+      "athlete": "Atleta",
+      "emailStatus": "Stato Email",
+      "lastSent": "Ultimo Invio",
+      "submission": "Compilazione RPE"
+    },
+    "status": {
+      "pending": "In Coda",
+      "processing": "In Invio...",
+      "completed": "Inviata",
+      "failed": "Errore Invio",
+      "unknown": "Sconosciuto",
+      "waiting": "In attesa di compilazione"
+    },
+    "validation": {
+      "range": "L'RPE deve essere compreso tra 1 e 10"
+    },
+    "success": {
+      "sent": "RPE inviato con successo!",
+      "details": "Grazie! I tuoi dati sono stati registrati correttamente."
+    },
+    "error": {
+      "sending": "Errore durante l’invio",
+      "invalidToken": "Link non valido o scaduto",
+      "contactCoach": "Contatta il tuo allenatore per ricevere un nuovo link di inserimento."
+    },
+    "labels": {
+      "0": "Nessuno sforzo 😴",
+      "2": "Molto leggero 🙂",
+      "4": "Moderato 😐",
+      "6": "Impegnativo 😰",
+      "8": "Duro 🥵",
+      "9": "Estremo 💀",
+      "10": "Massimale 🔥",
+      "none": "Nessuno",
+      "light": "Leggero",
+      "moderate": "Moderato",
+      "challenging": "Impegnativo",
+      "hard": "Duro",
+      "maximal": "Massimale"
+    },
+    "pagination": {
+      "pageInfo": "Pagina {current} / {total}",
+      "paginationInfo": "Pagina {current} di {total} ({count} record totali)",
+      "chargeother": "Carica altri"
+    },
+    "errors": {
+      "loadOverview": "Errore nel caricamento overview",
+      "loadHistory": "Errore nel caricamento dello storico",
+      "fetch": "Errore nel caricamento degli stati email",
+      "resend": "Errore nel reinvio dell'email"
+    },
+    "messages": {
+      "resendSuccess": "Email reinviata con successo a {email}"
+    },
+    "filters": {
+      "allAthletes": "Tutti gli atleti",
+      "allStatuses": "Tutti gli stati"
+    },
+    "actions": {
+      "resend": "Reinvia Email"
+    },
+    "noAthletes": "no Athletes",
+    "noHistory": "no History",
+    "target": "target"
+  },
+  "analytics": {
+    "readiness_title": "Stato di Prontezza",
+    "readiness_label": "Punteggio Recupero",
+    "current_acwr": "ACWR Corrente",
+    "workload_trend": "Andamento Carico Acuto:Cronico (ACWR)",
+    "latest_results": "Ultimi Risultati Test",
+    "performance_history": "Trend Storico Prestazioni",
+    "injuries_status": "Storico Infortuni e Assenze",
+    "all_clear": "Tutto Ok - Nessun Infortunio",
+    "days_off": "Giorni",
+    "no_history": "Nessuno storico prestazioni disponibile per questo periodo",
+    "acwr": "Rapporto ACWR",
+    "error_loading": "Errore nel caricamento dei dati analitici",
+    "no_data_title": "Nessun dato disponibile",
+    "no_data_description": "Controlla il periodo selezionato o i record dell'atleta",
+    "no_tests_title": "Nessun Test Registrato",
+    "no_tests_description": "Non sono stati eseguiti test atletici nel periodo selezionato.",
+    "metrics_summary": "Riepilogo Misure Corporee",
+    "load_summary": "Dettaglio Carichi Settimanali",
+    "no_data_available": "Dati insufficienti per generare l'analisi. Assicurati che l'atleta abbia sessioni completate con RPE e test registrati.",
+    "no_tests_registered": "Nessun risultato di test disponibile per questo periodo. Esegui test atletici per monitorare i progressi e identificare aree di miglioramento",
+    "acute_load": "Carico Acuto",
+    "chronic_load": "Carico Cronico",
+    "last_7_days": "Ultimi 7 giorni",
+    "last_28_days": "Ultimi 28 giorni",
+    "acwr_trend": "Andamento ACWR",
+    "historical_metrics": "Metriche Storiche",
+    "no_historical_data": "Nessun dato storico disponibile",
+    "anthropometric_measures": "Misure Antropometriche",
+    "weight": "Peso",
+    "height": "Altezza",
+    "injury_status": "Stato Infortuni",
+    "active_injuries": "Infortuni Attivi",
+    "total_days_off": "Giorni Totali di Stop",
+    "injury_history": "Storico Infortuni",
+    "total_injuries": "Infortuni Totali",
+    "acwr_insufficient_data": "Dati insufficienti per il calcolo dell'ACWR",
+    "readiness_title_tooltip": "Readiness: punteggio medio di prontezza fisica dell'atleta basato sugli ultimi test e allenamenti",
+    "readiness": "Prontezza",
+    "add_injury": "Aggiungi infortunio",
+    "view_history": "Visualizza cronologia",
+    "injury_breakdown": "Ripartizione infortuni",
+    "last_tests": "Ultimi test",
+    "current_acwr_tooltip": "ACWR: rapporto tra carico acuto (7 giorni) e carico cronico (28 giorni). Valori > 1.3 indicano potenziale sovraccarico e rischio infortunio",
+    "acuteload_title_tooltip": "Acute Load: carico acuto dell'ultima settimana, basato su volume e intensità dell'allenamento",
+    "chronicload_title_tooltip": "Chronic Load: carico cronico delle ultime 4 settimane, rappresenta la capacità di carico dell'atleta",
+    "bmi": "bmi",
+    "of_max": "of max",
+    "risk": {
+      "baseline": "baseline",
+      "danger_spike": "danger spike",
+      "high_fatigue": "high fatigue",
+      "load_rising": "load rising",
+      "moderate_risk": "moderate risk",
+      "optimal": "optimal"
+    }
+  },
+  "injuries": {
+    "title": "Centro Medico",
+    "management_title": "Centro Medico",
+    "subtitle": "Monitoraggio clinico e tempi di recupero",
+    "history_title": "Registro Infortuni Atleta",
+    "add_new": "Nuovo Infortunio",
+    "no_data": "Nessun infortunio",
+    "no_data_desc": "L'atleta non ha infortuni registrati al momento.",
+    "fields": {
+      "injury": "Diagnosi / Infortunio",
+      "startDate": "Data Inizio",
+      "expectedReturn": "Rientro Stimato",
+      "category": "Categoria",
+      "severity": "Gravità",
+      "location": "Sede Corporea",
+      "status": "Stato",
+      "daysOut": "Giorni di Stop"
+    },
+    "placeholders": {
+      "injury": "Es. Lesione II Grado Bicipite",
+      "location": "Es. Coscia DX"
+    },
+    "categories": {
+      "muscular": "Muscolare",
+      "joint": "Articolare",
+      "tendon": "Tendineo",
+      "bone": "Osseo"
+    },
+    "severities": {
+      "mild": "Lieve",
+      "moderate": "Moderata",
+      "severe": "Grave"
+    },
+    "statuses": {
+      "active": "Attivo (Stop)",
+      "rehab": "In Recupero",
+      "returned": "Rientrato"
+    },
+    "fallback": {
+      "notAvailable": "N/D"
+    },
+    "form": {
+      "add_title": "Nuovo Infortunio",
+      "edit_title": "Aggiorna Infortunio"
+    },
+    "card": {
+      "start": "Inizio",
+      "location_label": "Sede",
+      "stop_duration": "Stop Totale"
+    },
+    "errors": {
+      "loadAthletes": "Errore nel caricamento degli atleti",
+      "loadInjuries": "Errore nel caricamento degli infortuni",
+      "save": "Errore durante il salvataggio dell'infortunio",
+      "delete": "Errore durante l'eliminazione dell'infortunio"
+    },
+    "toast": {
+      "created": "Infortunio registrato con successo",
+      "updated": "Record aggiornato correttamente",
+      "deleted": "Infortunio eliminato"
+    },
+    "deleteConfirm": "Conferma eliminazione",
+    "deleteQuestion": "Sei sicuro di voler eliminare questo infortunio?",
+    "selectAthleteInstruction": "Seleziona un atleta per visualizzare o registrare infortuni",
+    "deleteWarning": "Questa azione non può essere annullata.",
+    "dialog": {
+      "editTitle": "Modifica Infortunio",
+      "newTitle": "Nuovo Infortunio"
+    }
+  },
+  "performanceDashboard": {
+    "pageTitle": "Performance Dashboard",
+    "subtitle": "Monitoraggio Real-Time Atleti & Carichi di Lavoro",
+    "lastUpdated": "Aggiornamento",
+    "teamSize": "Team Size",
+    "athletesMonitored": "Atleti monitorati",
+    "avgReadiness": "Readiness Media",
+    "avgAcwr": "ACWR Medio",
+    "rpeSurveyStatus": "Compliance RPE",
+    "atRisk": "A Rischio",
+    "requireAttention": "Richiedono attenzione",
+    "readinessTrend": "Andamento Readiness",
+    "complianceRate": "Tasso di Compliance",
+    "workloadAcwrDistribution": "Distribuzione Carico ACWR",
+    "teamHealthDistribution": "Distribuzione Salute Team",
+    "readinessVsAcwrComparison": "Confronto Readiness vs Sicurezza ACWR",
+    "missingSessions": "Allerta Sessioni Mancanti",
+    "allAthletesCompliant": "Tutti gli Atleti Compliant",
+    "noMissingSessions": "Nessuna sessione mancante",
+    "quickInsights": "Insights Rapidi",
+    "teamStatus": "Stato Team",
+    "athletesInSafeZone": "atleti in zona sicura",
+    "averageLoad": "Carico Medio",
+    "optimal": "Ottimale",
+    "monitor": "Monitora",
+    "readyToday": "% pronti oggi",
+    "individualPerformanceMatrix": "Matrice Performance Individuale",
+    "dashboardAutoUpdated": "Dashboard aggiornato automaticamente",
+    "performanceIntelligence": "Intelligenza Performance",
+    "critical": "Critico",
+    "warning": "Avvertenza",
+    "safe": "Sicuro",
+    "chartLegends": {
+      "readinessTrend": "Mostra la percentuale di readiness degli atleti nel tempo. Valori più alti indicano migliore recupero e prontezza mentale.",
+      "complianceRate": "Percentuale di atleti che hanno completato i report RPE. Essenziale per il tracciamento del carico e la prevenzione degli infortuni.",
+      "acwrDistribution": "Valori ACWR (Rapporto Carico Acuto:Cronico). Verde < 1.3 = Sicuro, Giallo 1.3-1.5 = Attenzione, Rosso > 1.5 = Rischio infortunio critico.",
+      "teamHealth": "Distribuzione dello stato di salute degli atleti. Sicuro = Basso rischio infortunio, Attenzione = Monitoraggio richiesto.",
+      "radarComparison": "Linea blu = % Readiness, Linea rossa = Punteggio Sicurezza ACWR. Una forma più ampia indica una migliore condizione generale dell'atleta."
+    }
+  },
+  "profile": {
+    "title": "Il Mio Profilo",
+    "subtitle": "Gestione account Athlete-Hub",
+    "accountInfo": "Dati Account",
+    "role": "Livello Accesso",
+    "memberSince": "Membro dal",
+    "settingsTitle": "Impostazioni",
+    "settingsDesc": "Modifica le tue informazioni e le credenziali di accesso.",
+    "emailLabel": "Indirizzo Email",
+    "passwordSection": "Cambio Password",
+    "newPassword": "Nuova Password",
+    "confirmPassword": "Ripeti Password",
+    "confirmMod": "Conferma Modifiche",
+    "currentPassPlaceholder": "Inserisci password attuale",
+    "saveBtn": "Aggiorna Profilo",
+    "errors": {
+      "emailInvalid": "Inserisci un indirizzo email valido",
+      "currentPasswordRequired": "Inserisci la password attuale per salvare",
+      "passwordTooShort": "La nuova password deve avere almeno 8 caratteri",
+      "passwordsDontMatch": "Le password non coincidono"
+    },
+    "toast": {
+      "success": "Profilo aggiornato con successo",
+      "error": "Errore durante il salvataggio dei dati"
+    },
+    "roleAdmin": "Amministratore",
+    "roleUser": "Utente",
+    "passwordPlaceholder": "••••••••",
+    "username": "username"
+  },
+  "dataPolicy": {
+    "backHome": "Torna alla Home",
+    "title": "Athlete Hub - Informativa sulla Privacy",
+    "privacyMatters": "La Tua Privacy è Importante",
+    "introduction": "Questa informativa spiega come Athlete Hub raccoglie, utilizza e protegge i tuoi dati personali e sensibili. Siamo trasparenti su ogni aspetto del trattamento dei dati, includendo l'uso della tecnologia JWT per l'autenticazione sicura.",
+    "lastUpdated": "Ultimo aggiornamento",
+    "encryption": "Crittografia",
+    "encryptionDesc": "Tutti i dati sono crittografati in transito e a riposo",
+    "jwtSecure": "JWT Sicuro",
+    "jwtSecureDesc": "Token firmati e con scadenza temporale breve",
+    "gdprCompliance": "Conformità GDPR",
+    "gdprComplianceDesc": "Rispettiamo il GDPR e le leggi sulla privacy",
+    "dataController": "Titolare del Trattamento",
+    "companyName": "Nome Azienda",
+    "privacyEmail": "Email Privacy",
+    "dpoTitle": "Responsabile della Privacy",
+    "contactDpo": "Puoi contattarci per qualsiasi domanda riguardante la privacy o per esercitare i tuoi diritti.",
+    "dataCollected": "Quali Dati Raccogliamo",
+    "authentication": "Dati di Autenticazione",
+    "authDesc": "Utilizzata per login e comunicazioni",
+    "emailDesc": "Utilizzata per login e comunicazioni",
+    "passwordDesc": "Hash con Argon2 (mai in chiaro)",
+    "phone": "Numero di Telefono",
+    "phoneDesc": "Per verifica (facoltativo)",
+    "personalData": "Dati Personali E Profilo",
+    "personalDataDesc": "Per personalizzare la tua esperienza e mostrarti dati rilevanti per il tuo sport",
+    "fullName": "Nome e Cognome",
+    "fullNameDesc": "Identificarti nel sistema",
+    "dateOfBirth": "Data di Nascita",
+    "dateOfBirthDesc": "Calcolare l'età",
+    "gender": "Genere",
+    "genderDesc": "Statistiche e personalizzazione",
+    "sportTeam": "Sport e Squadra",
+    "sportTeamDesc": "Categorizzazione contenuti",
+    "avatar": "Avatar/Foto Profilo",
+    "avatarDesc": "Solo se scelto da te",
+    "healthData": "Dati Sanitari e Performance",
+    "healthDataDesc": "Questi sono dati particolari protetti da normative speciali",
+    "healthWarning": "Dati Sensibili",
+    "rpe": "RPE (Rate of Perceived Exertion)",
+    "rpeDesc": "Valutazione soggettiva dell'intensità dell'allenamento",
+    "athleticTests": "Test Atletici",
+    "athleticTestsDesc": "Risultati di test di performance (salti, velocità, etc.)",
+    "bodyMeasures": "Misure Corporee",
+    "bodyMeasuresDesc": "Peso, altezza, composizione corporea, circonferenze",
+    "injuryData": "Dati di Infortunio",
+    "injuryDataDesc": "Tipo, gravità, data e durata di infortuni",
+    "healthStatus": "Stato di Salute",
+    "healthStatusDesc": "Condizioni mediche che comunichi volontariamente",
+    "trainingSchedule": "Agenda Allenamenti",
+    "trainingScheduleDesc": "Programmi e risultati degli allenamenti",
+    "specialConsent": "Consenso Spediale",
+    "specialConsentDesc": "Hai dato il tuo esplicito consenso al trattamento di questi dati sensibili durante la registrazione",
+    "usageData": "Dati di Utilizzo e Log",
+    "usageDataDesc": "Per migliorare la sicurezza, debugare problemi e comprendere come usi la piattaforma",
+    "ipAddress": "Indirizzo IP",
+    "ipAddressDesc": "Per scopi di sicurezza e rilevamento frodi",
+    "userAgent": "User Agent",
+    "userAgentDesc": "Tipo di browser e dispositivo utilizzato",
+    "timestampDesc": "Data e ora dei tuoi accessi e azioni",
+    "pagesVisited": "Pagine Visitate",
+    "pagesVisitedDesc": "Quali sezioni della app utilizzi",
+    "actionsPerformed": "Azioni Eseguite",
+    "actionsPerformedDesc": "Creazione, modifica, cancellazione di dati",
+    "authenticationTitle": "Come Funziona l'Autenticazione JWT",
+    "jwtExplanation": "JWT (JSON Web Token) è uno standard di sicurezza internazionale che usiamo per verificare la tua identità senza memorizzare la password nella sessione.",
+    "loginProcess": "Il Processo di Login",
+    "step1": "Tu invia email e password",
+    "step1Desc": "Il browser invia le credenziali al server in modo crittografato (HTTPS)",
+    "step2": "Verifica della password",
+    "step2Desc": "Il server controlla se la password corrisponde all'hash memorizzato (non vede mai la password)",
+    "step3": "Generazione JWT",
+    "step3Desc": "Se corretta, il server crea un JWT firmato digitalmente con una scadenza (15 minuti)",
+    "step4": "Token inviato",
+    "step4Desc": "Il JWT viene inviato al browser e memorizzato in localStorage",
+    "step5": "Utilizzo nei successivi richieste",
+    "step5Desc": "Ogni richiesta include il JWT nell'header Authorization",
+    "accessToken": "Access Token (JWT)",
+    "accessTokenExpiry": "Scadenza: 15 minuti",
+    "accessTokenUsage": "Utilizzo: Accesso alle risorse protette",
+    "accessTokenContains": "Contiene: ID utente, email, permessi",
+    "accessTokenPlacement": "Posizionamento: Header Authorization",
+    "refreshToken": "Refresh Token",
+    "refreshTokenExpiry": "Scadenza: 7 giorni",
+    "refreshTokenUsage": "Utilizzo: Rinnovare l'Access Token",
+    "refreshTokenContains": "Contiene: Identificatore univoco",
+    "refreshTokenPlacement": "Posizionamento: HttpOnly Cookie",
+    "jwtBenefits": "Vantaggi di JWT",
+    "jwtBenefitsDesc": "Stateless (il server non deve memorizzare le sessioni), sicuro (firmato digitalmente), scalabile (funziona bene in ambienti distribuiti) e lo standard dei per modern web applications",
+    "dataUsage": "Come Usiamo i Tuoi Dati",
+    "serviceDelivery": "Fornire il Servizio",
+    "serviceDeliveryDesc": "Memorizziamo e organizziamo i tuoi dati di allenamento, performance e salute per permetterti di traccare i tuoi progressi nel tempo.",
+    "analyticsTitle": "Analisi e Miglioramenti",
+    "analyticsDesc": "Usiamo dati aggregati e anonimi per identificare trend, migliorare le funzionalità e creare migliori piani di allenamento.",
+    "securityTitle": "Sicurezza e Frodi",
+    "securityDesc": "Monitoriamo i log di accesso per rilevare attività sospette, hackeraggi e usi non autorizzati della tua conta.",
+    "communicationsTitle": "Comunicazioni (se acconsentito)",
+    "communicationsDesc": "Se hai optato per ricevere newsletter o notifiche, usiamo i tuoi dati per inviarti aggiornamenti rilevanti e consigli personalizzati.",
+    "legalTitle": "Conformità Legale",
+    "legalDesc": "Se richiesto per legge, possiamo rivelare i tuoi dati alle autorità competenti (ad es. richieste di polizia judizaria).",
+    "dataProtection": "Protezione dei Dati",
+    "securityMeasures": "Misure di Sicurezza Implementate",
+    "https": "HTTPS/TLS 1.3",
+    "httpsDesc": "Tutti i dati in transito sono crittografati end-to-end",
+    "encryptionAtRest": "Crittografia a Riposo",
+    "encryptionAtRestDesc": "I dati sensibili nel database sono crittografati",
+    "passwordHashing": "Hashing delle Password",
+    "passwordHashingDesc": "Usiamo Argon2 (algoritmo resistente ai brute force)",
+    "jwtSigned": "JWT Firmati",
+    "jwtSignedDesc": "I token JWT sono firmati digitalmente e non possono essere alterati",
+    "httpOnlyCookies": "HttpOnly Cookies",
+    "httpOnlyCookiesDesc": "Il Refresh Token è memorizzato in cookie HttpOnly (inaccessibile da JavaScript)",
+    "corsConfigured": "CORS Configurato",
+    "corsConfiguredDesc": "Solo i domini autorizzati possono accedere alle API",
+    "rateLimiting": "Rate Limiting",
+    "rateLimitingDesc": "Protezione contro attacchi brute force e DoS",
+    "auditLogging": "Audit Logging",
+    "auditLoggingDesc": "Tutti gli accessi importanti sono registrati per verifiche di sicurezza",
+    "monitoring": "Monitoraggio 24/7",
+    "monitoringDesc": "Sistemi automatici monitorano attività sospette in tempo reale",
+    "responsibility": "La tua responsabilità",
+    "responsibilityDesc": "Non condividere la tua password con nessuno. Se sospetti un accesso non autorizzato, cambia immediatamente la password o contattaci.",
+    "legalBasis": "Base Legale per il Trattamento",
+    "gdprArticle6": "Articolo 6 GDPR - Dati Comuni",
+    "gdprArticle6a": "6(1)(a): Consenso esplicito dell'interessato",
+    "gdprArticle6b": "6(1)(b): Necessità per esecuzione di contratto (servizio di tracking)",
+    "gdprArticle9": "Articolo 9 GDPR - Dati Sanitari",
+    "gdprArticle9a": "9(2)(a): Consenso esplicito del soggetto interessato (hai acconsentito durante la registrazione)",
+    "gdprArticle9h": "9(2)(h): Gestione della salute in contesto sportivo",
+    "dataRetention": "Quanto Tempo Conserviamo i Dati",
+    "dataType": "Tipo di Dato",
+    "retentionPeriod": "Periodo di Conservazione",
+    "reason": "Motivo",
+    "jwtRetention": "JWT e Token di Sessione",
+    "jwtRetentionPeriod": "15 min (Access) / 7 gg (Refresh)",
+    "jwtRetentionReason": "Scadenza standard di sicurezza",
+    "credentialsRetention": "Credenziali (email, password)",
+    "credentialsRetentionPeriod": "Fino alla cancellazione account",
+    "credentialsRetentionReason": "Necessarie per il servizio",
+    "profileRetention": "Profilo Personale",
+    "profileRetentionPeriod": "Fino alla cancellazione account",
+    "profileRetentionReason": "Fornire il servizio",
+    "trainingDataRetention": "Dati di Allenamento (RPE, misure, test)",
+    "trainingDataRetentionPeriod": "2 anni dopo la cancellazione",
+    "trainingDataRetentionReason": "Conservazione di backup, conformità",
+    "injuryRecordsRetention": "Registri di Infortuni",
+    "injuryRecordsRetentionPeriod": "5 anni",
+    "injuryRecordsRetentionReason": "Obbligo legale nel contesto medico-sportivo",
+    "logsRetention": "Log di Accesso (IP, timestamp, azioni)",
+    "logsRetentionPeriod": "1 anno",
+    "logsRetentionReason": "Sicurezza e auditing",
+    "backupRetention": "Backup Completi",
+    "backupRetentionPeriod": "1 anno (per ripristino)",
+    "backupRetentionReason": "Disaster recovery",
+    "retentionNote": "Quando cancelli il tuo account, i tuoi dati personali vengono eliminati immediatamente, ma i backup per motivi di sicurezza potrebbero conservare dati cifrati temporaneamente.",
+    "userRights": "I Tuoi Diritti",
+    "userRightsIntro": "In base al GDPR Europeo e alle leggi sulla privacy, hai i seguenti diritti",
+    "rightOfAccess": "Diritto di Accesso (Art. 15 GDPR)",
+    "rightOfAccessDesc": "Puoi richiedere una copia di tutti i dati in nostro possesso. Ti invieremo un file CSV con tutte le tue informazioni entro 30 giorni.",
+    "rightOfRectification": "Diritto di Rettifica (Art. 16 GDPR)",
+    "rightOfRectificationDesc": "Se i tuoi dati sono inesatti o incompleti, puoi richiederne la correzione. Puoi anche correggere molti dati direttamente nel tuo profilo.",
+    "rightToBeForget": "Diritto all'Oblio / Cancellazione (Art. 17 GDPR)",
+    "rightToBeForgetDesc": "Puoi richiedere la completa cancellazione del tuo account e di tutti i dati personali. Questo avverrà entro 30 giorni, salvo obblighi legali di conservazione.",
+    "rightToPortability": "Diritto di Portabilità (Art. 20 GDPR)",
+    "rightToPortabilityDesc": "Puoi richiedere che i tuoi dati ti siano forniti in un formato standard (es. JSON o CSV) per trasferirli ad un'altra piattaforma.",
+    "rightToRestriction": "Diritto di Limitazione del Trattamento (Art. 18 GDPR)",
+    "rightToRestrictionDesc": "Puoi richiedere che limitiamo il trattamento dei tuoi dati mentre verifichiamo una disputa o contestazione.",
+    "rightToObject": "Diritto di Opposizione (Art. 21 GDPR)",
+    "rightToObjectDesc": "Puoi opporti al trattamento dei tuoi dati, specialmente per marketing e comunicazioni. Puoi gestire le preferenze nel tuo profilo.",
+    "rightToAutomatedDecisions": "Diritti Relativi alle Decisioni Automatizzate (Art. 22 GDPR)",
+    "rightToAutomatedDecisionsDesc": "Non utilizziamo algoritmi di machine learning per prendere decisioni significative su di te. Qualsiasi analisi è informatora, non vincolante.",
+    "howToExerciseRights": "Come Esercitare i Tuoi Diritti",
+    "exerciseRightsDesc": "Invia una richiesta scritta al nostro DPO (Data Protection Officer) all'indirizzo email",
+    "exerciseRightsNote": "Specifiche chiaramente il diritto che desideri esercitare (accesso, rettifica, cancellazione, ecc.) e fornisci identificativi per verificare la tua identità.",
+    "dataSharing": "Condivisione dei Dati con Terzi",
+    "dataSharingIntro": "I tuoi dati NON vengono venduti a terze parti. Li condividiamo solo quando strettamente necessario",
+    "serviceProviders": "Fornitori di Servizi (Data Processors)",
+    "hostingDesc": "Vercel, AWS (per memorizzare i dati in modo sicuro)",
+    "payments": "Pagamenti",
+    "paymentsDesc": "Stripe (se implementato)",
+    "cdnDesc": "Cloudflare (per velocizzare il sito)",
+    "dpaNoteTitle": "Data Processing Agreements",
+    "dpaNoteDesc": "Abbiamo Data Processing Agreements (DPA) con tutti i fornitori per garantire che non usino i tuoi dati per scopi propri.",
+    "sharingWithoutConsent": "Quando Condividiamo Senza Consenso",
+    "legalOrder": "Per ordine legale (avviso legale, procedimento giudiziale)",
+    "protectRights": "Per proteggere diritti, privacy e sicurezza di persone e risorse",
+    "acquisition": "In caso di acquisizione aziendale (trasferimento dati al nuovo proprietario)",
+    "cookiesTracking": "Cookie e Tracciamento",
+    "cookiesUsed": "Cookie Utilizzati",
+    "authTokenCookie": "Token di Autenticazione (Refresh Token)",
+    "authTokenCookieDesc": "HttpOnly, Secure, SameSite=Strict - Necessario per mantenerti loggato",
+    "themeCookie": "Preferenze Tema",
+    "themeCookieDesc": "localStorage - Ricorda se preferisci tema scuro o chiaro",
+    "noTracking": "Non utilizziamo",
+    "noTrackingDesc": "Pixel di tracciamento, Google Analytics, o sistemi di retargeting. Crediamo nella privacy dei nostri utenti.",
+    "contactsComplaints": "Contatti e Reclami",
+    "contactPrivacy": "Contattaci per Privacy",
+    "contactPrivacyDesc": "Se hai domande su questa policy o sulla privacy",
+    "responseTime": "Risponderemo entro 5 giorni lavorativi.",
+    "complaintToAuthority": "Reclamo all'Autorità Competente",
+    "complaintToAuthorityDesc": "Se ritieni che la privacy non sia rispettata, hai diritto a presentare reclamo all'autorità competente (Garante della Privacy ITalia)",
+    "garante": "Garante per la Protezione dei Dati Personali",
+    "garanteAddress": "Via di Grottarossa, 537 - 00189 Roma | gpdp.it | reclami@gpdp.it",
+    "footer": "Questa informativa è legalmente vincolante. Se non accetti questi termini, non puoi utilizzare Athlete Hub.",
+    "copyright": "© 2026 Athlete Hub. Tutti i diritti riservati."
+  },
+  "landingpage": {
+    "navbar": {
+      "clientLogin": "Client Log in",
+      "demo": "Prenota Demo"
+    },
+    "hero": {
+      "subtitle": "MVP 1.0.2 Open for Early Adopters",
+      "title": "DATI D'ÉLITE PER ATLETI D'ÉLITE.",
+      "description": "Athlete Hub trasforma la complessità della preparazione atletica in una dashboard intuitiva, sicura e scientificamente rigorosa.",
+      "ctaStart": "Inizia come Coach",
+      "ctaExplore": "Esplora le Funzioni"
+    },
+    "features": {
+      "precisioneACWR": "Precisione ACWR",
+      "feedbackLoop": "Feedback Loop",
+      "clinicalData": "Clinical Data",
+      "descPrecisioneACWR": "Monitoraggio scientifico del rapporto tra carico acuto e cronico.",
+      "descFeedbackLoop": "Automazione totale della raccolta RPE tramite email.",
+      "descPianificazione": "Gestione sessioni multi-atleta con target definiti.",
+      "descClinicalData": "Hub centralizzato per infortuni e protocolli Return To Play."
+    },
+    "dashboard": {
+      "preview": "Anteprima della dashboard",
+      "pageTitle": "Dashboard",
+      "subtitle": "Monitoraggio del team e insight",
+      "timeRange": {
+        "1d": "24h",
+        "7d": "7g",
+        "30d": "30g",
+        "90d": "90g",
+        "select": "Seleziona intervallo"
+      },
+      "advancedFilter": "Filtro avanzato",
+      "lastUpdated": "Ultimo aggiornamento",
+      "athletes": "Atleti",
+      "status": {
+        "healthy": "Sano",
+        "warning": "Attenzione",
+        "error": "Errore"
+      },
+      "autoRefresh": {
+        "manual": "Manuale",
+        "auto": "Automatico"
+      },
+      "actions": {
+        "refresh": "Aggiorna",
+        "settings": "Impostazioni"
+      },
+      "loading": "Caricamento...",
+      "metrics": {
+        "teamReadiness": "Readiness del Team",
+        "avgFatigue": "Fatica media",
+        "avgSoreness": "Dolore medio",
+        "teamWorkload": "Carico del Team"
+      },
+      "noData": "Nessun dato per la dashboard.",
+      "loadData": "Carica dati"
+    },
+    "scalability": {
+      "title": "COSTRUITO PER LA SCALABILITÀ ESTREMA.",
+      "description": "Sfruttiamo Nuxt 3 e database crittografati per garantire che i dati dei tuoi atleti siano sempre accessibili, veloci e protetti.",
+      "dataIntegrity": "Data Integrity",
+      "dataIntegrityDesc": "Backup orari automatizzati e sincronizzazione cloud.",
+      "securityDesc": "Crittografia 256-bit per la massima privacy.",
+      "security": "security"
+    },
+    "roadmap": {
+      "title": "Roadmap di Sviluppo",
+      "steps": [
+        {
+          "title": "Wearable Sync",
+          "date": "Q3 2026"
+        },
+        {
+          "title": "AI Insights",
+          "date": "Q4 2026"
+        },
+        {
+          "title": "Mobile App",
+          "date": "Q1 2027"
+        }
+      ]
+    },
+    "waitlist": {
+      "title": "Partecipa alla Beta",
+      "subtitle": "Posti limitati per i primi 20 coach partner.",
+      "emailLabel": "Email Professionale",
+      "submitButton": "Richiedi Accesso",
+      "submitting": "Invio in corso...",
+      "placeholder": "coach@team.com",
+      "invalidEmail": "Inserisci un indirizzo email valido",
+      "successTitle": "Richiesta Ricevuta",
+      "successMessage": "Grazie Coach. Ti contatteremo entro 48 ore per l'accesso prioritario.",
+      "sendAgain": "Invia un'altra mail"
+    },
+    "footer": {
+      "athleteHub": "Athlete Hub",
+      "privacy": "Privacy & Data Policy",
+      "version": "v1.0.2 // Developed by Manuel Enzo",
+      "github": "github"
+    },
+    "theme": {
+      "dark": "Scuro",
+      "light": "Chiaro"
+    },
+    "alerts": {
+      "serverError": "Errore. Riprova più tardi."
+    },
+    "preview": {
+      "title": "Anteprima Funzionalità",
+      "calendar": "Calendario",
+      "details": "Dettagli Atleta",
+      "test": "Test Fitness"
+    }
+  },
+  "-": " ",
+  "/Auth/forgot-password": "/ Auth/forgot password",
+  "/Auth/reset-password-execution": "/ Auth/reset password execution",
+  "LayoutSidebarNavGroup": " Layout Sidebar Nav Group",
+  "LayoutSidebarNavLink": " Layout Sidebar Nav Link",
+  "_": " ",
+  "notifications": {
+    "eventCreated": "event Created"
+  },
+  "projects": {
+    "createProject": "create Project"
+  },
+  "update:showForm": "update:show Form",
+  "vue3-apexcharts": "vue3 apexcharts",
+  " ": " ",
+  "": {
+    "": ""
+  },
+  "/": "/",
+  ":": ":",
+  "@": "@",
+  "Ciao, vorrei suggerire questa funzionalità": {
+    "": {
+      "": {
+        "": ""
+      }
+    }
+  },
+  "T": " T",
+  "a": "a",
+  "apply": "apply",
+  "button": "button",
+  "close": "close",
+  "fallback": {
+    "notAvailable": "not Available"
+  },
+  "refresh": "refresh",
+  "shortcuts": {
+    "create": "create"
+  }
 }

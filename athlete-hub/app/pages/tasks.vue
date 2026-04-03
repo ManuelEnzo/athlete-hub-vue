@@ -1,9 +1,30 @@
 <script setup lang="ts">
+import type { Task } from '@/components/tasks/data/schema'
+import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { columns } from '@/components/tasks/components/columns'
 import DataTable from '@/components/tasks/components/DataTable.vue'
-import tasks from '@/components/tasks/data/tasks.json'
-import { useI18n } from 'vue-i18n'
+import rawTasks from '@/components/tasks/data/tasks.json'
+import { useErrorHandler } from '~/composables/useErrorHandler'
+import { useAuthStore } from '~/stores/auth'
+
 const { t } = useI18n()
+const handler = useErrorHandler({ component: 'TasksPage' })
+const auth = useAuthStore()
+
+const tasks = ref<Task[]>([])
+
+onMounted(() => {
+  // ensure auth/profile
+  auth.fetchProfile().catch(err => handler.handleError(err instanceof Error ? err : new Error(String(err))))
+  try {
+    tasks.value = Array.isArray(rawTasks.data) ? rawTasks.data : []
+  }
+  catch (err) {
+    handler.handleError(err instanceof Error ? err : new Error(String(err)))
+    tasks.value = []
+  }
+})
 </script>
 
 <template>
@@ -15,10 +36,10 @@ const { t } = useI18n()
         </h2>
         <p class="text-muted-foreground">
           {{ t('tasks.description') }}
-        </p> 
+        </p>
       </div>
     </div>
-    <DataTable :data="tasks.data" :columns="columns" />
+    <DataTable :data="tasks" :columns="columns" />
   </div>
 </template>
 

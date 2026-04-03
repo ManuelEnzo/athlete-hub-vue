@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import { toast } from 'vue-sonner'
 import * as z from 'zod'
+import notifications from '@/lib/notificationService'
 
 const formSchema = toTypedSchema(z.object({
   username: z
@@ -10,14 +10,13 @@ const formSchema = toTypedSchema(z.object({
     .min(2)
     .max(50),
   email: z
-    .string({ required_error: 'Please select an email to display.' })
+    .string()
+    .nonempty('Please select an email to display.')
     .email(),
   mobile: z
     .boolean(),
   type: z
-    .enum(['all', 'mentions', 'none'], {
-      required_error: 'You need to select a notification type.',
-    }),
+    .enum(['all', 'mentions', 'none'] as const),
   duration: z
     .array(z.number().min(0).max(60)),
 }))
@@ -30,9 +29,7 @@ const { isFieldDirty, handleSubmit } = useForm({
 })
 
 const onSubmit = handleSubmit((values) => {
-  toast('You submitted the following values:', {
-    description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-  })
+  notifications.info('You submitted the following values:', JSON.stringify(values, null, 2))
 })
 </script>
 

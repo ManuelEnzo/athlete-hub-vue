@@ -18,7 +18,7 @@ const showModalTheme = ref(false)
  */
 function openFeedback() {
   const subject = encodeURIComponent(`Feedback Athlete-Hub - Coach ${props.user.name}`)
-  const body = encodeURIComponent("Ciao, vorrei suggerire questa funzionalità...")
+  const body = encodeURIComponent('Ciao, vorrei suggerire questa funzionalità...')
   window.location.href = `mailto:tua-email@esempio.com?subject=${subject}&body=${body}`
 }
 /**
@@ -27,22 +27,24 @@ function openFeedback() {
  */
 async function handleLogout() {
   const authStore = useAuthStore() // Inizializzazione lazy dello store
-  console.log("COMPONENTE: Click logout");
+  console.warn('COMPONENTE: Click logout')
 
   try {
     await authStore.logout()
     // Se necessario, aggiungi un redirect o una notifica qui
-  } catch (error) {
-    console.error("Errore durante il logout:", error)
+  }
+  catch (error) {
+    console.error('Errore durante il logout:', error)
   }
 }
 
 /**
  * Helper per generare le iniziali dell'avatar
  */
-const getInitials = (name: string) => {
-  if (!name) return '??'
-  return name.split(' ').map((n) => n[0]).join('').toUpperCase()
+function getInitials(name: string) {
+  if (!name)
+    return '??'
+  return name.split(' ').map(n => n[0]).join('').toUpperCase()
 }
 </script>
 
@@ -51,8 +53,10 @@ const getInitials = (name: string) => {
     <SidebarMenuItem>
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <SidebarMenuButton size="lg"
-            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+          <SidebarMenuButton
+            size="lg"
+            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+          >
             <Avatar class="h-8 w-8 rounded-lg">
               <AvatarImage :src="user.avatar" :alt="user.name" />
               <AvatarFallback class="rounded-lg">
@@ -67,13 +71,17 @@ const getInitials = (name: string) => {
           </SidebarMenuButton>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent class="min-w-56 w-[--radix-dropdown-menu-trigger-width] rounded-lg"
-          :side="isMobile ? 'bottom' : 'right'">
+        <DropdownMenuContent
+          class="min-w-56 w-[--radix-dropdown-menu-trigger-width] rounded-lg"
+          :side="isMobile ? 'bottom' : 'right'"
+        >
           <DropdownMenuLabel class="p-0 font-normal">
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar class="h-8 w-8 rounded-lg">
                 <AvatarImage :src="user.avatar" :alt="user.name" />
-                <AvatarFallback class="rounded-lg">{{ getInitials(user.name) }}</AvatarFallback>
+                <AvatarFallback class="rounded-lg">
+                  {{ getInitials(user.name) }}
+                </AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
                 <span class="truncate font-semibold">{{ user.name }}</span>
@@ -111,7 +119,7 @@ const getInitials = (name: string) => {
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem @click="handleLogout" class="text-red-500 focus:text-red-500">
+          <DropdownMenuItem class="text-red-500 focus:text-red-500" @click="handleLogout">
             <Icon name="i-lucide-log-out" />
             Log out
           </DropdownMenuItem>

@@ -1,11 +1,10 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 definePageMeta({
   layout: 'blank',
-  auth: false
+  auth: false,
 })
-import { useI18n } from 'vue-i18n'
-import { Shield, Lock, Key, AlertCircle, User, UserCircle, Heart, Activity, Check, CheckCircle, BarChart2, ShieldAlert, Mail, AlertTriangle, ShieldCheck, Download, Edit, Trash2, Pause, Ban, Scale } from 'lucide-vue-next'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 const { t } = useI18n()
 </script>
 
@@ -14,8 +13,12 @@ const { t } = useI18n()
     <div class="bg-gradient-to-r from-primary/10 to-transparent border-b border-border px-4 md:px-6 py-6 md:py-8">
       <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:justify-between gap-3 md:gap-0 items-start">
         <div>
-          <h1 class="text-2xl md:text-4xl font-bold tracking-tight mb-1 md:mb-2 italic">{{ t('dataPolicy.title') }}</h1>
-          <p class="text-muted-foreground text-xs md:text-sm font-medium">{{ t('dataPolicy.privacyMatters') }}</p>
+          <h1 class="text-2xl md:text-4xl font-bold tracking-tight mb-1 md:mb-2 italic">
+            {{ t('dataPolicy.title') }}
+          </h1>
+          <p class="text-muted-foreground text-xs md:text-sm font-medium">
+            {{ t('dataPolicy.privacyMatters') }}
+          </p>
         </div>
         <NuxtLink to="/landingpage" class="mt-2 md:mt-0 inline-flex items-center gap-2 text-primary hover:opacity-80 transition text-sm font-semibold">
           <Icon name="lucide:arrow-left" class="w-4 h-4" />
@@ -45,21 +48,27 @@ const { t } = useI18n()
               <Icon name="lucide:lock" class="w-5 h-5 text-green-500" />
               <span class="font-semibold">{{ t('dataPolicy.encryption') }}</span>
             </div>
-            <p class="text-sm text-muted-foreground">{{ t('dataPolicy.encryptionDesc') }}</p>
+            <p class="text-sm text-muted-foreground">
+              {{ t('dataPolicy.encryptionDesc') }}
+            </p>
           </div>
           <div class="bg-card border border-border rounded-lg p-4">
             <div class="flex items-center gap-2 mb-2">
               <Icon name="lucide:key" class="w-5 h-5 text-blue-500" />
               <span class="font-semibold">{{ t('dataPolicy.jwtSecure') }}</span>
             </div>
-            <p class="text-sm text-muted-foreground">{{ t('dataPolicy.jwtSecureDesc') }}</p>
+            <p class="text-sm text-muted-foreground">
+              {{ t('dataPolicy.jwtSecureDesc') }}
+            </p>
           </div>
           <div class="bg-card border border-border rounded-lg p-4">
             <div class="flex items-center gap-2 mb-2">
               <Icon name="lucide:check-circle" class="w-5 h-5 text-purple-500" />
               <span class="font-semibold">{{ t('dataPolicy.gdprCompliance') }}</span>
             </div>
-            <p class="text-sm text-muted-foreground">{{ t('dataPolicy.gdprComplianceDesc') }}</p>
+            <p class="text-sm text-muted-foreground">
+              {{ t('dataPolicy.gdprComplianceDesc') }}
+            </p>
           </div>
         </div>
       </section>
@@ -73,7 +82,9 @@ const { t } = useI18n()
           <p><strong>{{ t('dataPolicy.companyName') }}:</strong> Athlete Hub</p>
           <p><strong>{{ t('dataPolicy.privacyEmail') }}:</strong> <a href="mailto:athletehub.sport@gmail.com" class="text-blue-500 hover:underline">athletehub.sport@gmail.com</a></p>
           <p><strong>{{ t('dataPolicy.dpoTitle') }}:</strong> Data Protection Officer</p>
-          <p class="text-muted-foreground text-sm mt-4">{{ t('dataPolicy.contactDpo') }}</p>
+          <p class="text-muted-foreground text-sm mt-4">
+            {{ t('dataPolicy.contactDpo') }}
+          </p>
         </div>
       </section>
 
@@ -165,10 +176,14 @@ const { t } = useI18n()
             <p class="font-mono text-xs text-foreground/70 break-all">
               eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkF0aGxldGEiLCJpYXQiOjE1MTYyMzkwMjJ9.SflKxw...
             </p>
-            <p class="text-[10px] text-muted-foreground mt-2 uppercase">Esempio di JWT (ridotto per brevità)</p>
+            <p class="text-[10px] text-muted-foreground mt-2 uppercase">
+              Esempio di JWT (ridotto per brevità)
+            </p>
           </div>
 
-          <h4 class="font-semibold mb-3">{{ t('dataPolicy.loginProcess') }}:</h4>
+          <h4 class="font-semibold mb-3">
+            {{ t('dataPolicy.loginProcess') }}:
+          </h4>
           <ol class="space-y-3 text-foreground/80">
             <li v-for="step in [1, 2, 3, 4, 5]" :key="step" class="flex gap-3">
               <span class="flex-shrink-0 w-6 h-6 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center font-bold">{{ step }}</span>
@@ -179,7 +194,9 @@ const { t } = useI18n()
 
         <div class="grid md:grid-cols-2 gap-4">
           <div class="bg-card border border-border rounded-lg p-4">
-            <h5 class="font-bold text-green-600 dark:text-green-400 mb-2">{{ t('dataPolicy.accessToken') }}</h5>
+            <h5 class="font-bold text-green-600 dark:text-green-400 mb-2">
+              {{ t('dataPolicy.accessToken') }}
+            </h5>
             <ul class="text-sm text-muted-foreground space-y-1">
               <li>⏱️ <strong>{{ t('dataPolicy.accessTokenExpiry') }}</strong></li>
               <li>🔐 <strong>{{ t('dataPolicy.accessTokenUsage') }}</strong></li>
@@ -187,7 +204,9 @@ const { t } = useI18n()
             </ul>
           </div>
           <div class="bg-card border border-border rounded-lg p-4">
-            <h5 class="font-bold text-purple-600 dark:text-purple-400 mb-2">{{ t('dataPolicy.refreshToken') }}</h5>
+            <h5 class="font-bold text-purple-600 dark:text-purple-400 mb-2">
+              {{ t('dataPolicy.refreshToken') }}
+            </h5>
             <ul class="text-sm text-muted-foreground space-y-1">
               <li>⏱️ <strong>{{ t('dataPolicy.refreshTokenExpiry') }}</strong></li>
               <li>🔄 <strong>{{ t('dataPolicy.refreshTokenUsage') }}</strong></li>
@@ -208,16 +227,28 @@ const { t } = useI18n()
             <table class="w-full text-sm">
               <thead class="bg-muted text-muted-foreground">
                 <tr>
-                  <th class="px-4 py-3 text-left font-semibold">{{ t('dataPolicy.dataType') }}</th>
-                  <th class="px-4 py-3 text-left font-semibold">{{ t('dataPolicy.retentionPeriod') }}</th>
-                  <th class="px-4 py-3 text-left font-semibold">{{ t('dataPolicy.reason') }}</th>
+                  <th class="px-4 py-3 text-left font-semibold">
+                    {{ t('dataPolicy.dataType') }}
+                  </th>
+                  <th class="px-4 py-3 text-left font-semibold">
+                    {{ t('dataPolicy.retentionPeriod') }}
+                  </th>
+                  <th class="px-4 py-3 text-left font-semibold">
+                    {{ t('dataPolicy.reason') }}
+                  </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-border">
                 <tr v-for="row in ['jwt', 'credentials', 'profile', 'trainingData', 'injuryRecords', 'logs', 'backup']" :key="row" class="hover:bg-accent/50 transition-colors">
-                  <td class="px-4 py-3 font-medium">{{ t(`dataPolicy.${row}Retention`) }}</td>
-                  <td class="px-4 py-3 text-muted-foreground">{{ t(`dataPolicy.${row}RetentionPeriod`) }}</td>
-                  <td class="px-4 py-3 text-muted-foreground italic text-xs">{{ t(`dataPolicy.${row}RetentionReason`) }}</td>
+                  <td class="px-4 py-3 font-medium">
+                    {{ t(`dataPolicy.${row}Retention`) }}
+                  </td>
+                  <td class="px-4 py-3 text-muted-foreground">
+                    {{ t(`dataPolicy.${row}RetentionPeriod`) }}
+                  </td>
+                  <td class="px-4 py-3 text-muted-foreground italic text-xs">
+                    {{ t(`dataPolicy.${row}RetentionReason`) }}
+                  </td>
                 </tr>
               </tbody>
             </table>

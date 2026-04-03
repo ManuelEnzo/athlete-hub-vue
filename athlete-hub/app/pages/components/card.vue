@@ -1,6 +1,6 @@
-  
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+
 const { t } = useI18n()
 </script>
 
@@ -37,7 +37,7 @@ const { t } = useI18n()
           <div class="w-full flex items-center justify-center gap-4 overflow-hidden">
             <Card class="w-full md:w-[350px]">
               <CardHeader>
-                <CardTitle>{{ t('projects.createProject') }}</CardTitle> 
+                <CardTitle>{{ t('projects.createProject') }}</CardTitle>
                 <CardDescription>Deploy your new project in one-click.</CardDescription>
               </CardHeader>
               <CardContent>

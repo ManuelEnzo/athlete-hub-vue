@@ -1,23 +1,30 @@
 <script setup lang="ts">
+import { toTypedSchema } from '@vee-validate/zod'
+import {
+  Calendar as CalendarIcon,
+  KeyRound,
+  Loader2,
+  Lock,
+  Mail,
+  Save,
+  ShieldCheck,
+  User,
+} from 'lucide-vue-next'
+import { useForm } from 'vee-validate'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
 import * as z from 'zod'
-import { toast } from 'vue-sonner'
-import { useAuthStore } from '~/stores/auth'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 // UI Components & Icons
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
-import {
-  User, Mail, ShieldCheck, Calendar as CalendarIcon,
-  Lock, KeyRound, Loader2, Save
-} from 'lucide-vue-next'
+import notifications from '@/lib/notificationService'
 import { authApi } from '~/api/auth'
+import { useErrorHandler } from '~/composables/useErrorHandler'
+import { useAuthStore } from '~/stores/auth'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -29,9 +36,9 @@ const profileSchema = toTypedSchema(z.object({
   currentPassword: z.string().min(1, t('profile.errors.currentPasswordRequired')),
   newPassword: z.string().min(8, t('profile.errors.passwordTooShort')).optional().or(z.literal('')),
   confirmPassword: z.string().optional().or(z.literal('')),
-}).refine((data) => data.newPassword === data.confirmPassword, {
+}).refine(data => data.newPassword === data.confirmPassword, {
   message: t('profile.errors.passwordsDontMatch'),
-  path: ["confirmPassword"],
+  path: ['confirmPassword'],
 }))
 
 const { handleSubmit, errors, defineField, setFieldValue } = useForm({
@@ -40,13 +47,14 @@ const { handleSubmit, errors, defineField, setFieldValue } = useForm({
     email: authStore.user?.email || '',
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   },
 })
 
 // Sincronizza il form se i dati arrivano dopo (es. refresh pagina)
 watch(() => authStore.user?.email, (newEmail) => {
-  if (newEmail) setFieldValue('email', newEmail)
+  if (newEmail)
+    setFieldValue('email', newEmail)
 })
 
 const [email] = defineField('email')
@@ -54,8 +62,9 @@ const [currentPassword] = defineField('currentPassword')
 const [newPassword] = defineField('newPassword')
 const [confirmPassword] = defineField('confirmPassword')
 
-const formatDate = (date?: string) => {
-  if (!date) return '--'
+function formatDate(date?: string) {
+  if (!date)
+    return '--'
   return new Date(date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
@@ -65,8 +74,8 @@ const onSaveProfile = handleSubmit(async (values) => {
     // 1. Chiamata al backend (Endpoint: /Auth/update-password)
     const response = await authApi.updatePassword({
       currentPassword: values.currentPassword,
-      newPassword: values.newPassword || "", // Se vuoto, il server non dovrebbe cambiare pw
-      email: values.email
+      newPassword: values.newPassword || '', // Se vuoto, il server non dovrebbe cambiare pw
+      email: values.email,
     })
 
     const { isSuccess, value, error } = response.data
@@ -77,7 +86,7 @@ const onSaveProfile = handleSubmit(async (values) => {
       authStore.setTokens(value.accessToken, value.refreshToken)
 
       // 3. Feedback all'utente
-      toast.success(t('profile.toast.success'))
+      notifications.success(t('profile.toast.success'))
 
       // 4. Reset dei campi password del form per pulizia
       setFieldValue('currentPassword', '')
@@ -86,15 +95,17 @@ const onSaveProfile = handleSubmit(async (values) => {
 
       // 5. Rinfreschiamo i dati dell'utente nello store (es. se l'email è cambiata)
       await authStore.fetchProfile()
-    } else {
-      // Gestione errore applicativo (es. password attuale errata)
-      toast.error(error?.message || t('profile.toast.error'))
     }
-  } catch (err: any) {
-    // Gestione errore di rete o eccezione
-    console.error("Errore update:", err)
-    toast.error(t('profile.toast.error'))
-  } finally {
+    else {
+      // Gestione errore applicativo (es. password attuale errata)
+      notifications.error(error?.message || t('profile.toast.error'))
+    }
+  }
+  catch (err: any) {
+    const handler = useErrorHandler({ component: 'ProfileForm' })
+    handler.handleError(err instanceof Error ? err : new Error(String(err)))
+  }
+  finally {
     isLoading.value = false
   }
 })
@@ -102,16 +113,16 @@ const onSaveProfile = handleSubmit(async (values) => {
 
 <template>
   <div class="w-full h-[calc(100vh-4rem)] flex flex-col overflow-hidden bg-background">
-
     <div class="mb-6">
       <h2 class="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
         <User class="h-8 w-8 text-primary" /> {{ t('profile.title') }}
       </h2>
-      <p class="text-muted-foreground italic text-sm">{{ t('profile.subtitle') }}</p>
+      <p class="text-muted-foreground italic text-sm">
+        {{ t('profile.subtitle') }}
+      </p>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 flex-1 min-h-0">
-
       <div class="xl:col-span-1 h-full">
         <Card class="border-none shadow-sm bg-card/50 backdrop-blur h-full flex flex-col">
           <CardHeader>
@@ -122,7 +133,9 @@ const onSaveProfile = handleSubmit(async (values) => {
           <CardContent class="space-y-6 flex-1">
             <div>
               <label class="text-[10px] font-black uppercase text-primary/70 block mb-1 tracking-widest">{{ t('profile.username') }}</label>
-              <p class="font-bold text-xl">{{ authStore.user?.userName || authStore.user?.email?.split('@')[0] || '---' }}</p>
+              <p class="font-bold text-xl">
+                {{ authStore.user?.userName || authStore.user?.email?.split('@')[0] || '---' }}
+              </p>
             </div>
             <Separator class="opacity-30" />
             <div>
@@ -145,22 +158,25 @@ const onSaveProfile = handleSubmit(async (values) => {
       </div>
 
       <div class="xl:col-span-3 h-full overflow-hidden">
-        <form @submit="onSaveProfile" class="h-full flex flex-col">
+        <form class="h-full flex flex-col" @submit="onSaveProfile">
           <Card class="border-none shadow-md bg-card/50 backdrop-blur h-full flex flex-col">
             <CardHeader>
-              <CardTitle class="text-xl font-black uppercase tracking-tight">{{ t('profile.settingsTitle') }}</CardTitle>
+              <CardTitle class="text-xl font-black uppercase tracking-tight">
+                {{ t('profile.settingsTitle') }}
+              </CardTitle>
               <CardDescription>{{ t('profile.settingsDesc') }}</CardDescription>
             </CardHeader>
 
             <CardContent class="space-y-6 overflow-y-auto flex-1 pr-4 custom-scrollbar">
               <div class="grid grid-cols-1 gap-8">
-
                 <div class="space-y-3">
                   <label class="text-[11px] font-black uppercase flex items-center gap-2 tracking-wider">
                     <Mail class="h-4 w-4 text-primary" /> {{ t('profile.emailLabel') }}
                   </label>
                   <Input v-model="email" type="email" class="bg-background/40 h-11 font-medium" />
-                  <p v-if="errors.email" class="text-[10px] text-destructive font-black uppercase">{{ errors.email }}</p>
+                  <p v-if="errors.email" class="text-[10px] text-destructive font-black uppercase">
+                    {{ errors.email }}
+                  </p>
                 </div>
 
                 <Separator />
@@ -168,7 +184,9 @@ const onSaveProfile = handleSubmit(async (values) => {
                 <div class="space-y-6">
                   <div class="flex items-center gap-2">
                     <Lock class="h-4 w-4 text-primary" />
-                    <h4 class="text-[11px] font-black uppercase tracking-widest">{{ t('profile.passwordSection') }}</h4>
+                    <h4 class="text-[11px] font-black uppercase tracking-widest">
+                      {{ t('profile.passwordSection') }}
+                    </h4>
                   </div>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-2">
@@ -183,7 +201,9 @@ const onSaveProfile = handleSubmit(async (values) => {
                       <Input v-model="confirmPassword" type="password" class="h-10 bg-background/40" placeholder="••••••••" />
                     </div>
                   </div>
-                  <p v-if="errors.confirmPassword" class="text-[10px] text-destructive font-black uppercase">{{ errors.confirmPassword }}</p>
+                  <p v-if="errors.confirmPassword" class="text-[10px] text-destructive font-black uppercase">
+                    {{ errors.confirmPassword }}
+                  </p>
                 </div>
 
                 <div class="mt-4 p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 max-w-xl mx-auto w-full">

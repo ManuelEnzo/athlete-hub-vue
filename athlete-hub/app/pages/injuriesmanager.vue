@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import type { AthleteResponse } from '@/types/api'
+import { Loader2, Stethoscope, User } from 'lucide-vue-next'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { User, Loader2, Stethoscope } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
-
-// UI Components
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
-import InjuryManagement from '@/components/injury/InjuryManagement.vue'
-
 // API & Types
 import { athleteApi } from '@/api/business'
-import type { AthleteResponse } from '@/types/api'
+
+import InjuryManagement from '@/components/injury/InjuryManagement.vue'
+// UI Components
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+
+import { useErrorHandler } from '~/composables/useErrorHandler'
+import { useAuthStore } from '~/stores/auth'
 
 const { t } = useI18n()
+const handler = useErrorHandler({ component: 'InjuriesManagerPage' })
+const _auth = useAuthStore()
 
 // ---------------- State ----------------
 const selectedAthleteId = ref<number | null>(null)
@@ -32,9 +35,11 @@ async function fetchAthletes() {
         selectedAthleteId.value = athletes.value[0]?.id ?? null
       }
     }
-  } catch (err) {
-    toast.error(t('measurements.toast.loadAthletesError'))
-  } finally {
+  }
+  catch {
+    handler.handleError(new Error(t('injuries.errors.loadAthletes')))
+  }
+  finally {
     loadingAthletes.value = false
   }
 }
@@ -46,7 +51,6 @@ onMounted(() => {
 
 <template>
   <div class="w-full flex flex-col gap-8 mx-auto p-4 max-w-[1600px]">
-    
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b pb-6">
       <div class="flex items-center gap-3">
         <div class="p-2 bg-primary/10 rounded-xl">
@@ -64,7 +68,7 @@ onMounted(() => {
 
       <div class="flex items-center space-x-3 w-full md:w-auto">
         <Loader2 v-if="loadingAthletes" class="h-5 w-5 animate-spin text-primary" />
-        
+
         <div class="relative min-w-[300px] w-full">
           <Select v-model="selectedAthleteId">
             <SelectTrigger class="w-full h-12 font-bold border-2 transition-all hover:border-primary/50">
@@ -74,9 +78,9 @@ onMounted(() => {
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem 
-                v-for="athlete in athletes" 
-                :key="athlete.id" 
+              <SelectItem
+                v-for="athlete in athletes"
+                :key="athlete.id"
                 :value="athlete.id"
                 class="font-bold uppercase text-[11px]"
               >
@@ -89,7 +93,7 @@ onMounted(() => {
     </div>
 
     <div v-if="selectedAthleteId" class="animate-in fade-in duration-500">
-      <InjuryManagement :athleteId="selectedAthleteId" />
+      <InjuryManagement :athlete-id="selectedAthleteId" />
     </div>
 
     <div v-else-if="!loadingAthletes" class="py-32 text-center bg-slate-50/50 rounded-[40px] border-2 border-dashed border-slate-200">
@@ -100,10 +104,9 @@ onMounted(() => {
         {{ t('measurements.validation.selectAthlete') }}
       </p>
       <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-        Seleziona un atleta per visualizzare o registrare infortuni
+        {{ t('injuries.selectAthleteInstruction') }}
       </p>
     </div>
-
   </div>
 </template>
 

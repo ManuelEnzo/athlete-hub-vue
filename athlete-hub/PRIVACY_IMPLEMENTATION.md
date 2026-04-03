@@ -32,7 +32,9 @@ definePageMeta({
 
 <template>
   <div class="container mx-auto px-4 py-12 max-w-4xl">
-    <h1 class="text-3xl font-bold mb-6">Privacy Policy</h1>
+    <h1 class="text-3xl font-bold mb-6">
+      Privacy Policy
+    </h1>
 
     <div class="prose prose-sm max-w-none">
       <h2>1. Data We Collect</h2>
@@ -108,13 +110,13 @@ Create `components/ConsentBanner.vue`:
 
 ```vue
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
+import { ref } from 'vue'
 
 const consentGiven = useLocalStorage('athlete_hub_consent', false)
 const showBanner = ref(!consentGiven.value)
 
-const acceptConsent = () => {
+function acceptConsent() {
   consentGiven.value = true
   showBanner.value = false
 
@@ -129,14 +131,16 @@ const acceptConsent = () => {
   useAnalytics().enable()
 }
 
-const openPrivacyPolicy = () => {
+function openPrivacyPolicy() {
   navigateTo('/privacy')
 }
 </script>
 
 <template>
-  <div v-if="showBanner"
-    class="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 shadow-2xl z-50">
+  <div
+    v-if="showBanner"
+    class="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 shadow-2xl z-50"
+  >
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
       <div class="flex-1">
         <p class="text-sm font-semibold mb-1">
@@ -145,15 +149,17 @@ const openPrivacyPolicy = () => {
         <p class="text-xs text-muted-foreground">
           We use cookies and collect personal data to improve your experience.
           <button
+            class="underline text-primary hover:text-primary/80"
             @click="openPrivacyPolicy"
-            class="underline text-primary hover:text-primary/80">
+          >
             Read our Privacy Policy
           </button>
         </p>
       </div>
       <button
+        class="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-semibold whitespace-nowrap"
         @click="acceptConsent"
-        class="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-semibold whitespace-nowrap">
+      >
         Accept & Continue
       </button>
     </div>
@@ -226,7 +232,8 @@ export function createAuditMiddleware() {
       }, event)
 
       return result
-    } catch (error) {
+    }
+    catch (error) {
       // Log failed operation
       await auditLog({
         action: getActionFromMethod(event.method || 'GET'),
@@ -242,10 +249,14 @@ export function createAuditMiddleware() {
 }
 
 function getActionFromMethod(method: string) {
-  if (method === 'GET') return 'READ'
-  if (method === 'POST') return 'CREATE'
-  if (method === 'PUT' || method === 'PATCH') return 'UPDATE'
-  if (method === 'DELETE') return 'DELETE'
+  if (method === 'GET')
+    return 'READ'
+  if (method === 'POST')
+    return 'CREATE'
+  if (method === 'PUT' || method === 'PATCH')
+    return 'UPDATE'
+  if (method === 'DELETE')
+    return 'DELETE'
   return 'READ'
 }
 
@@ -256,7 +267,7 @@ function extractResourceType(path: string): string {
 
 function extractResourceId(path: string): number | undefined {
   const match = path.match(/\/(\d+)/)
-  return match ? parseInt(match[1]) : undefined
+  return match ? Number.parseInt(match[1]) : undefined
 }
 ```
 
@@ -272,7 +283,8 @@ import { parse } from 'json2csv'
 
 export default defineEventHandler(async (event) => {
   const auth = await verifyAuth(event)
-  if (!auth) throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  if (!auth)
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
 
   // Log export request
   await auditLog({
@@ -329,7 +341,8 @@ import { defineEventHandler } from 'h3'
 
 export default defineEventHandler(async (event) => {
   const auth = await verifyAuth(event)
-  if (!auth) throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  if (!auth)
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
 
   const { password, confirmDelete } = await readBody(event)
 
@@ -481,12 +494,13 @@ Create `server/api/auth/setup-2fa.post.ts`:
 
 ```typescript
 import { defineEventHandler } from 'h3'
-import * as speakeasy from 'speakeasy'
 import * as QRCode from 'qrcode'
+import * as speakeasy from 'speakeasy'
 
 export default defineEventHandler(async (event) => {
   const auth = await verifyAuth(event)
-  if (!auth) throw createError({ statusCode: 401 })
+  if (!auth)
+    throw createError({ statusCode: 401 })
 
   // Generate secret
   const secret = speakeasy.generateSecret({

@@ -2,7 +2,7 @@
 definePageMeta({
   layout: 'blank',
   auth: false,
-  guestOnly: true
+  guestOnly: true,
 })
 </script>
 

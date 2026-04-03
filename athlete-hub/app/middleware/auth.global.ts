@@ -4,8 +4,8 @@ export default defineNuxtRouteMiddleware((to) => {
   const requiresAuth = to.meta.auth !== false
   const guestOnly = to.meta.guestOnly === true
 
-  console.log(
-    `MIDDLEWARE → ${to.path} | requiresAuth: ${requiresAuth} | guestOnly: ${guestOnly} | token: ${!!token}`
+  console.warn(
+    `MIDDLEWARE → ${to.path} | requiresAuth: ${requiresAuth} | guestOnly: ${guestOnly} | token: ${!!token}`,
   )
 
   // 🔒 Pagina protetta
