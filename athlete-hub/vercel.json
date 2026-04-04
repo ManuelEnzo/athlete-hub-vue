@@ -1,15 +1,16 @@
 {
+  "version": 3,
   "builds": [
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": ".output/public" }
+      "config": {
+        "distDir": ".output/public"
+      }
     }
   ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+  "routes": [
+    { "src": "/_nuxt/(.*)", "dest": "/_nuxt/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
