@@ -218,9 +218,11 @@
       "chest": "Torace",
       "waist": "Vita",
       "hip": "Fianchi",
-      "thigh": "Coscia",
-      "arm": "Braccio",
-      "calf": "Polpaccio",
+      "alreadyHaveAccount": "Already have an account?",
+      "backToLogin": "Back to login",
+      "title": "Welcome Back",
+      "subtitle": "Accedi con il tuo account Apple o Google",
+      "terms": "Cliccando continui accetti i nostri {terms} e la {privacy}.",
       "forearm": "Avambraccio",
       "neck": "Collo",
       "notes": "Note",
@@ -290,6 +292,7 @@
     "deleteWarning": "Questa azione eliminerà in modo permanente l'atleta e tutti i suoi dati associati. Sei sicuro di voler procedere?",
     "noData": "Nessun atleta disponibile. Per favore aggiungi nuovi atleti.",
     "pageTitle": "Dati Atleti",
+    "search": "Cerca per nome, email o sport",
     "visualizer": "Visualizzatore Atleta",
     "new": "Nuovo Atleta",
     "edit": "Modifica Atleta",
@@ -352,6 +355,18 @@
     "high": "⚠️ Alto Rischio",
     "low": "Basso Rischio",
     "medium": "Rischio Medio"
+  },
+  "health": {
+    "recommendation": {
+      "excellent": "Atleta in ottima condizione. Aumentare carico di allenamento.",
+      "moderate": "Monitorare attentamente. Mantieni carico moderato.",
+      "warning": "Ridurre carico di allenamento. Incrementare recupero."
+    },
+    "workload": {
+      "high": "Carico di allenamento alto. Aumentare recupero.",
+      "low": "Carico di allenamento basso. Aumentare stimolo.",
+      "optimal": "Carico di allenamento ottimale."
+    }
   },
   "team": {
     "individualStatus": "Stato Individuale Atleti",
@@ -660,7 +675,10 @@
       "forgotPassword": "Hai dimenticato la password?",
       "alreadyHaveAccount": "Hai già un account?",
       "backToLogin": "Torna al login",
-      "title": "Bentornato"
+      "title": "Bentornato",
+      "subtitle": "Accedi con il tuo account Apple o Google",
+      "terms": "Cliccando continui accetti i nostri {terms} e la {privacy}.",
+      "company": "Acme Inc."
     },
     "forgotPassword": {
       "title": "Recupero Credenziali",

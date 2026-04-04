@@ -6,17 +6,13 @@ import { columns } from '@/components/tasks/components/columns'
 import DataTable from '@/components/tasks/components/DataTable.vue'
 import rawTasks from '@/components/tasks/data/tasks.json'
 import { useErrorHandler } from '~/composables/useErrorHandler'
-import { useAuthStore } from '~/stores/auth'
 
 const { t } = useI18n()
 const handler = useErrorHandler({ component: 'TasksPage' })
-const auth = useAuthStore()
 
 const tasks = ref<Task[]>([])
 
 onMounted(() => {
-  // ensure auth/profile
-  auth.fetchProfile().catch(err => handler.handleError(err instanceof Error ? err : new Error(String(err))))
   try {
     tasks.value = Array.isArray(rawTasks.data) ? rawTasks.data : []
   }

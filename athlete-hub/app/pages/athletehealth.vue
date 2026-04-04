@@ -2,28 +2,9 @@
 import { Info } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button'
-// Importa il componente di input che abbiamo creato e corretto.
-// Assicurati che il percorso sia corretto nella tua struttura (es. app/components/dataentry/QuickDataEntry.vue)
 import AthleteHealthComp from '~/components/athletehealthc/AthleteHealthComp.vue'
-import { useErrorHandler } from '~/composables/useErrorHandler'
-import { useAuthStore } from '~/stores/auth'
 
 const { t } = useI18n()
-const handler = useErrorHandler({ component: 'AthleteHealthPage' })
-const auth = useAuthStore()
-
-// (Opzionale) Puoi impostare il layout della pagina, se usi un layout specifico di Nuxt
-// definePageMeta({
-//   layout: 'dashboard'
-// })
-onMounted(async () => {
-  try {
-    await auth.fetchProfile()
-  }
-  catch (err) {
-    handler.handleError(err instanceof Error ? err : new Error(String(err)))
-  }
-})
 </script>
 
 <template>

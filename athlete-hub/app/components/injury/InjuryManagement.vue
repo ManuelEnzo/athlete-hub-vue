@@ -13,20 +13,17 @@ import {
   Trash2,
   X,
 } from 'lucide-vue-next'
-import { reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-// API & Types
-import { athleteApi } from '@/api/business'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-// UI Components
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-
 import { Skeleton } from '@/components/ui/skeleton'
 import notifications from '@/lib/notificationService'
+import { useInjuryService } from '~/services/dataService'
 
 // --------------------
 // PROPS
@@ -36,13 +33,11 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const injurySvc = useInjuryService()
 
-// --------------------
-// STATE
-// --------------------
-const injuries = ref<InjuryResponseDTO[]>([])
-const loading = ref(false)
-const isSubmitting = ref(false)
+const injuries = computed(() => injurySvc.items.value)
+const loading = computed(() => injurySvc.loading.value)
+const isSubmitting = computed(() => injurySvc.submitting.value)
 const isDialogOpen = ref(false)
 const isDeleteDialogOpen = ref(false)
 const injuryToDelete = ref<InjuryResponseDTO | null>(null)
@@ -74,20 +69,13 @@ const injuryForm = reactive<InjuryForm>({
 // --------------------
 async function fetchInjuries() {
   if (!props.athleteId) {
-    injuries.value = []
     return
   }
-
-  loading.value = true
   try {
-    const res = await athleteApi.getInjuries(props.athleteId)
-    injuries.value = res.data.value ?? []
+    await injurySvc.fetch(props.athleteId)
   }
   catch {
     notifications.error(t('injuries.errors.loadInjuries'))
-  }
-  finally {
-    loading.value = false
   }
 }
 
@@ -98,7 +86,6 @@ async function handleSave() {
   }
 
   const validDate: string = (injuryForm.date || new Date().toISOString().split('T')[0]) ?? ''
-  isSubmitting.value = true
 
   try {
     if (injuryForm.id) {
@@ -111,7 +98,7 @@ async function handleSave() {
         expectedReturnDate: injuryForm.expectedReturnDate || undefined,
         date: validDate,
       }
-      await athleteApi.updateInjury(injuryForm.id, updatePayload)
+      await injurySvc.update(injuryForm.id, props.athleteId, updatePayload)
       notifications.success(t('injuries.toast.updated'))
     }
     else {
@@ -125,7 +112,7 @@ async function handleSave() {
         bodyLocation: injuryForm.bodyLocation,
         expectedReturnDate: injuryForm.expectedReturnDate || undefined,
       }
-      await athleteApi.createInjury(createPayload)
+      await injurySvc.create(createPayload)
       notifications.success(t('injuries.toast.created'))
     }
     isDialogOpen.value = false
@@ -133,9 +120,6 @@ async function handleSave() {
   }
   catch {
     notifications.error(t('injuries.errors.save'))
-  }
-  finally {
-    isSubmitting.value = false
   }
 }
 
@@ -148,19 +132,14 @@ async function confirmDelete() {
   if (!injuryToDelete.value)
     return
 
-  isSubmitting.value = true
   try {
-    await athleteApi.deleteInjury(injuryToDelete.value.id)
+    await injurySvc.remove(injuryToDelete.value.id)
     notifications.success(t('injuries.toast.deleted'))
-    fetchInjuries()
     isDeleteDialogOpen.value = false
     injuryToDelete.value = null
   }
   catch {
     notifications.error(t('injuries.errors.delete'))
-  }
-  finally {
-    isSubmitting.value = false
   }
 }
 

@@ -1,51 +1,25 @@
 <script setup lang="ts">
-import type { AthleteResponse } from '@/types/api'
 import { Loader2, Stethoscope, User } from 'lucide-vue-next'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-// API & Types
-import { athleteApi } from '@/api/business'
-
 import InjuryManagement from '@/components/injury/InjuryManagement.vue'
-// UI Components
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-
-import { useErrorHandler } from '~/composables/useErrorHandler'
-import { useAuthStore } from '~/stores/auth'
+import { useAthletesStore } from '~/stores/athletesStore'
 
 const { t } = useI18n()
-const handler = useErrorHandler({ component: 'InjuriesManagerPage' })
-const _auth = useAuthStore()
+const athletesStore = useAthletesStore()
 
-// ---------------- State ----------------
+// Local UI state only
 const selectedAthleteId = ref<number | null>(null)
-const athletes = ref<AthleteResponse[]>([])
-const loadingAthletes = ref(false)
 
-// ---------------- Actions ----------------
-async function fetchAthletes() {
-  loadingAthletes.value = true
-  try {
-    const res = await athleteApi.getAll()
-    if (res.data.isSuccess) {
-      athletes.value = res.data.value ?? []
+const athletes = computed(() => athletesStore.items)
+const loadingAthletes = computed(() => athletesStore.loading)
 
-      // Imposta il primo atleta se la lista non è vuota e non ne è già stato selezionato uno
-      if (athletes.value.length > 0 && selectedAthleteId.value === null) {
-        selectedAthleteId.value = athletes.value[0]?.id ?? null
-      }
-    }
+onMounted(async () => {
+  await athletesStore.initialize()
+  if (athletes.value.length > 0 && selectedAthleteId.value === null) {
+    selectedAthleteId.value = athletes.value[0]?.id ?? null
   }
-  catch {
-    handler.handleError(new Error(t('injuries.errors.loadAthletes')))
-  }
-  finally {
-    loadingAthletes.value = false
-  }
-}
-
-onMounted(() => {
-  fetchAthletes()
 })
 </script>
 
@@ -58,7 +32,7 @@ onMounted(() => {
         </div>
         <div>
           <h2 class="text-2xl font-black uppercase tracking-tighter">
-            {{ t('injuries.management_title') || 'Medical Center' }}
+            {{ t('injuries.management_title') }}
           </h2>
           <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
             {{ t('athlete.visualizer') }}

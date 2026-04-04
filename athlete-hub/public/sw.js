@@ -115,8 +115,13 @@ self.addEventListener('fetch', (event) => {
         .then((response) => {
           // Cache successful responses
           if (response.ok) {
-            const cache = caches.open(API_CACHE)
-            cache.then(c => c.put(request, response.clone()))
+            // Avoid cloning if the response body was already consumed (prevents "body is already used")
+            if (!response.bodyUsed) {
+              const cache = caches.open(API_CACHE)
+              cache.then(c => c.put(request, response.clone()))
+            } else {
+              console.warn('[SW] Skip caching - response body already used for', url.pathname)
+            }
           }
           return response
         })
@@ -155,8 +160,12 @@ self.addEventListener('fetch', (event) => {
             .then((response) => {
               // Update cache in background
               if (response.ok) {
-                const cache = caches.open(CACHE_VERSION)
-                cache.then(c => c.put(request, response.clone()))
+                if (!response.bodyUsed) {
+                  const cache = caches.open(CACHE_VERSION)
+                  cache.then(c => c.put(request, response.clone()))
+                } else {
+                  console.warn('[SW] Skip caching HTML - response body already used for', url.pathname)
+                }
               }
               return response
             })
@@ -187,8 +196,12 @@ self.addEventListener('fetch', (event) => {
           .then((response) => {
             // Cache successful responses
             if (response.ok && request.method === 'GET') {
-              const cache = caches.open(RUNTIME_CACHE)
-              cache.then(c => c.put(request, response.clone()))
+              if (!response.bodyUsed) {
+                const cache = caches.open(RUNTIME_CACHE)
+                cache.then(c => c.put(request, response.clone()))
+              } else {
+                console.warn('[SW] Skip caching asset - response body already used for', url.pathname)
+              }
             }
             return response
           })

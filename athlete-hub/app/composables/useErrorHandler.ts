@@ -21,7 +21,9 @@ interface ErrorContext {
 }
 
 function useErrorHandler(context?: ErrorContext) {
-  const notifications = useNotificationStore()
+  // NOTE: Do NOT call useNotificationStore() here at construction time.
+  // Layouts and plugins may instantiate this composable before Pinia is active.
+  // The store is resolved lazily inside handleError() instead.
 
   /**
    * Mappa codici errore a messaggi user-friendly
@@ -94,9 +96,15 @@ function useErrorHandler(context?: ErrorContext) {
       error,
     })
 
-    // Show notification
+    // Show notification — store resolved lazily so Pinia is guaranteed active
     if (autoNotify) {
-      notifications.error(title, `${message}${recovery ? `. ${recovery}` : ''}`)
+      try {
+        const notifications = useNotificationStore()
+        notifications.error(title, `${message}${recovery ? `. ${recovery}` : ''}`)
+      }
+      catch {
+        // Pinia not yet active (e.g. called during plugin init) — silently skip UI notification
+      }
     }
 
     return { title, message, recovery }

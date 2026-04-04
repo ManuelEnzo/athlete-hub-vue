@@ -3,27 +3,9 @@ import type { BadgeVariants } from '../ui/badge'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Stat from '../ui/stat/Stat.vue'
-// ⚠️ Assicurati di avere Badge, Button, Card, CardHeader, CardTitle, CardContent, Stat
-// importati dal tuo design system (es. shadcn-vue o componenti custom)
 
-interface AthleteHealth {
-  id: number
-  name: string
-  position: string
-  readinessScore: number
-  avgWellness: number
-  acuteLoad: number
-  chronicLoad: number
-  acwr: number
-}
-
-const mockTeamHealth: AthleteHealth[] = [
-  { id: 1, name: 'Marco Rossi', position: 'Centrocampista', readinessScore: 8.5, avgWellness: 2.1, acuteLoad: 3500, chronicLoad: 3000, acwr: 1.17 },
-  { id: 2, name: 'Laura Bianchi', position: 'Attaccante', readinessScore: 9.2, avgWellness: 1.5, acuteLoad: 3200, chronicLoad: 3250, acwr: 0.98 },
-  { id: 3, name: 'Andrea Verdi', position: 'Difensore', readinessScore: 6.0, avgWellness: 3.5, acuteLoad: 4200, chronicLoad: 3300, acwr: 1.27 },
-  { id: 4, name: 'Sofia Neri', position: 'Centrocampista', readinessScore: 7.8, avgWellness: 2.5, acuteLoad: 3000, chronicLoad: 2500, acwr: 1.20 },
-  { id: 5, name: 'Luca Gialli', position: 'Portiere', readinessScore: 5.1, avgWellness: 4.0, acuteLoad: 4800, chronicLoad: 2800, acwr: 1.71 },
-]
+import { onMounted } from 'vue'
+import { useAthletesService, useDashboardService } from '~/services/dataService'
 
 const { t } = useI18n()
 
@@ -39,12 +21,57 @@ function getStatusColor(acwr: number): { variant: BadgeVariants['variant'], labe
 const sortBy = ref<'acwr' | 'readiness'>('acwr')
 const sortDirection = ref<'asc' | 'desc'>('desc')
 
+const athletesSvc = useAthletesService()
+const dashboardSvc = useDashboardService()
+
+onMounted(() => {
+  // fetch both dashboard summary and athletes list
+  Promise.all([
+    dashboardSvc.fetch(),
+    athletesSvc.fetch(),
+  ]).catch(() => {
+    // errors are tracked/handled inside services
+  })
+})
+
+const teamHealth = computed(() => {
+  const dashboard = dashboardSvc.data?.value
+  const athletes = athletesSvc.items?.value ?? []
+  if (!dashboard || !dashboard.athletesHealth) return []
+
+  return Object.values(dashboard.athletesHealth).map((h: any) => {
+    const athlete = athletes.find(a => a.id === h.athleteId) || null
+    return {
+      id: h.athleteId,
+      name: athlete?.fullName || athlete?.firstName + ' ' + athlete?.lastName || (`#${h.athleteId}`),
+      position: athlete?.sportCategory || '',
+      acwr: h.acwr ?? 0,
+      readinessScore: h.readiness ?? 0,
+    }
+  })
+})
+
 const sortedTeamHealth = computed(() => {
-  return [...mockTeamHealth].sort((a, b) => {
+  const items = teamHealth.value ?? []
+  return [...items].sort((a, b) => {
     const valA = sortBy.value === 'acwr' ? a.acwr : a.readinessScore
     const valB = sortBy.value === 'acwr' ? b.acwr : b.readinessScore
     return sortDirection.value === 'asc' ? valA - valB : valB - valA
   })
+})
+
+const avgAcwr = computed(() => {
+  const items = teamHealth.value ?? []
+  if (!items.length) return null
+  const sum = items.reduce((s: number, it: any) => s + (it.acwr || 0), 0)
+  return +(sum / items.length).toFixed(2)
+})
+
+const avgReadiness = computed(() => {
+  const items = teamHealth.value ?? []
+  if (!items.length) return null
+  const sum = items.reduce((s: number, it: any) => s + (it.readinessScore || 0), 0)
+  return +(sum / items.length).toFixed(1)
 })
 </script>
 
@@ -113,11 +140,11 @@ const sortedTeamHealth = computed(() => {
             <CardTitle>{{ t('team.averages') }}</CardTitle>
           </CardHeader>
           <CardContent class="space-y-4">
-            <Stat :label="t('stats.avgAcwr')" value="1.15" color="primary" />
-            <Stat :label="t('stats.readiness')" value="7.8 / 10" color="success" />
-            <Stat label="Fatica Hooper" value="2.4 / 5" color="warning" />
-            <Stat label="Sonno Medio" value="7h" color="secondary" />
-            <Stat label="Stress Medio" value="2.1 / 5" color="default" />
+            <Stat :label="t('stats.avgAcwr')" :value="avgAcwr ?? '-'" color="primary" />
+            <Stat :label="t('stats.readiness')" :value="avgReadiness ? `${avgReadiness} / 10` : '-'" color="success" />
+            <Stat :label="t('stats.hooper')" value="-" color="warning" />
+            <Stat :label="t('stats.sleep')" value="-" color="secondary" />
+            <Stat :label="t('stats.stress')" value="-" color="default" />
           </CardContent>
         </Card>
 

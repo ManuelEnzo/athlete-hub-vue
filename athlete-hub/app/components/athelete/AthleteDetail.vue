@@ -1,21 +1,22 @@
 <script setup lang="ts">
 import type { ApexOptions } from 'apexcharts'
-import type { AthleteAnalyticsDto, InjuriesAnalytics } from '@/types/api'
+import type { InjuriesAnalytics } from '@/types/api'
 
 import { ClientOnly } from '#components'
 import { Activity, Scale, TrendingUp, Zap } from 'lucide-vue-next'
-import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { athleteApi } from '@/api/business'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useAnalyticsService } from '~/services/dataService'
 
 const props = defineProps<{ athleteId: number, from?: string, to?: string }>()
 const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'))
 const { t } = useI18n()
 
-const data = ref<AthleteAnalyticsDto | null>(null)
-const loading = ref(true)
+const analyticsSvc = useAnalyticsService()
+const data = computed(() => analyticsSvc.data.value)
+const loading = computed(() => analyticsSvc.loading.value)
 const selectedMetric = ref<string | null>(null)
 
 enum RiskManagementAction {
@@ -31,20 +32,15 @@ enum RiskManagementAction {
 async function fetchAnalytics() {
   if (!props.athleteId)
     return
-  loading.value = true
-  data.value = null
   const dateTo = props.to ?? new Date().toISOString()
   const dateFrom = props.from ?? (() => {
     const d = new Date()
     d.setDate(d.getDate() - 42)
     return d.toISOString()
   })()
-  try {
-    const response = await athleteApi.getDatasForAnalytics(props.athleteId, dateFrom, dateTo)
-    if (response.data.isSuccess)
-      data.value = response.data.value ?? null
-  }
-  finally { loading.value = false }
+  await analyticsSvc.fetch(props.athleteId, dateFrom, dateTo).catch(() => {
+    // error tracked inside service
+  })
 }
 
 watch(() => props.athleteId, fetchAnalytics)

@@ -280,6 +280,8 @@
     "deleteWarning": "This action will permanently delete the athlete and all associated data. Are you sure you want to proceed?",
     "noData": "No athletes available. Please add new athletes.",
     "pageTitle": "Athletes' Personal Data",
+    "search": "Search by name, email or sport",
+    "search": "Search by name, email or sport",
     "visualizer": "Athlete Visualizer",
     "new": "New Athlete",
     "edit": "Edit Athlete",
@@ -340,6 +342,18 @@
     "high": "⚠️ High Risk",
     "low": "Low Risk",
     "medium": "Medium Risk"
+  },
+  "health": {
+    "recommendation": {
+      "excellent": "Athlete in excellent condition. Increase training load.",
+      "moderate": "Monitor closely. Maintain moderate load.",
+      "warning": "Reduce training load. Increase recovery time."
+    },
+    "workload": {
+      "high": "High training load. Increase recovery.",
+      "low": "Low training load. Increase stimulus.",
+      "optimal": "Optimal training load."
+    }
   },
   "team": {
     "individualStatus": "Individual Athlete Status",
@@ -650,7 +664,10 @@
       "forgotPassword": "Forgot password?",
       "alreadyHaveAccount": "Already have an account?",
       "backToLogin": "Back to login",
-      "title": "Welcome Back"
+      "title": "Welcome Back",
+      "subtitle": "Login with your Apple or Google account",
+      "terms": "By continuing you agree to our {terms} and {privacy}."
+      ,"company":"Acme Inc."
     },
     "forgotPassword": {
       "title": "Recover Credentials",

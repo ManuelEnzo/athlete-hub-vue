@@ -12,6 +12,7 @@
 
 import type { Ref } from 'vue'
 import { computed, ref } from 'vue'
+import { t } from '~/lib/i18n-client'
 
 // ApexOptions local type placeholder (no import from api.ts)
 type ApexOptions = Record<string, any>
@@ -76,7 +77,7 @@ export interface HealthMetrics {
   recommendation: string
 }
 
-export function useHealthMetrics(athlete: any): HealthMetrics {
+export function useHealthMetrics(athlete: { readiness?: number, acwr?: number, rpe?: number } | null): HealthMetrics {
   const readiness = athlete?.readiness || 0
   const acwr = athlete?.acwr || 0
   const rpe = athlete?.rpe || 0
@@ -89,15 +90,15 @@ export function useHealthMetrics(athlete: any): HealthMetrics {
 
   if (score >= 80) {
     status = 'healthy'
-    recommendation = 'Atleta in ottima condizione. Aumentare carico di allenamento.'
+    recommendation = t('health.recommendation.excellent')
   }
   else if (score >= 60) {
     status = 'at-risk'
-    recommendation = 'Monitorare attentamente. Mantieni carico moderato.'
+    recommendation = t('health.recommendation.moderate')
   }
   else {
     status = 'warning'
-    recommendation = 'Ridurre carico di allenamento. Incrementare recupero.'
+    recommendation = t('health.recommendation.warning')
   }
 
   return {
@@ -132,15 +133,15 @@ export function useWorkloadAnalysis(current: number, historical: number[] = []):
 
   if (current > 100) {
     status = 'high'
-    recommendation = 'Carico di allenamento alto. Aumentare recupero.'
+    recommendation = t('health.workload.high')
   }
   else if (current < 50) {
     status = 'low'
-    recommendation = 'Carico di allenamento basso. Aumentare stimolo.'
+    recommendation = t('health.workload.low')
   }
   else {
     status = 'optimal'
-    recommendation = 'Carico di allenamento ottimale.'
+    recommendation = t('health.workload.optimal')
   }
 
   return {
@@ -212,8 +213,8 @@ export function useRealtimeUpdates(dataRef: Ref<any>, updateFn: () => Promise<an
           lastUpdate.value = new Date()
         }
       }
-      catch (err) {
-        console.error('Realtime update error:', err)
+      catch {
+        // silently ignore — errors tracked via useErrorTracking in services
       }
     }, intervalMs)
   }

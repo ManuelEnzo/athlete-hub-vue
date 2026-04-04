@@ -11,26 +11,23 @@ definePageMeta({
         <div class="h-6 w-6 flex items-center justify-center rounded-md bg-primary text-primary-foreground">
           <Icon name="i-lucide-gallery-vertical-end" class="size-4" />
         </div>
-        Acme Inc.
+        {{ $t('auth.login.company') }}
       </NuxtLink>
       <div class="flex flex-col gap-6">
         <Card>
           <CardHeader class="text-center">
             <CardTitle class="text-xl">
-              Welcome back
+              {{ $t('auth.login.title') }}
             </CardTitle>
             <CardDescription>
-              Login with your Apple or Google account
+              {{ $t('auth.login.subtitle') }}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <AuthSignIn />
           </CardContent>
         </Card>
-        <div class="text-center text-balance text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
-          By clicking continue, you agree to our <a href="#">Terms of Service</a>
-          and <a href="#">Privacy Policy</a>.
-        </div>
+        <div v-html="$t('auth.login.terms', { terms: '<a>Terms of Service</a>', privacy: '<a>Privacy Policy</a>' })" class="text-center text-balance text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary"></div>
       </div>
     </div>
   </div>

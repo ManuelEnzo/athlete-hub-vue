@@ -8,19 +8,12 @@ import KanbanBoard from '~/components/kanban/KanbanBoard.vue'
 import { useErrorHandler } from '~/composables/useErrorHandler'
 import { useKanban } from '~/composables/useKanban'
 import useToggle from '~/composables/useToggle'
-import { useAuthStore } from '~/stores/auth'
 
 const { t } = useI18n()
 const { state: showNewColumn, set: setShow } = useToggle(false)
 const newColumnTitle = ref('')
 const { addColumn } = useKanban()
-const auth = useAuthStore()
 const handler = useErrorHandler({ component: 'KanbanPage' })
-
-// Basic auth check
-if (!auth.user) {
-  auth.fetchProfile().catch(err => handler.handleError(err instanceof Error ? err : new Error(String(err))))
-}
 
 function resetForm() {
   newColumnTitle.value = ''

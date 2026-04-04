@@ -1,5 +1,20 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useAuthStore } from '~/stores/auth'
+import { useErrorHandler } from '~/composables/useErrorHandler'
 
+// ⚠️ NON inizializzare store fuori da lifecycle in SSR
+onMounted(() => {
+  const auth = useAuthStore()
+  const handler = useErrorHandler({ component: 'Layout' })
+
+  // Fetch user profile once for the entire authenticated session.
+  if (auth.token && !auth.user) {
+    auth.fetchProfile().catch(err =>
+      handler.handleError(err instanceof Error ? err : new Error(String(err))),
+    )
+  }
+})
 </script>
 
 <template>
@@ -17,5 +32,4 @@
 </template>
 
 <style scoped>
-
 </style>

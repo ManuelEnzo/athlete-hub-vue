@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n'
 import { useErrorHandler } from '~/composables/useErrorHandler'
 
 import { useNotificationStore } from '~/stores/notificationStore'
+import { useAthletesStore } from '~/stores/athletesStore'
 import { athleteApi } from '../../api/business'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
@@ -21,9 +22,12 @@ const emit = defineEmits(['update:showForm'])
 const { t } = useI18n()
 const handler = useErrorHandler({ component: 'AthleteManagement' })
 const notifications = useNotificationStore()
+const athletesStore = useAthletesStore()
 
-const athletes = ref<AthleteResponse[]>([])
-const loading = ref(false)
+// ---- Store-derived state (no local duplication) ----
+const athletes = computed(() => athletesStore.items)
+const loading = computed(() => athletesStore.loading)
+
 const editingId = ref<number | null>(null)
 const formCardRef = ref<HTMLElement | null>(null)
 const athleteToDelete = ref<AthleteResponse | null>(null)
@@ -136,16 +140,11 @@ function validateForm(): boolean {
 
 // ---------------- API ----------------
 async function fetchAthletes() {
-  loading.value = true
   try {
-    const res = await athleteApi.getAll()
-    athletes.value = res.data.value ?? []
+    await athletesStore.initialize()
   }
   catch (err: any) {
     handler.handleError(err instanceof Error ? err : new Error(err?.error?.message || t('athlete.errors.load')))
-  }
-  finally {
-    loading.value = false
   }
 }
 
@@ -153,7 +152,6 @@ async function saveAthlete() {
   if (!validateForm())
     return
 
-  loading.value = true
   try {
     if (editingId.value !== null) {
       await athleteApi.update(editingId.value, form)
@@ -163,26 +161,22 @@ async function saveAthlete() {
       await athleteApi.create(form as AthleteCreateRequest)
       notifications.success('', t('athlete.success.created'))
     }
-
-    await fetchAthletes()
+    // re-sync store
+    await athletesStore.initialize()
     resetForm()
   }
   catch (err: any) {
     handler.handleError(err instanceof Error ? err : new Error(err?.error?.message || t('errors.save')))
-  }
-  finally {
-    loading.value = false
   }
 }
 
 async function confirmDelete() {
   if (!athleteToDelete.value)
     return
-  loading.value = true
   try {
     await athleteApi.delete(athleteToDelete.value.id)
-    athletes.value = athletes.value.filter(a => a.id !== athleteToDelete.value!.id)
     notifications.success('', t('athlete.success.deleted'))
+    await athletesStore.initialize()
   }
   catch (err: any) {
     handler.handleError(err instanceof Error ? err : new Error(err?.error?.message || t('errors.delete')))
@@ -190,7 +184,6 @@ async function confirmDelete() {
   finally {
     isDeleteDialogOpen.value = false
     athleteToDelete.value = null
-    loading.value = false
   }
 }
 
@@ -317,7 +310,7 @@ onMounted(fetchAthletes)
   <div class="w-full flex flex-col gap-8 mx-auto p-4 relative">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-center gap-3 w-full md:w-auto">
-        <Input v-model="searchQuery" placeholder="Search athletes, email or sport" class="w-full md:w-64" aria-label="Search athletes" />
+        <Input v-model="searchQuery" :placeholder="t('athlete.search')" class="w-full md:w-64" aria-label="Search athletes" />
       </div>
     </div>
 

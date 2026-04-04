@@ -3,16 +3,10 @@ import { PlusCircle } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button'
 import AthleteManagement from '~/components/athmanagement/AthleteManagement.vue'
-import { useErrorHandler } from '~/composables/useErrorHandler'
 import useToggle from '~/composables/useToggle'
-import { useAuthStore } from '~/stores/auth'
 
 const { t } = useI18n()
 const { state: isFormVisible, toggle } = useToggle(false)
-
-// Auth guard + profile fetch
-const _auth = useAuthStore()
-const _handler = useErrorHandler({ component: 'AthleteManagementPage' })
 </script>
 
 <template>

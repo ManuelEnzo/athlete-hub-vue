@@ -1,69 +1,46 @@
 <script setup lang="ts">
-import type { AthleteMeasurementsResponse, AthleteResponse } from '~/types/api'
+import type { AthleteMeasurementsResponse } from '~/types/api'
 import { Loader2, PlusCircle } from 'lucide-vue-next'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { athleteApi } from '~/api/business'
 import AthletesMeasurements from '~/components/athletemeasurements/AthletesMeasurements.vue'
-import { useErrorHandler } from '~/composables/useErrorHandler'
 import useToggle from '~/composables/useToggle'
-import { useAuthStore } from '~/stores/auth'
+import { useMeasurementsService } from '~/services/dataService'
+import { useAthletesStore } from '~/stores/athletesStore'
 
 const { state: isFormVisible, toggle: _toggle } = useToggle(false)
 const selectedAthleteId = ref<number | null>(null)
-const athletes = ref<AthleteResponse[]>([])
-const loading = ref(false)
-const measurements = ref<AthleteMeasurementsResponse[]>([])
 const { t } = useI18n()
-const handler = useErrorHandler({ component: 'AthleteMeasurementsPage' })
-const auth = useAuthStore()
 
-// Carica l'elenco atleti e imposta il primo se presente
-async function fetchAthletes() {
-  try {
-    const res = await athleteApi.getAll()
-    if (res.data.isSuccess) {
-      athletes.value = res.data.value ?? []
-      if (athletes.value.length > 0 && selectedAthleteId.value === null) {
-        selectedAthleteId.value = athletes.value[0]?.id ?? null
-      }
-    }
-  }
-  catch (err) {
-    handler.handleError(err instanceof Error ? err : new Error(t('measurements.toast.loadAthletesError')))
-  }
-}
+// Athletes — fetched once via store (cached, deduplicated)
+const athletesStore = useAthletesStore()
+const athletes = computed(() => athletesStore.items)
 
-// Carica TUTTE le misurazioni o quelle specifiche
+// Measurements — fetched via centralised service
+const measurementsSvc = useMeasurementsService()
+const measurements = computed<AthleteMeasurementsResponse[]>(() => measurementsSvc.items.value)
+const loading = computed(() => measurementsSvc.loading.value)
+
 async function refreshData() {
-  loading.value = true
-  try {
-    const res = await athleteApi.getAllMeasurements()
-    if (res.data.isSuccess) {
-      measurements.value = res.data.value ?? []
-    }
-  }
-  catch (err) {
-    handler.handleError(err instanceof Error ? err : new Error(t('measurements.toast.loadMeasurementsError')))
-  }
-  finally {
-    loading.value = false
-  }
+  await measurementsSvc.fetch()
 }
 
-// Quando cambia l'atleta, resettiamo eventuali stati temporanei se necessario
+// When athlete changes, optional UI-only side effects can go here
 watch(selectedAthleteId, () => {
-  // Se vuoi nascondere il form quando cambi atleta:
-  // isFormVisible.value = false
+  // isFormVisible.value = false // uncomment if needed
 })
 
-onMounted(() => {
-  // ensure auth/profile then load
-  auth.fetchProfile().catch(e => handler.handleError(e instanceof Error ? e : new Error(String(e))))
-  fetchAthletes()
-  refreshData()
+onMounted(async () => {
+  await Promise.all([
+    athletesStore.initialize(),
+    refreshData(),
+  ])
+  // Auto-select first athlete
+  if (athletes.value.length > 0 && selectedAthleteId.value === null) {
+    selectedAthleteId.value = athletes.value[0]?.id ?? null
+  }
 })
 </script>
 

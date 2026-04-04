@@ -36,10 +36,10 @@ useSeoMeta({
   ogTitle: title,
   ogDescription: description,
   ogUrl: '',
-  ogImage: 'https://nuxt-shadcn-dashboard.vercel.app/social-card.png',
+  ogImage: config.siteOgImage,
   twitterTitle: title,
   twitterDescription: description,
-  twitterImage: 'https://nuxt-shadcn-dashboard.vercel.app/social-card.png',
+  twitterImage: config.siteOgImage,
   twitterCard: 'summary_large_image',
 })
 

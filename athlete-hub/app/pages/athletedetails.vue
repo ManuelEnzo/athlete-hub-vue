@@ -1,49 +1,26 @@
 <script setup lang="ts">
-import type { AthleteResponse } from '@/types/api'
 import { Loader2, User } from 'lucide-vue-next'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-// API & Types
-import { athleteApi } from '@/api/business'
-
 import AthleteDetail from '@/components/athelete/AthleteDetail.vue'
-// UI Components
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-
-import { useErrorHandler } from '~/composables/useErrorHandler'
-import { useAuthStore } from '~/stores/auth'
+import { useAthletesStore } from '~/stores/athletesStore'
 
 const { t } = useI18n()
-const handler = useErrorHandler({ component: 'AthleteDetailsPage' })
-const auth = useAuthStore()
+const athletesStore = useAthletesStore()
 
-// ---------------- State ----------------
+// Local UI state only — data lives in the store
 const selectedAthleteId = ref<number | null>(null)
-const athletes = ref<AthleteResponse[]>([])
-const loadingAthletes = ref(false)
 
-// ---------------- Actions ----------------
-// Carica l'elenco atleti e imposta il primo se presente
-async function fetchAthletes() {
-  try {
-    const res = await athleteApi.getAll()
-    if (res.data.isSuccess) {
-      athletes.value = res.data.value ?? []
+const athletes = computed(() => athletesStore.items)
+const loadingAthletes = computed(() => athletesStore.loading)
 
-      if (athletes.value.length > 0 && selectedAthleteId.value === null) {
-        selectedAthleteId.value = athletes.value[0]?.id ?? null
-      }
-    }
+onMounted(async () => {
+  await athletesStore.initialize()
+  // Auto-select first athlete after load
+  if (athletes.value.length > 0 && selectedAthleteId.value === null) {
+    selectedAthleteId.value = athletes.value[0]?.id ?? null
   }
-  catch (err) {
-    handler.handleError(err instanceof Error ? err : new Error(t('measurements.toast.loadAthletesError')))
-  }
-}
-
-onMounted(() => {
-  // ensure auth profile (non-blocking)
-  auth.fetchProfile().catch(e => handler.handleError(e instanceof Error ? e : new Error(String(e))))
-  fetchAthletes()
 })
 </script>
 

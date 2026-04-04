@@ -6,6 +6,8 @@ const config = {
   apiEndpoint: import.meta.env.VITE_ATHLETE_HUB_API || 'http://localhost:5051/api/v1',
   // endpoint used for public forms (waitlist / contact) - can be proxied via backend in production
   formEndpoint: import.meta.env.VITE_ATHLETE_HUB_FORM_ENDPOINT || 'https://formsubmit.co/ajax/athletehub.sport@gmail.com',
+  // Social card image for OG/Twitter meta tags — override via env in production
+  siteOgImage: import.meta.env.VITE_ATHLETE_HUB_OG_IMAGE || '/social-card.png',
 }
 
 export default config

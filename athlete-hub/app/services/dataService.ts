@@ -372,6 +372,189 @@ export function useErrorTracking() {
 }
 
 // ============================================
+// ANALYTICS SERVICE (per-athlete, cacheable)
+// ============================================
+export function useAnalyticsService() {
+  const data = ref<import('~/types/api').AthleteAnalyticsDto | null>(null)
+  const loading = ref(false)
+  const error = ref<DataServiceError | null>(null)
+
+  const fetch = async (athleteId: number, from: string, to: string) => {
+    loading.value = true
+    error.value = null
+    data.value = null
+
+    try {
+      const result = await withRetry(async () => {
+        const res = await athleteApi.getDatasForAnalytics(athleteId, from, to)
+        if (!res.data.isSuccess) {
+          throw new DataServiceError('API_ERROR', 'Errore caricamento analytics atleta')
+        }
+        return res.data.value
+      })
+      data.value = result
+      return result
+    }
+    catch (err) {
+      const dataError = err instanceof DataServiceError
+        ? err
+        : new DataServiceError('UNKNOWN_ERROR', String(err))
+      error.value = dataError
+      throw dataError
+    }
+    finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    data: computed(() => data.value),
+    loading: computed(() => loading.value),
+    error: computed(() => error.value),
+    fetch,
+  }
+}
+
+// ============================================
+// INJURY SERVICE (per-athlete CRUD)
+// ============================================
+export function useInjuryService() {
+  const items = ref<import('~/types/api').InjuryResponseDTO[]>([])
+  const loading = ref(false)
+  const submitting = ref(false)
+  const error = ref<DataServiceError | null>(null)
+
+  const fetch = async (athleteId: number) => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const result = await withRetry(async () => {
+        const res = await athleteApi.getInjuries(athleteId)
+        if (!res.data.isSuccess) {
+          throw new DataServiceError('API_ERROR', 'Errore caricamento infortuni')
+        }
+        return res.data.value
+      })
+      items.value = result || []
+      return items.value
+    }
+    catch (err) {
+      const dataError = err instanceof DataServiceError
+        ? err
+        : new DataServiceError('UNKNOWN_ERROR', String(err))
+      error.value = dataError
+      throw dataError
+    }
+    finally {
+      loading.value = false
+    }
+  }
+
+  const create = async (payload: import('~/types/api').InjuryCreateDTO) => {
+    submitting.value = true
+    try {
+      const res = await athleteApi.createInjury(payload)
+      if (!res.data.isSuccess) throw new DataServiceError('API_ERROR', 'Errore creazione infortunio')
+      if (res.data.value) items.value.push(res.data.value)
+      return res.data.value
+    }
+    catch (err) {
+      throw err instanceof DataServiceError ? err : new DataServiceError('UNKNOWN_ERROR', String(err))
+    }
+    finally {
+      submitting.value = false
+    }
+  }
+
+  const update = async (id: number, athleteId: number, payload: import('~/types/api').InjuryUpdateDTO) => {
+    submitting.value = true
+    try {
+      const res = await athleteApi.updateInjury(id, payload)
+      if (!res.data.isSuccess) throw new DataServiceError('API_ERROR', 'Errore aggiornamento infortunio')
+      // re-fetch to get latest server state
+      await fetch(athleteId)
+      return res.data.value
+    }
+    catch (err) {
+      throw err instanceof DataServiceError ? err : new DataServiceError('UNKNOWN_ERROR', String(err))
+    }
+    finally {
+      submitting.value = false
+    }
+  }
+
+  const remove = async (id: number) => {
+    submitting.value = true
+    try {
+      const res = await athleteApi.deleteInjury(id)
+      if (!res.data.isSuccess) throw new DataServiceError('API_ERROR', 'Errore eliminazione infortunio')
+      items.value = items.value.filter(i => i.id !== id)
+    }
+    catch (err) {
+      throw err instanceof DataServiceError ? err : new DataServiceError('UNKNOWN_ERROR', String(err))
+    }
+    finally {
+      submitting.value = false
+    }
+  }
+
+  return {
+    items: computed(() => items.value),
+    loading: computed(() => loading.value),
+    submitting: computed(() => submitting.value),
+    error: computed(() => error.value),
+    fetch,
+    create,
+    update,
+    remove,
+  }
+}
+
+// ============================================
+// MEASUREMENTS SERVICE
+// ============================================
+export function useMeasurementsService() {
+  const items = ref<import('~/types/api').AthleteMeasurementsResponse[]>([])
+  const loading = ref(false)
+  const error = ref<DataServiceError | null>(null)
+
+  const fetch = async () => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const result = await withRetry(async () => {
+        const res = await athleteApi.getAllMeasurements()
+        if (!res.data.isSuccess) {
+          throw new DataServiceError('API_ERROR', 'Errore caricamento misurazioni')
+        }
+        return res.data.value
+      })
+      items.value = result || []
+      return items.value
+    }
+    catch (err) {
+      const dataError = err instanceof DataServiceError
+        ? err
+        : new DataServiceError('UNKNOWN_ERROR', String(err))
+      error.value = dataError
+      throw dataError
+    }
+    finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    items: computed(() => items.value),
+    loading: computed(() => loading.value),
+    error: computed(() => error.value),
+    fetch,
+  }
+}
+
+// ============================================
 // EXPORTS
 // ============================================
 export {
