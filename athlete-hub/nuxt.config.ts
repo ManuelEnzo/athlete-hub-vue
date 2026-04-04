@@ -63,7 +63,6 @@ export default defineNuxtConfig({
   routeRules: {
     '/components': { redirect: '/components/accordion' },
     '/settings': { redirect: '/settings/profile' },
-    '/**': { ssr: false, static: true } // <- fallback SPA per tutte le route
   },
 
   imports: {
@@ -72,6 +71,6 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2024-12-14',
   nitro: {
-    preset: 'static',
+    preset: 'vercel-static',
   },
 })

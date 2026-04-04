@@ -630,7 +630,7 @@
       "confirmPassword": "Confirm Password",
       "createAccount": "Create Account",
       "placeholders": {
-        "email": "name@example.com"
+        "email": "Your email"
       },
       "orContinue": "Or continue with",
       "submit": "Sign Up"
@@ -651,8 +651,8 @@
       "newPassword": "New Password",
       "confirmPassword": "Confirm Password",
       "invitationCode": "Invitation Code",
-      "email": "email",
-      "password": "password"
+      "email": "Email",
+      "password": "Password"
     },
     "login": {
       "withApple": "Login with Apple",

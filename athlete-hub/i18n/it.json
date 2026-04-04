@@ -641,7 +641,7 @@
       "confirmPassword": "Conferma Password",
       "createAccount": "Crea Account",
       "placeholders": {
-        "email": "name@example.com"
+        "email": "La tua email"
       },
       "orContinue": "O continua con",
       "submit": "Registrati"
@@ -662,8 +662,8 @@
       "newPassword": "Nuova Password",
       "confirmPassword": "Conferma Password",
       "invitationCode": "Codice Invito",
-      "email": "email",
-      "password": "password"
+      "email": "Email",
+      "password": "Password"
     },
     "login": {
       "withApple": "Login with Apple",
