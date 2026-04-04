@@ -1,18 +1,33 @@
 import tailwindcss from '@tailwindcss/vite'
 
+// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: false, // SPA puro
   devtools: { enabled: true },
-  sourcemap: { server: true, client: true },
+  sourcemap: {
+    server: true,
+    client: true
+  },
   css: ['~/assets/css/tailwind.css'],
 
   vite: {
-    build: { sourcemap: true },
-    css: { devSourcemap: true },
-    plugins: [tailwindcss() as any],
+    build: {
+      sourcemap: true
+    },
+    css: {
+      devSourcemap: true
+    },
+    plugins: [
+      tailwindcss() as any,
+    ],
   },
 
-  components: [{ path: '~/components', extensions: ['.vue'] }],
+  components: [
+    {
+      path: '~/components',
+      extensions: ['.vue'],
+    },
+  ],
 
   modules: [
     'shadcn-nuxt',
@@ -24,25 +39,39 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
   ],
 
-  shadcn: { prefix: '', componentDir: '~/components/ui' },
-  colorMode: { classSuffix: '' },
+  shadcn: {
+    prefix: '',
+    componentDir: '~/components/ui',
+  },
 
-  eslint: { config: { standalone: false } },
+  colorMode: {
+    classSuffix: '',
+  },
 
-  fonts: { defaults: { weights: [300, 400, 500, 600, 700, 800] } },
+  eslint: {
+    config: {
+      standalone: false,
+    },
+  },
 
-  // Fallback SPA per tutte le route
+  fonts: {
+    defaults: {
+      weights: [300, 400, 500, 600, 700, 800],
+    },
+  },
+
   routeRules: {
     '/components': { redirect: '/components/accordion' },
     '/settings': { redirect: '/settings/profile' },
+    '/**': { ssr: false, static: true } // <- fallback SPA per tutte le route
   },
 
-  imports: { dirs: ['./lib'] },
+  imports: {
+    dirs: ['./lib'],
+  },
 
   compatibilityDate: '2024-12-14',
   nitro: {
-    // Invece di 'static', usa 'vercel-spa' o lascialo vuoto
-    // se vuoi che Vercel gestisca il routing tramite vercel.json
-    preset: 'vercel'
+    preset: 'static',
   },
 })
