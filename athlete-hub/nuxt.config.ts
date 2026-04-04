@@ -35,11 +35,14 @@ export default defineNuxtConfig({
   routeRules: {
     '/components': { redirect: '/components/accordion' },
     '/settings': { redirect: '/settings/profile' },
-    '/**': { ssr: false, static: true },
   },
 
   imports: { dirs: ['./lib'] },
 
   compatibilityDate: '2024-12-14',
-  nitro: { preset: 'static' },
+  nitro: {
+    // Invece di 'static', usa 'vercel-spa' o lascialo vuoto
+    // se vuoi che Vercel gestisca il routing tramite vercel.json
+    preset: 'vercel'
+  },
 })
