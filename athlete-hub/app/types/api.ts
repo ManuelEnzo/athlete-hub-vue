@@ -472,6 +472,40 @@ export interface MailRequestDto {
   updatedAt: string
 }
 
+// -------------------- SLEEP DTOs --------------------
+
+export enum SleepDataSource {
+  Manual = 0,
+  Device = 1,
+  Mixed = 2,
+}
+
+export enum SleepStatus {
+  Awake = 0,
+  Core = 1,
+  REM = 2,
+  Deep = 3,
+}
+
+export interface SleepSegmentDto {
+  startTime: string // ISO 8601
+  endTime: string // ISO 8601
+  stage: SleepStatus
+}
+
+export interface SleepResponseDto {
+  athleteId: number
+  date: string // ISO 8601
+  hoursSlept?: number
+  sleepQuality?: number
+  notes?: string
+  source: SleepDataSource
+  segments?: SleepSegmentDto[]
+  deepSleepHours?: number
+  remSleepHours?: number
+  awakeTime?: number
+}
+
 // Dashboard Filter State
 export interface FilterState {
   athletes: number[]

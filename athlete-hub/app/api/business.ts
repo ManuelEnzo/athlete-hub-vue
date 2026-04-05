@@ -22,11 +22,12 @@ import type {
   RpeLastSessionOverviewDto,
   RpeLinkQueueResponseDto,
   RpeLinkQueueSubmitRpeDto,
+  SleepResponseDto,
   TestDefinitionDto,
   TestEntryGridDto,
   TestManagementCreateRequest,
   TestManagementUpdateRequest,
-  TestResultSaveDto,
+  TestResultSaveDto
 } from '../types/api'
 import api from './client-optimized'
 
@@ -172,5 +173,14 @@ export const athleteApi = {
 
   createNewMailAsync: (data: MailRequestDto) =>
     api.post(`/Mail/create-new-mail`, data),
+
+  // -------------------- SLEEP --------------------
+  getSleepData: (athleteId: number, date: string) =>
+    api.get<Result<SleepResponseDto>>(`/Sleep/${athleteId}/${date}`),
+
+  getSleepHistory: (athleteId: number, from?: string, to?: string) => {
+    const params = { params: { ...(from && { from }), ...(to && { to }) } }
+    return api.get<Result<SleepResponseDto[]>>(`/Sleep/${athleteId}/history`, params)
+  },
 
 }

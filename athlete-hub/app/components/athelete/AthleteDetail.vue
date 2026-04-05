@@ -9,6 +9,8 @@ import { useI18n } from 'vue-i18n'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAnalyticsService } from '~/services/dataService'
+import type { RpeHistoricalEntryDto } from '@/types/api'
+import { athleteApi } from '~/api/business'
 
 const props = defineProps<{ athleteId: number, from?: string, to?: string }>()
 const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'))
@@ -18,6 +20,7 @@ const analyticsSvc = useAnalyticsService()
 const data = computed(() => analyticsSvc.data.value)
 const loading = computed(() => analyticsSvc.loading.value)
 const selectedMetric = ref<string | null>(null)
+const rpeHistory = ref<RpeHistoricalEntryDto[]>([])
 
 enum RiskManagementAction {
   InsufficientData = 0,
@@ -41,6 +44,10 @@ async function fetchAnalytics() {
   await analyticsSvc.fetch(props.athleteId, dateFrom, dateTo).catch(() => {
     // error tracked inside service
   })
+  // Fetch RPE history for load comparison (fire-and-forget)
+  athleteApi.getHistoricalAnalysis(props.athleteId, 0, 10)
+    .then(res => { if (res.data.isSuccess) rpeHistory.value = res.data.value?.items ?? [] })
+    .catch(() => {})
 }
 
 watch(() => props.athleteId, fetchAnalytics)
@@ -230,16 +237,86 @@ const readinessRadialOptions = computed<ApexOptions>(() => ({
   colors: ['#6366f1']
 }))
 
-const lastTestsSeries = computed(() => {
-  const vals = data.value?.performance.lastTests.map(m => m.value) ?? []
-  return [{ name: t('analytics.last_tests'), data: vals }]
+const lastTestsWithTrend = computed(() => {
+  const tests = data.value?.performance.lastTests ?? []
+  const history = [...(data.value?.performance.history ?? [])]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  return tests.map((m) => {
+    const entries = history
+      .map(h => h.metrics.find(hm => hm.metricName === m.metricName))
+      .filter((e): e is typeof m => e != null)
+    const prev = entries[1]
+    const change = prev != null ? m.value - prev.value : null
+    const pct = prev && prev.value !== 0 ? Math.round((change! / prev.value) * 100) : null
+    return { ...m, change, pct }
+  })
 })
 
-const lastTestsOptions = computed<ApexOptions>(() => ({
-  chart: { toolbar: { show: false } },
-  xaxis: { categories: data.value?.performance.lastTests.map(m => m.metricName) ?? [] },
-  colors: ['#8b5cf6']
-}))
+const rpeLoadSessions = computed(() => {
+  return rpeHistory.value
+    .filter(s => s.targetRpe != null && s.targetRpe > 0)
+    .slice(0, 7)
+    .map((s) => {
+      const target = s.targetRpe!
+      const actual = s.rpe
+      const diff = actual - target
+      const pct = Math.round((diff / target) * 100)
+      return {
+        name: s.nomeSessione || s.sessionType,
+        date: new Date(s.sessionDate).toLocaleDateString(),
+        actual,
+        target,
+        diff,
+        pct,
+        status: pct > 20 ? 'over-high' : pct > 5 ? 'over' : pct < -20 ? 'under' : 'ok',
+      }
+    })
+})
+
+/* READINESS ZONE */
+const readinessZone = computed(() => {
+  const v = readinessPercent.value
+  if (v >= 80) return { label: t('analytics.readiness_peak'), textClass: 'text-green-600', lightClass: 'bg-green-100 text-green-800' }
+  if (v >= 60) return { label: t('analytics.readiness_good'), textClass: 'text-blue-600', lightClass: 'bg-blue-100 text-blue-800' }
+  if (v >= 40) return { label: t('analytics.readiness_moderate'), textClass: 'text-yellow-600', lightClass: 'bg-yellow-100 text-yellow-800' }
+  return { label: t('analytics.readiness_low'), textClass: 'text-red-600', lightClass: 'bg-red-100 text-red-800' }
+})
+
+const acwrAlertVisible = computed(() =>
+  latestAcwr.value?.zone === RiskManagementAction.DangerSpike
+  || latestAcwr.value?.zone === RiskManagementAction.HighFatigue,
+)
+
+const acwrBorderClass = computed(() => {
+  const z = latestAcwr.value?.zone
+  if (z === RiskManagementAction.DangerSpike || z === RiskManagementAction.HighFatigue) return 'border-l-4 border-l-red-500'
+  if (z === RiskManagementAction.LoadRising || z === RiskManagementAction.ModerateRisk) return 'border-l-4 border-l-yellow-500'
+  if (z === RiskManagementAction.Optimal) return 'border-l-4 border-l-green-500'
+  return ''
+})
+
+/* INJURY TIMELINE */
+const injuryTimeline = computed(() => {
+  const today = new Date()
+  const rangeMs = 90 * 24 * 60 * 60 * 1000
+  const rangeStart = new Date(today.getTime() - rangeMs)
+  return injuries.value
+    .map((i) => {
+      const start = new Date(i.date)
+      const isActive = i.status.toLowerCase() === 'active'
+      const isRehab = i.status.toLowerCase().includes('rehab')
+      const end = isActive
+        ? today
+        : new Date(start.getTime() + Math.max(1, i.daysOut ?? 1) * 24 * 60 * 60 * 1000)
+      const leftPct = Math.max(0, (start.getTime() - rangeStart.getTime()) / rangeMs * 100)
+      const rawRight = (end.getTime() - rangeStart.getTime()) / rangeMs * 100
+      const rightPct = Math.min(100, rawRight)
+      const widthPct = Math.max(2, rightPct - leftPct)
+      return { ...i, leftPct, widthPct, rightPct, isActive, isRehab }
+    })
+    .filter(i => i.rightPct > 0)
+    .slice(0, 8)
+})
 </script>
 
 <template>
@@ -285,6 +362,20 @@ const lastTestsOptions = computed<ApexOptions>(() => ({
             </DropdownMenu>
         </div>
       </div>
+
+      <!-- ACWR RISK ALERT -->
+      <div
+        v-if="acwrAlertVisible"
+        class="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-900 px-4 py-3"
+        role="alert"
+      >
+        <Zap class="h-5 w-5 text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
+        <div>
+          <p class="text-sm font-semibold text-red-700 dark:text-red-400">{{ t('analytics.acwr_alert_title') }}</p>
+          <p class="text-xs text-red-600 dark:text-red-500 mt-0.5">{{ getRiskLabel(latestAcwr?.zone) }} — {{ t('analytics.acwr_alert_desc') }}</p>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card
           :title="t('analytics.readiness_title_tooltip')"
@@ -321,7 +412,8 @@ const lastTestsOptions = computed<ApexOptions>(() => ({
         </Card>
 
         <Card
-          :title="t('analytics.current_acwr_tooltip') "
+          :class="acwrBorderClass"
+          :title="t('analytics.current_acwr_tooltip')"
         >
           <CardContent class="p-6">
             <p class="text-xs font-bold uppercase text-muted-foreground mb-2">
@@ -444,27 +536,169 @@ const lastTestsOptions = computed<ApexOptions>(() => ({
         </Card>
       </div>
 
+      <!-- RPE LOAD COMPARISON -->
+      <div class="bg-card rounded-2xl border shadow-sm p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wide text-muted-foreground">{{ t('analytics.rpe_load_title') }}</h3>
+            <p class="text-xs text-muted-foreground mt-0.5">{{ t('analytics.rpe_load_subtitle') }}</p>
+          </div>
+        </div>
+
+        <div v-if="rpeLoadSessions.length" class="space-y-4">
+          <div
+            v-for="s in rpeLoadSessions"
+            :key="s.date + s.name"
+            class="group rounded-xl border border-border bg-background p-3 hover:shadow-sm transition-shadow"
+          >
+            <!-- Row header -->
+            <div class="flex items-center justify-between mb-2.5">
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-foreground truncate">{{ s.name }}</p>
+                <p class="text-xs text-muted-foreground">{{ s.date }}</p>
+              </div>
+              <span
+                class="ml-3 shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full"
+                :class="{
+                  'bg-red-100 text-red-700': s.status === 'over-high',
+                  'bg-yellow-100 text-yellow-700': s.status === 'over',
+                  'bg-blue-100 text-blue-700': s.status === 'under',
+                  'bg-green-100 text-green-700': s.status === 'ok',
+                }"
+              >
+                <template v-if="s.status === 'over-high'">+{{ s.pct }}% {{ t('analytics.rpe_over_target') }}</template>
+                <template v-else-if="s.status === 'over'">+{{ s.pct }}% {{ t('analytics.rpe_over_target') }}</template>
+                <template v-else-if="s.status === 'under'">{{ s.pct }}% {{ t('analytics.rpe_under_target') }}</template>
+                <template v-else>{{ t('analytics.rpe_ok') }}</template>
+              </span>
+            </div>
+
+            <!-- Dual bars -->
+            <div class="space-y-1.5">
+              <!-- Actual RPE -->
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] text-muted-foreground w-16 shrink-0 text-right">{{ t('analytics.rpe_actual') }}</span>
+                <div class="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all duration-500"
+                    :class="{
+                      'bg-red-500': s.status === 'over-high',
+                      'bg-yellow-500': s.status === 'over',
+                      'bg-blue-400': s.status === 'under',
+                      'bg-green-500': s.status === 'ok',
+                    }"
+                    :style="{ width: `${(s.actual / 10) * 100}%` }"
+                  />
+                </div>
+                <span
+                  class="text-xs font-bold w-8 shrink-0 tabular-nums"
+                  :class="{
+                    'text-red-600': s.status === 'over-high',
+                    'text-yellow-600': s.status === 'over',
+                    'text-blue-600': s.status === 'under',
+                    'text-green-600': s.status === 'ok',
+                  }"
+                >{{ s.actual.toFixed(1) }}</span>
+              </div>
+              <!-- Target RPE -->
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] text-muted-foreground w-16 shrink-0 text-right">{{ t('analytics.rpe_target') }}</span>
+                <div class="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+                  <div
+                    class="h-full rounded-full bg-slate-300 dark:bg-slate-600 transition-all duration-500"
+                    :style="{ width: `${(s.target / 10) * 100}%` }"
+                  />
+                </div>
+                <span class="text-xs text-muted-foreground w-8 shrink-0 tabular-nums">{{ s.target.toFixed(1) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p v-else class="py-6 text-center text-sm text-muted-foreground">
+          {{ t('analytics.rpe_no_data') }}
+        </p>
+      </div>
+
       <!-- QUICK KPIS / CHARTS -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- READINESS ZONE CARD -->
         <Card>
-          <CardHeader>
+          <CardHeader class="pb-2">
             <CardTitle class="text-sm font-bold uppercase">{{ t('analytics.readiness') }}</CardTitle>
           </CardHeader>
-          <CardContent class="flex items-center justify-center">
-            <ClientOnly>
-              <VueApexCharts type="radialBar" height="160" :options="readinessRadialOptions" :series="readinessRadialSeries" />
-            </ClientOnly>
+          <CardContent class="px-5 pb-5">
+            <!-- Score + zone -->
+            <div class="flex items-end gap-2 mb-3">
+              <span class="text-5xl font-black tabular-nums leading-none" :class="readinessZone.textClass">{{ readinessPercent }}</span>
+              <span class="text-base text-muted-foreground mb-0.5">/100</span>
+            </div>
+            <span class="inline-block text-xs font-bold px-2.5 py-1 rounded-full mb-4" :class="readinessZone.lightClass">
+              {{ readinessZone.label }}
+            </span>
+            <!-- Gradient zone bar -->
+            <div class="relative h-3 rounded-full overflow-hidden bg-gradient-to-r from-red-400 via-orange-400 via-yellow-400 to-green-500">
+              <div
+                class="absolute top-0 h-3 w-1 -translate-x-0.5 rounded-full bg-white shadow-md ring-1 ring-gray-300 pointer-events-none"
+                :style="{ left: `${readinessPercent}%` }"
+              />
+            </div>
+            <div class="flex justify-between text-[10px] text-muted-foreground mt-1.5">
+              <span>0</span><span>40</span><span>60</span><span>80</span><span>100</span>
+            </div>
           </CardContent>
         </Card>
 
+        <!-- INJURY TIMELINE CARD -->
         <Card>
-          <CardHeader>
+          <CardHeader class="pb-2">
             <CardTitle class="text-sm font-bold uppercase">{{ t('analytics.injury_breakdown') }}</CardTitle>
           </CardHeader>
-          <CardContent class="flex items-center justify-center">
-            <ClientOnly>
-              <VueApexCharts type="donut" height="160" :options="injuriesDonutOptions" :series="injuriesDonutSeries" />
-            </ClientOnly>
+          <CardContent class="px-5 pb-4">
+            <div v-if="injuryTimeline.length > 0">
+              <!-- legend -->
+              <div class="flex items-center gap-3 mb-3 text-[11px]">
+                <span class="flex items-center gap-1.5">
+                  <span class="inline-block w-2 h-2 rounded-full bg-red-500" />
+                  {{ activeInjuries.length }} {{ t('injuries.statuses.active') }}
+                </span>
+                <span class="flex items-center gap-1.5">
+                  <span class="inline-block w-2 h-2 rounded-full bg-yellow-500" />
+                  {{ injuryTimeline.filter(i => i.isRehab).length }} {{ t('injuries.statuses.rehab') }}
+                </span>
+                <span class="ml-auto text-muted-foreground">{{ t('analytics.last_90_days') }}</span>
+              </div>
+              <!-- bars -->
+              <div class="space-y-3">
+                <div v-for="inj in injuryTimeline" :key="inj.date + inj.injury">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-medium text-foreground truncate max-w-[55%]">{{ inj.injury }}</span>
+                    <span
+                      class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0"
+                      :class="inj.isActive ? 'bg-red-100 text-red-700' : inj.isRehab ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'"
+                    >{{ translateInjuryStatus(inj.status) }}</span>
+                  </div>
+                  <div class="relative h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      class="absolute top-0 h-full rounded-full"
+                      :class="inj.isActive ? 'bg-red-500' : inj.isRehab ? 'bg-yellow-500' : 'bg-green-400'"
+                      :style="{ left: `${inj.leftPct}%`, width: `${inj.widthPct}%` }"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="flex justify-between text-[10px] text-muted-foreground mt-2 pt-1 border-t border-border">
+                <span>-90{{ t('common.days_short') }}</span>
+                <span>{{ new Date().toLocaleDateString() }}</span>
+              </div>
+            </div>
+            <div v-else class="flex flex-col items-center justify-center py-6 text-center">
+              <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mb-2">
+                <span class="text-green-600 text-lg font-bold">✓</span>
+              </div>
+              <p class="text-sm font-semibold text-green-700">{{ t('analytics.all_clear') }}</p>
+            </div>
           </CardContent>
         </Card>
 
@@ -472,10 +706,27 @@ const lastTestsOptions = computed<ApexOptions>(() => ({
           <CardHeader>
             <CardTitle class="text-sm font-bold uppercase">{{ t('analytics.last_tests') }}</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ClientOnly>
-              <VueApexCharts type="bar" height="160" :options="lastTestsOptions" :series="lastTestsSeries" />
-            </ClientOnly>
+          <CardContent class="px-5 pb-4">
+            <div v-if="lastTestsWithTrend.length" class="divide-y divide-border">
+              <div
+                v-for="m in lastTestsWithTrend"
+                :key="m.metricName"
+                class="flex items-center justify-between py-2.5 gap-2"
+              >
+                <span class="text-xs text-muted-foreground truncate min-w-0 flex-1">{{ m.metricName }}</span>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="text-sm font-bold tabular-nums text-foreground">{{ m.value }}<span class="text-xs font-normal text-muted-foreground ml-0.5">{{ m.unit }}</span></span>
+                  <span
+                    v-if="m.pct !== null"
+                    class="text-[11px] font-semibold px-1.5 py-0.5 rounded"
+                    :class="m.pct > 0 ? 'bg-green-100 text-green-700' : m.pct < 0 ? 'bg-red-100 text-red-700' : 'bg-muted text-muted-foreground'"
+                  >
+                    {{ m.pct > 0 ? '+' : '' }}{{ m.pct }}%
+                  </span>
+                </div>
+              </div>
+            </div>
+            <p v-else class="py-4 text-center text-sm text-muted-foreground">{{ t('analytics.no_data_available') }}</p>
           </CardContent>
         </Card>
       </div>

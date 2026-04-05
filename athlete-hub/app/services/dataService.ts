@@ -559,6 +559,79 @@ export function useMeasurementsService() {
 }
 
 // ============================================
+// SLEEP SERVICE
+// ============================================
+export function useSleepService() {
+  const history = ref<import('~/types/api').SleepResponseDto[]>([])
+  const selected = ref<import('~/types/api').SleepResponseDto | null>(null)
+  const loading = ref(false)
+  const loadingDetail = ref(false)
+  const error = ref<DataServiceError | null>(null)
+
+  const fetchHistory = async (athleteId: number, from?: string, to?: string) => {
+    loading.value = true
+    error.value = null
+    try {
+      const result = await withRetry(async () => {
+        const res = await athleteApi.getSleepHistory(athleteId, from, to)
+        if (!res.data.isSuccess) {
+          throw new DataServiceError('API_ERROR', 'Errore caricamento storico sonno')
+        }
+        return res.data.value
+      })
+      history.value = result || []
+      return history.value
+    }
+    catch (err) {
+      const dataError = err instanceof DataServiceError
+        ? err
+        : new DataServiceError('UNKNOWN_ERROR', String(err))
+      error.value = dataError
+      throw dataError
+    }
+    finally {
+      loading.value = false
+    }
+  }
+
+  const fetchDay = async (athleteId: number, date: string) => {
+    loadingDetail.value = true
+    try {
+      const result = await withRetry(async () => {
+        const res = await athleteApi.getSleepData(athleteId, date)
+        if (!res.data.isSuccess) {
+          throw new DataServiceError('API_ERROR', 'Errore caricamento dati sonno')
+        }
+        return res.data.value
+      })
+      selected.value = result
+      return result
+    }
+    catch (err) {
+      throw err instanceof DataServiceError ? err : new DataServiceError('UNKNOWN_ERROR', String(err))
+    }
+    finally {
+      loadingDetail.value = false
+    }
+  }
+
+  const setSelected = (entry: import('~/types/api').SleepResponseDto | null) => {
+    selected.value = entry
+  }
+
+  return {
+    history: computed(() => history.value),
+    selected: computed(() => selected.value),
+    loading: computed(() => loading.value),
+    loadingDetail: computed(() => loadingDetail.value),
+    error: computed(() => error.value),
+    fetchHistory,
+    fetchDay,
+    setSelected,
+  }
+}
+
+// ============================================
 // EXPORTS
 // ============================================
 export {

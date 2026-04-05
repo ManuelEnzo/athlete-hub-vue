@@ -925,7 +925,22 @@
     "chronicload_title_tooltip": "Chronic Load: chronic load of the last 4 weeks, represents the athlete's loading capacity",
     "bmi": "bmi",
     "height": "height",
-    "weight": "weight"
+    "weight": "weight",
+    "rpe_load_title": "Session Intensity — Actual vs Target RPE",
+    "rpe_load_subtitle": "Scale 0–10 · latest sessions with defined target",
+    "rpe_actual": "Actual",
+    "rpe_target": "Target",
+    "rpe_over_target": "above target",
+    "rpe_under_target": "below target",
+    "rpe_ok": "On target",
+    "rpe_no_data": "No sessions with RPE target available in the selected period",
+    "readiness_peak": "Peak Readiness",
+    "readiness_good": "Good Readiness",
+    "readiness_moderate": "Moderate Readiness",
+    "readiness_low": "Low Readiness",
+    "acwr_alert_title": "Warning: Excessive Load",
+    "acwr_alert_desc": "ACWR exceeds the critical threshold. Consider reducing training load.",
+    "last_90_days": "90 days"
   },
   "injuries": {
     "title": "Medical Center",
@@ -1384,5 +1399,73 @@
   "refresh": "refresh",
   "shortcuts": {
     "create": "create"
+  },
+  "sleep": {
+    "pageTitle": "Sleep History",
+    "pageSubtitle": "Sleep quality & recovery monitoring",
+    "selectAthleteInstruction": "Select an athlete to view sleep data",
+    "noData": "No sleep data available",
+    "notes": "Notes",
+    "questionnaire": {
+      "title": "Sleep Survey",
+      "qualityTitle": "Perceived Quality",
+      "noNotes": "No notes recorded"
+    },
+    "kpi": {
+      "hoursSlept": "Hours Slept",
+      "totalSleep": "Total sleep duration",
+      "quality": "Sleep Quality",
+      "deepSleep": "Deep Sleep",
+      "deepSleepSub": "Restorative phase",
+      "remSleep": "REM Sleep",
+      "remSleepSub": "Memory consolidation",
+      "awakeTime": "Awake Time",
+      "awakeTimeSub": "Time spent awake"
+    },
+    "quality": {
+      "noData": "No data",
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "stages": {
+      "deep": "Deep",
+      "rem": "REM",
+      "core": "Core",
+      "awake": "Awake"
+    },
+    "source": {
+      "manual": "Manual",
+      "device": "Device",
+      "mixed": "Mixed"
+    },
+    "chart": {
+      "trendTitle": "Sleep Trend",
+      "distributionTitle": "Stage Distribution",
+      "hoursSlept": "Hours Slept",
+      "quality": "Quality",
+      "hours": "Hours (h)",
+      "qualityScale": "Quality (/10)",
+      "optimalZone": "Optimal zone (7–9h)"
+    },
+    "timeline": {
+      "title": "Sleep Stages Timeline",
+      "selectDay": "Select a day to view the sleep timeline",
+      "noSegments": "No stage data for this night"
+    },
+    "history": {
+      "title": "Daily Log",
+      "anomaly": "Anomaly detected"
+    },
+    "filter": {
+      "from": "From",
+      "to": "To",
+      "apply": "Apply"
+    },
+    "errors": {
+      "loadHistory": "Error loading sleep history",
+      "loadDetail": "Error loading sleep detail"
+    }
   }
 }

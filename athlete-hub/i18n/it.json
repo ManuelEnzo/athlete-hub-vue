@@ -957,7 +957,22 @@
       "load_rising": "load rising",
       "moderate_risk": "moderate risk",
       "optimal": "optimal"
-    }
+    },
+    "rpe_load_title": "Intensità sessioni — RPE effettivo vs target",
+    "rpe_load_subtitle": "Scala 0–10 · ultime sessioni con target definito",
+    "rpe_actual": "Effettivo",
+    "rpe_target": "Target",
+    "rpe_over_target": "sopra target",
+    "rpe_under_target": "sotto target",
+    "rpe_ok": "In target",
+    "rpe_no_data": "Nessuna sessione con RPE target disponibile nel periodo selezionato",
+    "readiness_peak": "Prontezza Ottimale",
+    "readiness_good": "Buona Prontezza",
+    "readiness_moderate": "Prontezza Moderata",
+    "readiness_low": "Prontezza Bassa",
+    "acwr_alert_title": "Attenzione: Carico Eccessivo",
+    "acwr_alert_desc": "L\u2019ACWR supera la soglia critica. Valutare una riduzione del carico di allenamento.",
+    "last_90_days": "90 giorni"
   },
   "injuries": {
     "title": "Centro Medico",
@@ -1459,5 +1474,73 @@
   "refresh": "refresh",
   "shortcuts": {
     "create": "create"
+  },
+  "sleep": {
+    "pageTitle": "Storico Sonno",
+    "pageSubtitle": "Monitoraggio qualità del sonno e recupero",
+    "selectAthleteInstruction": "Seleziona un atleta per visualizzare i dati del sonno",
+    "noData": "Nessun dato del sonno disponibile",
+    "notes": "Note",
+    "questionnaire": {
+      "title": "Questionario Sonno",
+      "qualityTitle": "Qualità Percepita",
+      "noNotes": "Nessuna nota registrata"
+    },
+    "kpi": {
+      "hoursSlept": "Ore Dormite",
+      "totalSleep": "Durata totale del sonno",
+      "quality": "Qualità Sonno",
+      "deepSleep": "Sonno Profondo",
+      "deepSleepSub": "Fase rigenerativa",
+      "remSleep": "Sonno REM",
+      "remSleepSub": "Consolidamento memoria",
+      "awakeTime": "Tempo Sveglio",
+      "awakeTimeSub": "Tempo trascorso sveglio"
+    },
+    "quality": {
+      "noData": "Nessun dato",
+      "excellent": "Eccellente",
+      "good": "Buono",
+      "fair": "Discreto",
+      "poor": "Scarso"
+    },
+    "stages": {
+      "deep": "Profondo",
+      "rem": "REM",
+      "core": "Core",
+      "awake": "Sveglio"
+    },
+    "source": {
+      "manual": "Manuale",
+      "device": "Dispositivo",
+      "mixed": "Misto"
+    },
+    "chart": {
+      "trendTitle": "Andamento Sonno",
+      "distributionTitle": "Distribuzione Fasi",
+      "hoursSlept": "Ore Dormite",
+      "quality": "Qualità",
+      "hours": "Ore (h)",
+      "qualityScale": "Qualità (/10)",
+      "optimalZone": "Zona ottimale (7–9h)"
+    },
+    "timeline": {
+      "title": "Timeline Fasi del Sonno",
+      "selectDay": "Seleziona un giorno per visualizzare la timeline del sonno",
+      "noSegments": "Nessun dato di fase per questa notte"
+    },
+    "history": {
+      "title": "Log Giornaliero",
+      "anomaly": "Anomalia rilevata"
+    },
+    "filter": {
+      "from": "Da",
+      "to": "A",
+      "apply": "Applica"
+    },
+    "errors": {
+      "loadHistory": "Errore nel caricamento dello storico sonno",
+      "loadDetail": "Errore nel caricamento del dettaglio sonno"
+    }
   }
 }

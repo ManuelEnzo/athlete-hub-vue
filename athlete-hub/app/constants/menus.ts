@@ -61,6 +61,11 @@ export const navMenu: NavMenu[] = [
         link: '/injuriesmanager',
       },
       {
+        title: 'Sleep History',
+        icon: 'i-lucide-moon',
+        link: '/sleephistory',
+      },
+      {
         title: 'Test Settings',
         icon: 'i-lucide-settings-2',
         link: '/testmanagement',
