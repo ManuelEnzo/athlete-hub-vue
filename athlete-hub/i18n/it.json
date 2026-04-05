@@ -1,4 +1,4 @@
-{
+﻿{
   "dashboard": {
     "title": "Athlete Hub Dashboard",
     "export": "Esporta Dati",
@@ -948,6 +948,11 @@
     "current_acwr_tooltip": "ACWR: rapporto tra carico acuto (7 giorni) e carico cronico (28 giorni). Valori > 1.3 indicano potenziale sovraccarico e rischio infortunio",
     "acuteload_title_tooltip": "Acute Load: carico acuto dell'ultima settimana, basato su volume e intensità dell'allenamento",
     "chronicload_title_tooltip": "Chronic Load: carico cronico delle ultime 4 settimane, rappresenta la capacità di carico dell'atleta",
+    "recovery_score_tooltip": "Recovery Score (0–100): indice composito che misura quanto l'atleta si è recuperato. Derivato da qualità del sonno, trend HRV e carico di allenamento accumulato.",
+    "fatigue_score_tooltip": "Fatigue Score (0–100): accumulo di stress fisiologico nelle sessioni recenti. Valori elevati indicano maggiore fatica — valutare riduzione del carico o priorità al riposo.",
+    "sleep_factor_tooltip": "Sleep Factor (0–100%): quanto la qualità e durata del sonno della notte scorsa ha contribuito al recovery score odierno. Valori bassi segnalano riposo insufficiente.",
+    "readiness_score_tooltip": "Readiness Score (0–100): prontezza complessiva dell'atleta ad allenarsi o gareggiare oggi, combinando recupero, sonno e dati di performance recenti.",
+    "acwr_trend_tooltip": "Trend ACWR: evoluzione del rapporto Carico Acuto:Cronico nel periodo selezionato. La zona verde (0.8–1.3) è ottimale.",
     "bmi": "bmi",
     "of_max": "of max",
     "risk": {
@@ -972,7 +977,22 @@
     "readiness_low": "Prontezza Bassa",
     "acwr_alert_title": "Attenzione: Carico Eccessivo",
     "acwr_alert_desc": "L\u2019ACWR supera la soglia critica. Valutare una riduzione del carico di allenamento.",
-    "last_90_days": "90 giorni"
+    "last_90_days": "90 giorni",
+    "section_overview": "Panoramica",
+    "section_load": "Carico & ACWR",
+    "section_recovery": "Recupero & Sonno",
+    "section_performance": "Performance",
+    "section_predictions": "Proiezione 7 Giorni",
+    "section_injuries": "Infortuni",
+    "recovery_score": "Punteggio Recupero",
+    "fatigue_score": "Punteggio Fatica",
+    "fatigue_high_bad": "alto = peggio",
+    "fatigue_desc": "La fatica aumenta con l'accumulo di carico",
+    "sleep_factor": "Fattore Sonno",
+    "sleep_factor_desc": "Indice qualita sonno che influenza il recupero",
+    "computed": "calcolato",
+    "predicted_title": "Metriche Previste - Prossimi 7 Giorni",
+    "predicted_subtitle": "Proiezione basata su carico attuale e trend di recupero"
   },
   "injuries": {
     "title": "Centro Medico",

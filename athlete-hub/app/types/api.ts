@@ -305,11 +305,27 @@ export interface Pagination<T> {
 
 // Shared/types/api.ts (o dove gestisci i tuoi DTO in TS)
 
+export interface AthleteCurrentStateDto {
+  athleteId: number
+  date: string
+  acuteLoad: number
+  chronicLoad: number
+  acwr: number
+  sleepFactor: number
+  recoveryScore: number
+  fatigueScore: number
+  readinessScore: number
+}
+
+export type AthletePredictedDto = AthleteCurrentStateDto
+
 export interface AthleteAnalyticsDto {
   athlete: InfoAthleteAnalytics
   acwr: AcwrDetails[]
   performance: PerformanceAthlete
   injuries: InjuriesAnalytics[]
+  currentState?: AthleteCurrentStateDto
+  predicted?: AthletePredictedDto[]
 }
 
 // --- Sezione Atleta ---

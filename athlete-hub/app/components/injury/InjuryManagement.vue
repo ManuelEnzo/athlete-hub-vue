@@ -260,7 +260,7 @@ watch(() => props.athleteId, () => {
             </div>
           </div>
 
-          <div class="flex justify-end gap-2 pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div class="flex justify-end gap-2 pt-1 transition-opacity">
             <Button variant="ghost" size="icon" class="h-7 w-7 rounded-full" @click="openDialog(item)">
               <Edit3 class="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
@@ -293,7 +293,7 @@ watch(() => props.athleteId, () => {
             <X class="h-5 w-5" />
           </Button>
         </CardHeader>
-        <CardContent class="grid grid-cols-2 gap-4 pt-6">
+        <CardContent class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6">
           <div class="col-span-2">
             <label class="text-[9px] font-black uppercase text-muted-foreground block mb-1">{{ t('injuries.fields.injury') }}</label>
             <Input v-model="injuryForm.injury" :placeholder="t('injuries.placeholders.injury')" class="h-9 text-sm" />

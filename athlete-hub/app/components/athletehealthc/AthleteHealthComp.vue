@@ -86,6 +86,7 @@ const avgReadiness = computed(() => {
           <span class="text-sm text-muted-foreground">{{ t('team.sortByAcwr') }}</span>
         </CardHeader>
         <CardContent class="p-0">
+          <div class="overflow-x-auto w-full">
           <table class="w-full">
             <thead class="bg-muted text-xs font-medium text-muted-foreground uppercase">
               <tr>
@@ -130,6 +131,7 @@ const avgReadiness = computed(() => {
               </tr>
             </tbody>
           </table>
+          </div>
         </CardContent>
       </Card>
 
@@ -158,7 +160,7 @@ const avgReadiness = computed(() => {
             <div class="flex items-center justify-between">
               <span class="text-sm text-muted-foreground">{{ t('risk.optimal') }}</span>
               <div class="flex items-center gap-2">
-                <div class="h-2 w-32 bg-muted rounded-full overflow-hidden">
+                <div class="h-2 flex-1 min-w-[4rem] max-w-[8rem] bg-muted rounded-full overflow-hidden">
                   <div class="h-2 bg-green-500" style="width: 40%" />
                 </div>
                 <span class="text-sm font-bold text-green-600">40%</span>
@@ -167,7 +169,7 @@ const avgReadiness = computed(() => {
             <div class="flex items-center justify-between">
               <span class="text-sm text-muted-foreground">{{ t('risk.moderate') }}</span>
               <div class="flex items-center gap-2">
-                <div class="h-2 w-32 bg-muted rounded-full overflow-hidden">
+                <div class="h-2 flex-1 min-w-[4rem] max-w-[8rem] bg-muted rounded-full overflow-hidden">
                   <div class="h-2 bg-yellow-500" style="width: 35%" />
                 </div>
                 <span class="text-sm font-bold text-yellow-600">35%</span>
@@ -176,7 +178,7 @@ const avgReadiness = computed(() => {
             <div class="flex items-center justify-between">
               <span class="text-sm text-muted-foreground">{{ t('risk.high') }}</span>
               <div class="flex items-center gap-2">
-                <div class="h-2 w-32 bg-muted rounded-full overflow-hidden">
+                <div class="h-2 flex-1 min-w-[4rem] max-w-[8rem] bg-muted rounded-full overflow-hidden">
                   <div class="h-2 bg-red-600" style="width: 25%" />
                 </div>
                 <span class="text-sm font-bold text-red-600">25%</span>

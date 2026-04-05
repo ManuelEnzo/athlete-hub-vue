@@ -13,7 +13,7 @@ const router = useRouter()
 <template>
   <div class="h-svh">
     <div class="m-auto h-full w-full flex flex-col items-center justify-center gap-2">
-      <h1 class="text-[7rem] font-bold leading-tight">
+      <h1 class="text-5xl sm:text-[7rem] font-bold leading-tight">
         404
       </h1>
       <span class="font-medium">Oops! Page Not Found!</span>

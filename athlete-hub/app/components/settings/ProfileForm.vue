@@ -112,7 +112,7 @@ const onSaveProfile = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <div class="w-full h-[calc(100vh-4rem)] flex flex-col overflow-hidden bg-background">
+  <div class="w-full flex flex-col gap-6">
     <div class="mb-6">
       <h2 class="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
         <User class="h-8 w-8 text-primary" /> {{ t('profile.title') }}
@@ -122,9 +122,9 @@ const onSaveProfile = handleSubmit(async (values) => {
       </p>
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 flex-1 min-h-0">
-      <div class="xl:col-span-1 h-full">
-        <Card class="border-none shadow-sm bg-card/50 backdrop-blur h-full flex flex-col">
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+      <div class="xl:col-span-1">
+        <Card class="border-none shadow-sm bg-card/50 backdrop-blur">
           <CardHeader>
             <CardTitle class="text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em]">
               {{ t('profile.accountInfo') }}
@@ -157,9 +157,9 @@ const onSaveProfile = handleSubmit(async (values) => {
         </Card>
       </div>
 
-      <div class="xl:col-span-3 h-full overflow-hidden">
-        <form class="h-full flex flex-col" @submit="onSaveProfile">
-          <Card class="border-none shadow-md bg-card/50 backdrop-blur h-full flex flex-col">
+      <div class="xl:col-span-3">
+        <form class="flex flex-col" @submit="onSaveProfile">
+          <Card class="border-none shadow-md bg-card/50 backdrop-blur flex flex-col">
             <CardHeader>
               <CardTitle class="text-xl font-black uppercase tracking-tight">
                 {{ t('profile.settingsTitle') }}
@@ -167,7 +167,7 @@ const onSaveProfile = handleSubmit(async (values) => {
               <CardDescription>{{ t('profile.settingsDesc') }}</CardDescription>
             </CardHeader>
 
-            <CardContent class="space-y-6 overflow-y-auto flex-1 pr-4 custom-scrollbar">
+            <CardContent class="space-y-6 pr-4 custom-scrollbar">
               <div class="grid grid-cols-1 gap-8">
                 <div class="space-y-3">
                   <label class="text-[11px] font-black uppercase flex items-center gap-2 tracking-wider">
