@@ -6,7 +6,7 @@ import type {
   UserSignUpResponse,
 } from '../types/api'
 // api/auth.ts
-import api from './client'
+import api from './client-optimized'
 
 export const authApi = {
   signIn: (data: any) => api.post<Result<UserSignInResponse>>('/Auth/sign-in', data),
