@@ -8,6 +8,11 @@
 import notificationsSvc from '@/lib/notificationService'
 
 export default defineNuxtPlugin(() => {
+  // Skip service worker in dev — internal Nuxt virtual paths (/_nuxt/...) are
+  // not served as static files and cause unhandled 404s when the SW tries to
+  // pre-cache them via cache.addAll(CRITICAL_ASSETS).
+  if (import.meta.dev) return
+
   if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
     window.addEventListener('load', registerServiceWorker)
   }

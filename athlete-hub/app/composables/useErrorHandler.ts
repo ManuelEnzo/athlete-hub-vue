@@ -74,10 +74,12 @@ function useErrorHandler(context?: ErrorContext) {
       }
     }
 
-    // Generic Error
+    // Generic Error — check for server payload set by the axios interceptor
+    // (see plugins/axios.client.ts: apiErr.payload = error.response.data)
+    const payloadMessage = (error as any).payload?.error?.message
     return {
       title: 'Errore',
-      message: error.message || 'Qualcosa è andato storto',
+      message: payloadMessage || error.message || 'Qualcosa è andato storto',
       recovery: 'Riprova',
     }
   }

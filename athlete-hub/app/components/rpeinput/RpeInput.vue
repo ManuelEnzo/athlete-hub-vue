@@ -58,7 +58,7 @@ async function fetchSessionDetails() {
     sessionInfo.value = res.data.value
   }
   catch (err: any) {
-    const msg = err.error?.message || t('rpe.error.invalidToken')
+    const msg = err?.payload?.error?.message || t('rpe.error.invalidToken')
     notifications.error(msg)
   }
   finally {
@@ -84,7 +84,7 @@ async function submitRpe() {
     notifications.success(t('rpe.success.sent'))
   }
   catch (err: any) {
-    const msg = err.error?.message || t('rpe.error.sending')
+    const msg = err?.payload?.error?.message || t('rpe.error.sending')
     notifications.error(msg)
   }
   finally {

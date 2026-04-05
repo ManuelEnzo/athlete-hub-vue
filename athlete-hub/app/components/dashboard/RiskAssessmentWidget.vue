@@ -1,344 +1,156 @@
 <script setup lang="ts">
-import { CheckCircle2, RefreshCw } from 'lucide-vue-next'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { AlertTriangle, ArrowUp, CheckCircle2, Minus, TrendingUp } from 'lucide-vue-next'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useDataFormatting } from '~/composables/useDashboardComposables'
-import { useAthletesStore } from '~/stores/athletesStore'
 import { useDashboardStore } from '~/stores/dashboardStore'
 
-const dashboardStore = useDashboardStore()
-const _athletesStore = useAthletesStore()
-const { formatDate: _formatDate } = useDataFormatting()
 const { t } = useI18n()
+const dashboardStore = useDashboardStore()
 
-const isLoading = ref(false)
-const lastUpdateTime = ref('now')
-const expandedIds = ref<string[]>([])
-let refreshInterval: ReturnType<typeof setInterval> | null = null
+// riskTrend: 0=Stabile, 1=InAumento, 2=Alto, 3=Critico
+const riskAlerts = computed(() => dashboardStore.data?.riskAlerts ?? [])
 
-interface RiskItem {
-  id: string
-  athleteName: string
-  level: 'low' | 'medium' | 'high'
-  score: number
-  factors: string[]
-  factorsCount: number
-  readiness: number
-  fatigue: number
-  soreness: number
-  workload: number
-  action: string
-}
+const criticalCount = computed(() => riskAlerts.value.filter(r => Number(r.riskTrend) >= 3).length)
+const warningCount = computed(() => riskAlerts.value.filter(r => Number(r.riskTrend) === 1 || Number(r.riskTrend) === 2).length)
+const safeCount = computed(() => riskAlerts.value.filter(r => Number(r.riskTrend) === 0).length)
 
-const risksByAthlete = computed((): RiskItem[] => {
-  const athletes = dashboardStore.athletes
-  if (!athletes || athletes.length === 0)
-    return []
-
-  return (athletes as any[])
-    .map((athlete) => {
-      const readiness = athlete.readinessScore || 0
-      const fatigue = athlete.fatigueScore || 0
-      const soreness = athlete.sorenessScore || 0
-      const workload = athlete.recentWorkload || 0
-
-      // Risk score calculation
-      const score = (fatigue * 0.4) + (soreness * 0.35) - (readiness * 0.25)
-      let level: 'low' | 'medium' | 'high' = 'low'
-      let action = 'Continue monitoring'
-
-      if (score > 70) {
-        level = 'high'
-        action = 'Immediately reduce training load and increase recovery protocols'
-      }
-      else if (score > 50) {
-        level = 'medium'
-        action = 'Monitor closely, increase recovery time, reduce training intensity'
-      }
-
-      const factors: string[] = []
-      if (readiness < 40)
-        factors.push('Low readiness')
-      if (readiness < 60)
-        factors.push('Moderate readiness')
-      if (fatigue > 75)
-        factors.push('High fatigue')
-      if (soreness > 60)
-        factors.push('Elevated soreness')
-      if (workload > 150)
-        factors.push('High workload')
-
-      return {
-        id: athlete.id,
-        athleteName: athlete.name || athlete.displayName || 'Unknown',
-        level,
-        score: Math.round(score),
-        factors: factors.length > 0 ? factors : ['Monitoring'],
-        factorsCount: factors.length,
-        readiness,
-        fatigue,
-        soreness,
-        workload,
-        action,
-      }
-    })
-    .sort((a, b) => b.score - a.score)
+const sortedAlerts = computed(() => {
+  return [...riskAlerts.value].sort((a, b) => {
+    const trendDiff = Number(b.riskTrend) - Number(a.riskTrend)
+    if (trendDiff !== 0)
+      return trendDiff
+    return b.acwrValue - a.acwrValue
+  })
 })
 
-const highRiskCount = computed(() => risksByAthlete.value.filter(r => r.level === 'high').length)
-const mediumRiskCount = computed(() => risksByAthlete.value.filter(r => r.level === 'medium').length)
-const lowRiskCount = computed(() => risksByAthlete.value.filter(r => r.level === 'low').length)
-
-function getRiskIcon(level: 'low' | 'medium' | 'high') {
-  switch (level) {
-    case 'high': return '🚨'
-    case 'medium': return '⚠️'
-    case 'low': return '✅'
-  }
+function trendRowClass(trend: number): string {
+  if (trend >= 3)
+    return 'border-l-4 border-l-red-500 bg-red-50/50 dark:bg-red-950/20'
+  if (trend === 2)
+    return 'border-l-4 border-l-orange-400 bg-orange-50/50 dark:bg-orange-950/20'
+  if (trend === 1)
+    return 'border-l-4 border-l-yellow-400 bg-yellow-50/50 dark:bg-yellow-950/20'
+  return 'border-l-4 border-l-green-400 bg-green-50/50 dark:bg-green-950/20'
 }
 
-function getRiskColor(level: 'low' | 'medium' | 'high'): string {
-  switch (level) {
-    case 'high': return 'text-red-600'
-    case 'medium': return 'text-yellow-600'
-    case 'low': return 'text-green-600'
-  }
+function acwrBadgeClass(acwr: number): string {
+  if (acwr > 1.5)
+    return 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
+  if (acwr > 1.3)
+    return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400'
+  if (acwr >= 0.8)
+    return 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
+  return 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
 }
 
-function toggleExpanded(id: string) {
-  const idx = expandedIds.value.indexOf(id)
-  if (idx >= 0) {
-    expandedIds.value.splice(idx, 1)
-  }
-  else {
-    expandedIds.value.push(id)
-  }
+function trendLabel(trend: number): string {
+  if (trend >= 3)
+    return t('dashboard.riskTrend.critical')
+  if (trend === 2)
+    return t('dashboard.riskTrend.high')
+  if (trend === 1)
+    return t('dashboard.riskTrend.increasing')
+  return t('dashboard.riskTrend.stable')
 }
 
-function updateLastTime() {
-  const now = new Date()
-  const hour = now.getHours().toString().padStart(2, '0')
-  const min = now.getMinutes().toString().padStart(2, '0')
-  lastUpdateTime.value = `${hour}:${min}`
+function trendTextClass(trend: number): string {
+  if (trend >= 3)
+    return 'text-red-600 dark:text-red-400'
+  if (trend === 2)
+    return 'text-orange-500 dark:text-orange-400'
+  if (trend === 1)
+    return 'text-yellow-600 dark:text-yellow-400'
+  return 'text-green-600 dark:text-green-400'
 }
-
-async function refresh() {
-  isLoading.value = true
-  try {
-    await dashboardStore.refresh()
-    updateLastTime()
-  }
-  finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(() => {
-  // Initial load
-  if (!dashboardStore.data) {
-    refresh()
-  }
-  else {
-    updateLastTime()
-  }
-
-  // Auto-refresh every 2 minutes
-  refreshInterval = setInterval(() => {
-    refresh()
-  }, 120000)
-})
-
-onUnmounted(() => {
-  if (refreshInterval)
-    clearInterval(refreshInterval)
-})
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
+  <div class="h-full flex flex-col gap-3 overflow-hidden">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-foreground">
+    <div class="flex items-center justify-between shrink-0">
+      <h3 class="text-base font-semibold text-foreground">
         {{ t('dashboard.risk.title') }}
       </h3>
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-muted-foreground">{{ t('dashboard.risk.updated') }} {{ lastUpdateTime }}</span>
-        <button
-          :disabled="isLoading"
-          class="p-1.5 hover:bg-muted rounded-md disabled:opacity-50"
-          @click="refresh"
-        >
-          <RefreshCw :size="16" :class="{ 'animate-spin': isLoading }" />
-        </button>
-      </div>
+      <span class="text-xs text-muted-foreground">{{ riskAlerts.length }} {{ t('dashboard.athletes') }}</span>
     </div>
 
-    <!-- Risk Summary Cards -->
-    <div v-if="!isLoading" class="grid grid-cols-3 gap-3 mb-4">
+    <!-- Summary counters -->
+    <div class="grid grid-cols-3 gap-2 shrink-0">
       <div
-        class="p-3 rounded-lg border" :class="{
-          'bg-red-50 border-red-200 dark:bg-red-950': highRiskCount > 0,
-          'bg-muted border-border': highRiskCount === 0,
-        }"
+        class="rounded-lg p-2.5 text-center"
+        :class="criticalCount > 0 ? 'bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800' : 'bg-muted border border-border'"
       >
-        <div class="text-sm text-muted-foreground">
-          {{ t('dashboard.risk.critical') }}
-        </div>
-        <div class="text-2xl font-bold" :class="highRiskCount > 0 ? 'text-red-600' : 'text-muted-foreground'">
-          {{ highRiskCount }}
-        </div>
+        <p class="text-[11px] text-muted-foreground">
+          {{ t('dashboard.riskTrend.critical') }}
+        </p>
+        <p class="text-xl font-bold" :class="criticalCount > 0 ? 'text-red-600' : 'text-muted-foreground'">
+          {{ criticalCount }}
+        </p>
       </div>
-
       <div
-        class="p-3 rounded-lg border" :class="{
-          'bg-yellow-50 border-yellow-200 dark:bg-yellow-950': mediumRiskCount > 0,
-          'bg-muted border-border': mediumRiskCount === 0,
-        }"
+        class="rounded-lg p-2.5 text-center"
+        :class="warningCount > 0 ? 'bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800' : 'bg-muted border border-border'"
       >
-        <div class="text-sm text-muted-foreground">
-          {{ t('dashboard.risk.warning') }}
-        </div>
-        <div class="text-2xl font-bold" :class="mediumRiskCount > 0 ? 'text-yellow-600' : 'text-muted-foreground'">
-          {{ mediumRiskCount }}
-        </div>
+        <p class="text-[11px] text-muted-foreground">
+          {{ t('dashboard.riskTrend.increasing') }}
+        </p>
+        <p class="text-xl font-bold" :class="warningCount > 0 ? 'text-yellow-600' : 'text-muted-foreground'">
+          {{ warningCount }}
+        </p>
       </div>
-
       <div
-        class="p-3 rounded-lg border" :class="{
-          'bg-green-50 border-green-200 dark:bg-green-950': lowRiskCount > 0,
-          'bg-muted border-border': lowRiskCount === 0,
-        }"
+        class="rounded-lg p-2.5 text-center"
+        :class="safeCount > 0 ? 'bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800' : 'bg-muted border border-border'"
       >
-        <div class="text-sm text-muted-foreground">
+        <p class="text-[11px] text-muted-foreground">
           {{ t('dashboard.risk.safe') }}
-        </div>
-        <div class="text-2xl font-bold" :class="lowRiskCount > 0 ? 'text-green-600' : 'text-muted-foreground'">
-          {{ lowRiskCount }}
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    <div v-if="isLoading" class="flex-1 flex items-center justify-center">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto mb-2" />
-        <p class="text-sm text-muted-foreground">
-          {{ t('dashboard.risk.loading') }}
+        </p>
+        <p class="text-xl font-bold" :class="safeCount > 0 ? 'text-green-600' : 'text-muted-foreground'">
+          {{ safeCount }}
         </p>
       </div>
     </div>
 
-    <!-- Risk List -->
-    <div v-else-if="risksByAthlete.length > 0" class="flex-1 overflow-auto">
-      <div v-for="risk in risksByAthlete" :key="risk.id" class="mb-3 last:mb-0">
-        <!-- Athlete Risk Card -->
-        <div
-          class="border rounded-lg p-3 cursor-pointer transition-all hover:shadow-md"
-          :class="{
-            'bg-red-50 border-red-200 dark:bg-red-950': risk.level === 'high',
-            'bg-yellow-50 border-yellow-200 dark:bg-yellow-950': risk.level === 'medium',
-            'bg-green-50 border-green-200 dark:bg-green-950': risk.level === 'low',
-          }"
-          @click="toggleExpanded(risk.id)"
-        >
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3 flex-1">
-              <div class="text-2xl">
-                {{ getRiskIcon(risk.level) }}
-              </div>
-              <div class="flex-1">
-                <p class="font-semibold text-foreground">
-                  {{ risk.athleteName }}
-                </p>
-                <p class="text-xs text-muted-foreground">
-                  {{ risk.factorsCount }} {{ t('dashboard.risk.riskFactors') }}
-                </p>
-              </div>
-            </div>
-            <div class="text-right">
-              <div class="text-2xl font-bold" :class="getRiskColor(risk.level)">
-                {{ risk.score }}
-              </div>
-              <p class="text-xs text-muted-foreground capitalize">
-                {{ risk.level }}
-              </p>
-            </div>
+    <!-- Alert list -->
+    <div v-if="sortedAlerts.length" class="flex-1 overflow-auto flex flex-col gap-2">
+      <div
+        v-for="alert in sortedAlerts"
+        :key="alert.athleteName"
+        class="rounded-lg border p-3"
+        :class="trendRowClass(Number(alert.riskTrend))"
+      >
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-foreground text-sm truncate">
+              {{ alert.athleteName }}
+            </p>
+            <p class="text-[11px] text-muted-foreground">
+              {{ alert.discipline }}
+            </p>
           </div>
-
-          <!-- Expandable Details -->
-          <Transition name="expand">
-            <div v-if="expandedIds.includes(risk.id)" class="mt-3 pt-3 border-t border-current opacity-60">
-              <!-- Risk Factors -->
-              <div class="mb-2">
-                <p class="text-xs font-semibold text-muted-foreground mb-1">
-                  {{ t('dashboard.risk.riskFactorsHeader') }}
-                </p>
-                <div class="flex flex-wrap gap-1">
-                  <span
-                    v-for="(factor, idx) in risk.factors"
-                    :key="idx"
-                    class="text-xs px-2 py-1 rounded-full bg-black bg-opacity-20"
-                  >
-                    {{ factor }}
-                  </span>
-                </div>
-              </div>
-
-              <!-- Metrics Detail -->
-              <div class="grid grid-cols-2 gap-2 text-xs mb-2">
-                <div>
-                  <p class="text-muted-foreground">
-                    {{ t('dashboard.health.readiness') }}
-                  </p>
-                  <p class="font-semibold">
-                    {{ risk.readiness }}%
-                  </p>
-                </div>
-                <div>
-                  <p class="text-muted-foreground">
-                    {{ t('dashboard.health.fatigue') }}
-                  </p>
-                  <p class="font-semibold">
-                    {{ risk.fatigue }}%
-                  </p>
-                </div>
-                <div>
-                  <p class="text-muted-foreground">
-                    {{ t('dashboard.health.soreness') }}
-                  </p>
-                  <p class="font-semibold">
-                    {{ risk.soreness }}%
-                  </p>
-                </div>
-                <div>
-                  <p class="text-muted-foreground">
-                    {{ t('dashboard.health.workload') }}
-                  </p>
-                  <p class="font-semibold">
-                    {{ risk.workload }}
-                  </p>
-                </div>
-              </div>
-
-              <!-- Recommended Action -->
-              <div class="bg-black bg-opacity-10 rounded p-2">
-                <p class="text-xs font-semibold mb-1">
-                  {{ t('dashboard.risk.recommendedAction') }}
-                </p>
-                <p class="text-xs leading-relaxed">
-                  {{ risk.action }}
-                </p>
-              </div>
-            </div>
-          </Transition>
+          <span
+            class="text-xs font-mono font-bold px-2 py-0.5 rounded-full shrink-0"
+            :class="acwrBadgeClass(alert.acwrValue)"
+          >
+            ACWR {{ alert.acwrValue.toFixed(2) }}
+          </span>
+          <span
+            class="text-xs font-semibold shrink-0 flex items-center gap-0.5"
+            :class="trendTextClass(Number(alert.riskTrend))"
+          >
+            <AlertTriangle v-if="Number(alert.riskTrend) >= 2" class="h-3.5 w-3.5" />
+            <TrendingUp v-else-if="Number(alert.riskTrend) === 1" class="h-3.5 w-3.5" />
+            <CheckCircle2 v-else class="h-3.5 w-3.5" />
+            {{ trendLabel(Number(alert.riskTrend)) }}
+          </span>
         </div>
       </div>
     </div>
 
-    <!-- Empty State -->
+    <!-- Empty state -->
     <div v-else class="flex-1 flex items-center justify-center text-center text-muted-foreground">
       <div>
-        <CheckCircle2 :size="32" class="mx-auto mb-2 opacity-50" />
+        <CheckCircle2 :size="28" class="mx-auto mb-2 opacity-50" />
         <p class="text-sm">
           {{ t('dashboard.risk.noRisks') }}
         </p>
@@ -347,21 +159,3 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style scoped>
-.expand-enter-active,
-.expand-leave-active {
-  transition: all 0.3s ease;
-}
-
-.expand-enter-from,
-.expand-leave-to {
-  opacity: 0;
-  max-height: 0;
-}
-
-.expand-enter-to,
-.expand-leave-from {
-  opacity: 1;
-  max-height: 500px;
-}
-</style>

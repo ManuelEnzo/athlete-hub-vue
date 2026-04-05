@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import * as LucideIcons from 'lucide-vue-next'
+import { computed } from 'vue'
+
 interface Props {
   title: string
   value: string | number
@@ -7,7 +10,11 @@ interface Props {
   trendPositive: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+const iconComponent = computed(() => {
+  return (LucideIcons as any)[props.icon] ?? LucideIcons.BarChart2
+})
 </script>
 
 <template>
@@ -21,19 +28,14 @@ defineProps<Props>()
           {{ value }}
         </p>
       </div>
-      <span class="text-3xl">{{ icon }}</span>
+      <component :is="iconComponent" class="h-8 w-8 text-muted-foreground" />
     </div>
-    <div class="flex items-center gap-1">
+    <div v-if="trend" class="flex items-center gap-1">
       <span
         class="text-sm font-semibold"
         :class="trendPositive ? 'text-green-600' : 'text-red-600'"
       >
         {{ trend }}
-      </span>
-      <span
-        :class="trendPositive ? 'text-green-600' : 'text-red-600'"
-      >
-        {{ trendPositive ? '📈' : '📉' }}
       </span>
     </div>
   </div>

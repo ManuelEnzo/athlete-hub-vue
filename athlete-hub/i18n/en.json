@@ -23,6 +23,32 @@
     "no_critical_athletes": "No Critical Athletes",
     "high_acwr": "High ACWR",
     "pageTitle": "Dashboard",
+    "acwrZone": {
+      "optimal": "Optimal",
+      "caution": "Caution",
+      "critical": "Critical",
+      "low": "Low",
+      "noData": "N/A"
+    },
+    "riskTrend": {
+      "stable": "Stable",
+      "increasing": "Increasing",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "discipline": {
+      "title": "Discipline Distribution"
+    },
+    "table": {
+      "athlete": "Athlete",
+      "readiness": "Readiness",
+      "acwr": "ACWR",
+      "zone": "Zone"
+    },
+    "agenda": {
+      "title": "Upcoming schedule",
+      "empty": "No upcoming appointments"
+    },
     "subtitle": "Team monitoring and insights",
     "timeRange": {
       "1d": "24h",
@@ -145,7 +171,7 @@
       "spikeIncrease": "{name}: {value}% increase",
       "acwrValue": "ACWR: {value}"
     },
-    "athletes": "athletes",
+    "athletes": "Athletes",
     "autoRefresh": {
       "auto": "auto",
       "manual": "manual"

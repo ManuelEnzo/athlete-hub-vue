@@ -78,14 +78,8 @@ async function onSubmit(event: Event) {
     await navigateTo('/')
   }
   catch (error: any) {
-    const serverMessage = error?.error?.message
-
-    if (serverMessage) {
-      notifications.error(serverMessage)
-    }
-    else {
-      notifications.error(t('auth.signup.networkError'))
-    }
+    const serverMessage = error?.payload?.error?.message || error?.response?.data?.error?.message || error?.message
+    notifications.error(serverMessage || t('auth.signup.networkError'))
   }
   finally {
     isLoading.value = false

@@ -138,7 +138,52 @@
       "spikeIncrease": "{name}: incremento {value}%",
       "acwrValue": "ACWR: {value}"
     },
-    "athletes": "athletes",
+    "athletes": "Atleti",
+    "acwrZone": {
+      "optimal": "Ottimale",
+      "caution": "Attenzione",
+      "critical": "Critico",
+      "low": "Basso",
+      "noData": "N/D"
+    },
+    "riskTrend": {
+      "stable": "Stabile",
+      "increasing": "In aumento",
+      "high": "Alto",
+      "critical": "Critico"
+    },
+    "discipline": {
+      "title": "Distribuzione Discipline"
+    },
+    "table": {
+      "athlete": "Atleta",
+      "readiness": "Readiness",
+      "acwr": "ACWR",
+      "zone": "Zona"
+    },
+    "agenda": {
+      "title": "Prossimi appuntamenti",
+      "empty": "Nessun appuntamento in programma"
+    },
+    "widget": {
+      "workloadAnalysis": "Carico settimanale",
+      "athleteStatus": "Stato atleti",
+      "readiness": "Panoramica Readiness",
+      "aiInsights": "AI Insights",
+      "healthAssessment": "Valutazione Salute",
+      "performanceTrends": "Andamento Performance",
+      "riskAssessment": "Valutazione Rischio",
+      "teamComparison": "Confronto Team"
+    },
+    "workload": {
+      "title": "Carico",
+      "totalWeekly": "totale settimana",
+      "avgLabel": "media/giorno",
+      "peak": "Picco",
+      "legendNormal": "Normale",
+      "legendMedium": "Medio",
+      "legendHigh": "Elevato"
+    },
     "autoRefresh": {
       "auto": "auto",
       "manual": "manual"

@@ -237,7 +237,7 @@ async function saveMeasurement() {
     resetForm()
   }
   catch (err: any) {
-    notifications.error(err.error?.message || t('measurements.toast.saveError'))
+    notifications.error(err?.payload?.error?.message || t('measurements.toast.saveError'))
   }
   finally {
     saving.value = false
@@ -255,7 +255,7 @@ async function confirmDelete() {
     isDeleteDialogOpen.value = false
   }
   catch (err: any) {
-    notifications.error(err.error?.message || t('measurements.toast.deleteError'))
+    notifications.error(err?.payload?.error?.message || t('measurements.toast.deleteError'))
   }
   finally {
     deleting.value = false

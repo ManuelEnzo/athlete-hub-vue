@@ -3,7 +3,6 @@ import { Loader2 } from 'lucide-vue-next'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import notifications from '@/lib/notificationService'
-import { useErrorHandler } from '~/composables/useErrorHandler'
 import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/auth'
 import { useLoadingStore } from '../../stores/loadingStore'
@@ -28,8 +27,6 @@ async function onSubmit(event: Event) {
     return
   }
 
-  const handler = useErrorHandler({ component: 'SignIn' })
-
   try {
     const response = await authApi.signIn({
       email: email.value,
@@ -43,9 +40,14 @@ async function onSubmit(event: Event) {
       notifications.success(t('auth.login.success'))
       await navigateTo('/')
     }
+    else {
+      notifications.error(result.error?.message || t('auth.errors.genericLogin'))
+    }
   }
   catch (err: any) {
-    handler.handleError(err instanceof Error ? err : new Error(String(err)))
+    // The axios plugin wraps server errors in err.payload (see axios.client.ts)
+    const serverMessage = err?.payload?.error?.message || err?.response?.data?.error?.message || err?.message
+    notifications.error(serverMessage || t('auth.errors.genericLogin'))
   }
 }
 </script>
