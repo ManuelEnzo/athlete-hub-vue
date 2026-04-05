@@ -45,9 +45,18 @@
       "acwr": "ACWR",
       "zone": "Zone"
     },
+    "filter": {
+      "one": "active filter",
+      "many": "active filters",
+      "activeNote": "only compatible widgets are filtered",
+      "clear": "Clear filters"
+    },
     "agenda": {
       "title": "Upcoming schedule",
-      "empty": "No upcoming appointments"
+      "empty": "No upcoming appointments",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "appointments": "appointments"
     },
     "subtitle": "Team monitoring and insights",
     "timeRange": {
@@ -142,13 +151,16 @@
       }
     },
     "widget": {
+      "kpi": "KPI Cards",
       "readiness": "Readiness overview",
       "aiInsights": "AI Insights",
       "healthAssessment": "Health Assessment",
       "performanceTrends": "Performance Trends",
       "riskAssessment": "Risk Assessment",
       "teamComparison": "Team Comparison",
-      "workloadAnalysis": "Workload Analysis"
+      "workloadAnalysis": "Workload Analysis",
+      "athleteStatus": "Athlete Status",
+      "agenda": "Upcoming Schedule"
     },
     "team": {
       "comparing": "Comparing athletes...",
@@ -306,7 +318,6 @@
     "deleteWarning": "This action will permanently delete the athlete and all associated data. Are you sure you want to proceed?",
     "noData": "No athletes available. Please add new athletes.",
     "pageTitle": "Athletes' Personal Data",
-    "search": "Search by name, email or sport",
     "search": "Search by name, email or sport",
     "visualizer": "Athlete Visualizer",
     "new": "New Athlete",
@@ -723,7 +734,8 @@
     "Corsa": "Running",
     "Sport di Squadra": "Team Sport",
     "Checkup": "Check-Up",
-    "Controllo": "Check-Up"
+    "Controllo": "Check-Up",
+    "Test" : "Test"
   },
   "genders": {
     "genderPlaceholder": "Select gender",

@@ -6,7 +6,7 @@ import { useDashboardStore } from '~/stores/dashboardStore'
 const { t } = useI18n()
 const dashboardStore = useDashboardStore()
 
-const athletes = computed(() => dashboardStore.data?.athleteStatusMatrix ?? [])
+const athletes = computed(() => dashboardStore.filteredData?.athleteStatusMatrix ?? [])
 
 function readinessColor(value: number): string {
   if (value >= 80)
@@ -71,8 +71,42 @@ const sortedAthletes = computed(() => {
       </span>
     </div>
 
-    <!-- Table -->
-    <div v-if="sortedAthletes.length" class="flex-1 overflow-auto">
+    <!-- Mobile card-stack (xs/sm) -->
+    <div v-if="sortedAthletes.length" class="flex-1 overflow-auto sm:hidden space-y-2">
+      <div
+        v-for="athlete in sortedAthletes"
+        :key="`card-${athlete.name}`"
+        class="bg-muted/30 rounded-lg p-3 border border-border"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-semibold text-sm text-foreground">{{ athlete.name }}</span>
+          <span
+            class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium"
+            :class="acwrBadgeClass(athlete.acwr)"
+          >
+            {{ acwrLabel(athlete.acwr) }}
+          </span>
+        </div>
+        <div class="flex items-center gap-2 mb-1">
+          <div class="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+            <div
+              class="h-full rounded-full transition-all duration-300"
+              :class="readinessColor(athlete.readiness)"
+              :style="{ width: `${athlete.readiness}%` }"
+            />
+          </div>
+          <span class="text-xs font-semibold w-8 text-right shrink-0" :class="readinessTextColor(athlete.readiness)">
+            {{ athlete.readiness }}%
+          </span>
+        </div>
+        <div class="text-[11px] text-muted-foreground">
+          {{ t('dashboard.table.acwr') }}: <span class="font-mono font-semibold text-foreground">{{ athlete.acwr.toFixed(2) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop table (sm+) -->
+    <div v-if="sortedAthletes.length" class="flex-1 overflow-auto hidden sm:block">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-border">
@@ -96,12 +130,9 @@ const sortedAthletes = computed(() => {
             :key="athlete.name"
             class="hover:bg-muted/30 transition-colors"
           >
-            <!-- Name -->
             <td class="py-2.5 pr-4">
               <span class="font-medium text-foreground">{{ athlete.name }}</span>
             </td>
-
-            <!-- Readiness bar -->
             <td class="py-2.5 pr-4">
               <div class="flex items-center gap-2">
                 <div class="flex-1 h-2 bg-muted rounded-full overflow-hidden">
@@ -116,15 +147,11 @@ const sortedAthletes = computed(() => {
                 </span>
               </div>
             </td>
-
-            <!-- ACWR value -->
             <td class="py-2.5 pr-4 text-center">
               <span class="text-sm font-mono font-semibold text-foreground">
                 {{ athlete.acwr.toFixed(2) }}
               </span>
             </td>
-
-            <!-- Zone badge -->
             <td class="py-2.5 text-center">
               <span
                 class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium"

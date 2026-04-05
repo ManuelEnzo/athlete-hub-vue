@@ -1,42 +1,63 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits<{
   close: []
+  apply: [settings: { refreshInterval: string, defaultTimeRange: string, visibleWidgets: string[] }]
 }>()
 
 const { t } = useI18n()
+const colorMode = useColorMode()
+
+// Single unified settings key — same key used by the store's PERSIST_KEY for timeRange/interval
+const SETTINGS_KEY = 'dashboardSettings'
+
+function loadStoredSettings() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as Record<string, unknown>
+  }
+  catch { return null }
+}
+
+const stored = loadStoredSettings()
+// Also read refreshIntervalKey/timeRange from the store's key if not in our own key
+const storePrefs = (() => {
+  try {
+    return (JSON.parse(localStorage.getItem('dashboard:preferences') ?? 'null') ?? {}) as Record<string, unknown>
+  }
+  catch { return {} as Record<string, unknown> }
+})()
 
 const settings = ref({
-  showMetrics: true,
-  compactMode: false,
-  darkMode: false,
-  refreshInterval: '5m',
-  defaultTimeRange: '7d',
-  enableAlerts: true,
-  enableSounds: false,
+  showMetrics: (stored?.showMetrics as boolean) ?? true,
+  compactMode: (stored?.compactMode as boolean) ?? false,
+  darkMode: colorMode.preference === 'dark',
+  refreshInterval: (stored?.refreshInterval as string) ?? (storePrefs.refreshIntervalKey as string) ?? '5m',
+  defaultTimeRange: (stored?.defaultTimeRange as string) ?? (storePrefs.timeRange as string) ?? '7d',
+  enableAlerts: (stored?.enableAlerts as boolean) ?? true,
+  enableSounds: (stored?.enableSounds as boolean) ?? false,
 })
 
-const visibleWidgets = ref([
-  'readiness',
-  'risk',
-  'workload',
-  'trends',
-  'comparison',
-  'insights',
-  'health',
-])
+const visibleWidgets = ref<string[]>(
+  (stored?.visibleWidgets as string[]) ?? ['kpi', 'workload', 'risk', 'athleteTable', 'health', 'agenda'],
+)
 
 const availableWidgets = [
-  { id: 'readiness', name: t('dashboard.widget.readiness') },
-  { id: 'risk', name: t('dashboard.widget.riskAssessment') },
+  { id: 'kpi', name: t('dashboard.widget.kpi') },
   { id: 'workload', name: t('dashboard.widget.workloadAnalysis') },
-  { id: 'trends', name: t('dashboard.widget.performanceTrends') },
-  { id: 'comparison', name: t('dashboard.widget.teamComparison') },
-  { id: 'insights', name: t('dashboard.widget.aiInsights') },
+  { id: 'risk', name: t('dashboard.widget.riskAssessment') },
+  { id: 'athleteTable', name: t('dashboard.widget.athleteStatus') },
   { id: 'health', name: t('dashboard.widget.healthAssessment') },
+  { id: 'agenda', name: t('dashboard.widget.agenda') },
 ]
+
+// Apply dark mode immediately when the toggle changes (no save needed)
+watch(() => settings.value.darkMode, (dark) => {
+  colorMode.preference = dark ? 'dark' : 'light'
+})
 
 function resetToDefaults() {
   settings.value = {
@@ -48,26 +69,25 @@ function resetToDefaults() {
     enableAlerts: true,
     enableSounds: false,
   }
-  visibleWidgets.value = availableWidgets.map(w => w.id)
+  visibleWidgets.value = ['kpi', 'workload', 'risk', 'athleteTable', 'health', 'agenda']
+  colorMode.preference = 'light'
 }
 
 function saveSettings() {
-  // Save to localStorage
-  localStorage.setItem('dashboardSettings', JSON.stringify({
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({
     ...settings.value,
     visibleWidgets: visibleWidgets.value,
   }))
+  emit('apply', {
+    refreshInterval: settings.value.refreshInterval,
+    defaultTimeRange: settings.value.defaultTimeRange,
+    visibleWidgets: visibleWidgets.value,
+  })
   emit('close')
 }
 
 function exportSettings() {
-  const data = {
-    ...settings.value,
-    visibleWidgets: visibleWidgets.value,
-    exportedAt: new Date().toISOString(),
-  }
-  const json = JSON.stringify(data, null, 2)
-  const blob = new Blob([json], { type: 'application/json' })
+  const blob = new Blob([JSON.stringify({ ...settings.value, visibleWidgets: visibleWidgets.value, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url

@@ -15,20 +15,26 @@ export const useAuthStore = defineStore('auth', () => {
 
   const user = ref<UserProfileResponse | null>(null)
 
-  async function fetchProfile() {
-    if (!token.value) {
-      return
-    }
+  const profileLoading = ref(false)
 
+  async function fetchProfile() {
+    if (!token.value || profileLoading.value)
+      return
+
+    profileLoading.value = true
     try {
       const response = await authApi.getProfile()
       if (response.data.isSuccess && response.data.value) {
         user.value = response.data.value
       }
     }
-    catch (error) {
-      const handler = useErrorHandler({ component: 'AuthStore' })
-      handler.handleError(error instanceof Error ? error : new Error(String(error)))
+    catch {
+      // Non-critical: profile is cosmetic. Silently ignore to avoid
+      // spurious error toasts on slow/mobile connections.
+      console.warn('[AuthStore] fetchProfile failed silently')
+    }
+    finally {
+      profileLoading.value = false
     }
   }
 

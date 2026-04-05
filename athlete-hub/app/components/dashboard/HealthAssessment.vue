@@ -19,8 +19,8 @@ import { useDashboardStore } from '~/stores/dashboardStore'
 const { t } = useI18n()
 const dashboardStore = useDashboardStore()
 
-const healthDistribution = computed(() => dashboardStore.data?.healthDistribution ?? [])
-const disciplineDistribution = computed(() => dashboardStore.data?.disciplineDistribution ?? [])
+const healthDistribution = computed(() => dashboardStore.filteredData?.healthDistribution ?? [])
+const disciplineDistribution = computed(() => dashboardStore.filteredData?.disciplineDistribution ?? [])
 
 const totalAthletes = computed(() =>
   healthDistribution.value.reduce((s, h) => s + h.count, 0),

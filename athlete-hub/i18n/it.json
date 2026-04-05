@@ -161,19 +161,30 @@
       "acwr": "ACWR",
       "zone": "Zona"
     },
+    "filter": {
+      "one": "filtro attivo",
+      "many": "filtri attivi",
+      "activeNote": "solo i widget compatibili vengono filtrati",
+      "clear": "Rimuovi filtri"
+    },
     "agenda": {
       "title": "Prossimi appuntamenti",
-      "empty": "Nessun appuntamento in programma"
+      "empty": "Nessun appuntamento in programma",
+      "today": "Oggi",
+      "tomorrow": "Domani",
+      "appointments": "appuntamenti"
     },
     "widget": {
       "workloadAnalysis": "Carico settimanale",
       "athleteStatus": "Stato atleti",
+      "kpi": "Schede KPI",
       "readiness": "Panoramica Readiness",
       "aiInsights": "AI Insights",
       "healthAssessment": "Valutazione Salute",
       "performanceTrends": "Andamento Performance",
       "riskAssessment": "Valutazione Rischio",
-      "teamComparison": "Confronto Team"
+      "teamComparison": "Confronto Team",
+      "agenda": "Prossimi appuntamenti"
     },
     "workload": {
       "title": "Carico",
@@ -755,7 +766,8 @@
     "Checkup": "Controllo",
     "Conditioning": "Condizionamento",
     "Match": "Partita",
-    "Technical": "Tecnico"
+    "Technical": "Tecnico",
+    "Test" : "Test"
   },
   "genders": {
     "genderPlaceholder": "Seleziona sesso",

@@ -6,7 +6,7 @@ import { useDashboardStore } from '~/stores/dashboardStore'
 const { t } = useI18n()
 const dashboardStore = useDashboardStore()
 
-const data = computed(() => dashboardStore.data?.workloadComparison ?? [])
+const data = computed(() => dashboardStore.filteredData?.workloadComparison ?? [])
 
 const maxValue = computed(() => {
   const max = Math.max(...data.value.map(d => d.value), 1)

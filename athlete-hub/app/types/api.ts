@@ -475,6 +475,7 @@ export interface MailRequestDto {
 // Dashboard Filter State
 export interface FilterState {
   athletes: number[]
+  athleteNames: string[] // resolved names at apply-time for reliable cross-field matching
   dateRange: {
     from: string
     to: string

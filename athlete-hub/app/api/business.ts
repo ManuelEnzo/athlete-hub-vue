@@ -133,7 +133,10 @@ export const athleteApi = {
   deleteInjury: (id: number) =>
     api.delete<Result<boolean>>(`/Injury/${id}`),
 
-  getSummary: () => api.get<Result<CoachDashboardSummaryDto>>('/dashboard/get-data-for-dashboard'),
+  getSummary: (from?: string, to?: string) => {
+    const cfg = (from && to) ? { params: { from, to } } : undefined
+    return api.get<Result<CoachDashboardSummaryDto>>('/dashboard/get-data-for-dashboard', cfg)
+  },
 
   // Recupera i lookup veloci (ID e Nome)
   testDefGetAllLookups: () =>

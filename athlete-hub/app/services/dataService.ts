@@ -59,9 +59,9 @@ interface RetryConfig {
 }
 
 const DEFAULT_RETRY_CONFIG: RetryConfig = {
-  maxRetries: 3,
-  initialDelay: 100,
-  maxDelay: 5000,
+  maxRetries: 1,
+  initialDelay: 500,
+  maxDelay: 2000,
   backoffMultiplier: 2,
 }
 
@@ -104,6 +104,8 @@ export function useDashboardService() {
   const loading = ref(false)
   const error = ref<DataServiceError | null>(null)
   const lastUpdated = ref<Date | null>(null)
+  let lastFrom: string | undefined
+  let lastTo: string | undefined
 
   const isStale = computed(() => {
     if (!lastUpdated.value)
@@ -112,18 +114,20 @@ export function useDashboardService() {
     return ageMs > 2 * 60 * 1000 // 2 minutes
   })
 
-  const fetch = async () => {
+  const fetch = async (from?: string, to?: string) => {
     // Return cached if fresh
     if (!isStale.value && data.value) {
       return data.value
     }
+    if (from) lastFrom = from
+    if (to) lastTo = to
 
     loading.value = true
     error.value = null
 
     try {
       const result = await withRetry(async () => {
-        const res = await athleteApi.getSummary()
+        const res = await athleteApi.getSummary(lastFrom, lastTo)
         if (!res.data.isSuccess) {
           throw new DataServiceError(
             'API_ERROR',
@@ -149,9 +153,9 @@ export function useDashboardService() {
     }
   }
 
-  const refresh = async () => {
+  const refresh = async (from?: string, to?: string) => {
     lastUpdated.value = null
-    return fetch()
+    return fetch(from ?? lastFrom, to ?? lastTo)
   }
 
   // Real-time updates (polling)

@@ -25,16 +25,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-full flex flex-col gap-8 mx-auto">
+  <div class="w-full flex flex-col gap-4 sm:gap-8 mx-auto">
     <div class="flex flex-wrap items-center justify-between gap-4">
       <h2 class="text-2xl font-bold tracking-tight flex items-center gap-2">
         {{ t('athlete.visualizer') }}
       </h2>
 
-      <div class="flex items-center space-x-3">
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
         <Loader2 v-if="loadingAthletes" class="h-5 w-5 animate-spin text-primary" />
 
-        <div class="relative min-w-[260px]">
+        <div class="relative min-w-[200px] sm:min-w-[260px] w-full sm:w-auto">
           <Select v-model="selectedAthleteId">
             <SelectTrigger class="w-full pl-9 font-semibold">
               <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">

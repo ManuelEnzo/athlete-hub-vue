@@ -10,7 +10,7 @@
  * Save as: app/stores/dashboardStore.ts
  */
 
-import type { CoachDashboardSummaryDto } from '~/types/api'
+import type { CoachDashboardSummaryDto, FilterState } from '~/types/api'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useErrorHandler } from '~/composables/useErrorHandler'
@@ -29,11 +29,15 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
   // Load data and setup auto-refresh
   const initialize = async () => {
+    restorePreferences()
     try {
-      const result = await dataService.fetch()
+      // Fetch with the restored (or default) time range
+      const days: Record<string, number> = { '1d': 1, '7d': 7, '30d': 30, '90d': 90 }
+      const d = days[selectedTimeRange.value] ?? 7
+      const to = new Date().toISOString().split('T')[0]!
+      const from = new Date(Date.now() - d * 86400000).toISOString().split('T')[0]!
+      const result = await dataService.fetch(from, to)
       data.value = result
-
-      // Setup auto-refresh
       if (autoRefreshEnabled.value) {
         startAutoRefresh()
       }
@@ -80,10 +84,17 @@ export const useDashboardStore = defineStore('dashboard', () => {
     }
   }
 
-  // Change time range
+  // Change time range — also triggers a refresh with the matching date range
   const setTimeRange = (range: string) => {
     selectedTimeRange.value = range
     dataService.invalidate()
+    const days: Record<string, number> = { '1d': 1, '7d': 7, '30d': 30, '90d': 90 }
+    const d = days[range] ?? 7
+    const to = new Date().toISOString().split('T')[0]!
+    const from = new Date(Date.now() - d * 86400000).toISOString().split('T')[0]!
+    dataService.refresh(from, to)
+      .then(result => { if (result) data.value = result })
+      .catch(err => handler.handleError(err instanceof Error ? err : new Error(String(err))))
   }
 
   // Summary analytics
@@ -112,13 +123,171 @@ export const useDashboardStore = defineStore('dashboard', () => {
     }
   })
 
-  // Local filters (from AdvancedFilterModal)
-  const filters = ref<any>(null)
+  // ─── Persistence ─────────────────────────────────────────────────────────
+  const PERSIST_KEY = 'dashboard:preferences'
+  const refreshIntervalKey = ref('5m')
+  const visibleWidgets = ref<string[]>(['kpi', 'workload', 'risk', 'athleteTable', 'health', 'agenda'])
 
-  const setFilter = (f: any) => {
+  // Local filters (from AdvancedFilterModal)
+  const filters = ref<FilterState | null>(null)
+
+  function savePreferences() {
+    try {
+      localStorage.setItem(PERSIST_KEY, JSON.stringify({
+        timeRange: selectedTimeRange.value,
+        filters: filters.value,
+        refreshIntervalKey: refreshIntervalKey.value,
+        visibleWidgets: visibleWidgets.value,
+      }))
+    }
+    catch { /* storage unavailable */ }
+  }
+
+  function restorePreferences() {
+    try {
+      const raw = localStorage.getItem(PERSIST_KEY)
+      if (!raw)
+        return
+      const prefs = JSON.parse(raw) as {
+        timeRange?: string
+        filters?: FilterState | null
+        refreshIntervalKey?: string
+        visibleWidgets?: string[]
+      }
+      if (prefs.timeRange)
+        selectedTimeRange.value = prefs.timeRange
+      if (prefs.filters)
+        filters.value = prefs.filters
+      if (prefs.refreshIntervalKey)
+        refreshIntervalKey.value = prefs.refreshIntervalKey
+      if (prefs.visibleWidgets && prefs.visibleWidgets.length > 0)
+        visibleWidgets.value = prefs.visibleWidgets
+    }
+    catch { /* ignore */ }
+  }
+
+  const setFilter = (f: FilterState) => {
     filters.value = f
-    // Invalidate cached data so next fetch will re-query backend
     dataService.invalidate()
+    savePreferences()
+  }
+
+  const clearFilters = () => {
+    filters.value = null
+    savePreferences()
+  }
+
+  // How many filter dimensions are currently active
+  const activeFilterCount = computed(() => {
+    const f = filters.value
+    if (!f)
+      return 0
+    let n = 0
+    if (f.athletes.length > 0)
+      n++
+    if (f.dateRange?.from)
+      n++
+    if (f.metrics.readiness[0] !== 0 || f.metrics.readiness[1] !== 100)
+      n++
+    return n
+  })
+
+  // Client-side filtered view of data — ALL display components read from here
+  const filteredData = computed(() => {
+    if (!data.value)
+      return null
+    const f = filters.value
+    const hasAthleteFilter = f && f.athletes.length > 0
+    const hasReadinessFilter = f && (f.metrics.readiness[0] !== 0 || f.metrics.readiness[1] !== 100)
+    const hasDateFilter = f && f.dateRange?.from
+    if (!hasAthleteFilter && !hasReadinessFilter && !hasDateFilter)
+      return data.value
+
+    const result = { ...data.value }
+
+    // Build name set: prefer pre-resolved names from the filter (set by the modal),
+    // which avoids depending on agenda items to discover the mapping.
+    let selectedNames: Set<string> | null = null
+    if (hasAthleteFilter) {
+      if (f!.athleteNames && f!.athleteNames.length > 0) {
+        selectedNames = new Set(f!.athleteNames)
+      }
+      else {
+        // Fallback: resolve via upcomingAgenda (legacy / restored-from-storage filters)
+        selectedNames = new Set(
+          (data.value.upcomingAgenda ?? [])
+            .filter(item => f!.athletes.includes(item.athleteId))
+            .map(item => item.athleteFullName),
+        )
+      }
+    }
+
+    // Filter athleteStatusMatrix
+    let matrix = data.value.athleteStatusMatrix ?? []
+    if (hasReadinessFilter) {
+      const [min, max] = f!.metrics.readiness
+      matrix = matrix.filter(a => a.readiness >= min && a.readiness <= max)
+    }
+    if (selectedNames && selectedNames.size > 0)
+      matrix = matrix.filter(a => selectedNames!.has(a.name))
+    result.athleteStatusMatrix = matrix
+
+    // Recompute aggregate KPI fields from the filtered matrix
+    // (these are the values shown in MetricCard KPIs)
+    result.totalMonitoredAthletes = matrix.length
+    if (matrix.length > 0) {
+      result.averageReadinessScore = Math.round(
+        matrix.reduce((s, a) => s + a.readiness, 0) / matrix.length,
+      )
+      result.criticalAcwrCount = matrix.filter(a => a.acwr > 1.5).length
+    }
+    else {
+      result.averageReadinessScore = 0
+      result.criticalAcwrCount = 0
+    }
+
+    // Filter riskAlerts
+    if (selectedNames && selectedNames.size > 0)
+      result.riskAlerts = (data.value.riskAlerts ?? []).filter(r => selectedNames!.has(r.athleteName))
+
+    // Filter upcomingAgenda
+    let agenda = data.value.upcomingAgenda ?? []
+    if (hasDateFilter) {
+      const from = new Date(f!.dateRange.from)
+      const to = new Date(f!.dateRange.to)
+      to.setHours(23, 59, 59, 999)
+      agenda = agenda.filter((item) => {
+        const d = new Date(item.scheduledAt)
+        return d >= from && d <= to
+      })
+    }
+    if (hasAthleteFilter)
+      agenda = agenda.filter(item => f!.athletes.includes(item.athleteId))
+    result.upcomingAgenda = agenda
+
+    return result
+  })
+
+  // Apply settings from DashboardSettings modal
+  const applySettings = (s: { refreshInterval: string, defaultTimeRange: string, visibleWidgets?: string[] }) => {
+    refreshIntervalKey.value = s.refreshInterval
+    const intervalMap: Record<string, number> = {
+      'disabled': 0, '1m': 60000, '5m': 300000, '10m': 600000, '30m': 1800000,
+    }
+    const ms = intervalMap[s.refreshInterval] ?? 300000
+    if (ms === 0) {
+      autoRefreshEnabled.value = false
+      stopAutoRefresh()
+    }
+    else {
+      autoRefreshEnabled.value = true
+      setRefreshInterval(ms)
+    }
+    if (s.defaultTimeRange && s.defaultTimeRange !== selectedTimeRange.value)
+      setTimeRange(s.defaultTimeRange)
+    if (s.visibleWidgets)
+      visibleWidgets.value = s.visibleWidgets
+    savePreferences()
   }
 
   // Normalize workload summary for UI
@@ -187,9 +356,19 @@ export const useDashboardStore = defineStore('dashboard', () => {
     setTimeRange,
     // Methods + compatibility
     setFilter,
+    clearFilters,
+    // Filtered data for display components
+    filteredData,
+    // Active filter count for UI badge
+    activeFilterCount,
+    // Widget visibility
+    visibleWidgets: computed(() => visibleWidgets.value),
+    // Apply settings from DashboardSettings
+    applySettings,
     // Normalized fields
     athletes: computed(() => athletes.value),
     workload: computed(() => workload.value),
     filters: computed(() => filters.value),
+    refreshIntervalKey,
   }
 })

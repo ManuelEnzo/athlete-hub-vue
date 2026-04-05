@@ -8,7 +8,7 @@ const { t } = useI18n()
 const dashboardStore = useDashboardStore()
 
 // riskTrend: 0=Stabile, 1=InAumento, 2=Alto, 3=Critico
-const riskAlerts = computed(() => dashboardStore.data?.riskAlerts ?? [])
+const riskAlerts = computed(() => dashboardStore.filteredData?.riskAlerts ?? [])
 
 const criticalCount = computed(() => riskAlerts.value.filter(r => Number(r.riskTrend) >= 3).length)
 const warningCount = computed(() => riskAlerts.value.filter(r => Number(r.riskTrend) === 1 || Number(r.riskTrend) === 2).length)

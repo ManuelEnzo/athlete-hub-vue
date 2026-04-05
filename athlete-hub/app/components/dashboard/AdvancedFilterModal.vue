@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { Filter, RotateCcw, Save, X } from 'lucide-vue-next'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAthletesStore } from '~/stores/athletesStore'
 import { useDashboardStore } from '~/stores/dashboardStore'
@@ -30,9 +30,20 @@ const { t } = useI18n()
 const _dashStore = useDashboardStore()
 const athletesStore = useAthletesStore()
 
+// Load athletes list when modal first opens
+onMounted(() => {
+  if (!athletesStore.items.length)
+    athletesStore.initialize()
+})
+watch(() => props.isOpen, (open) => {
+  if (open && !athletesStore.items.length)
+    athletesStore.initialize()
+})
+
 // Filter State
 interface FilterState {
   athletes: number[]
+  athleteNames: string[] // resolved full names at apply-time
   dateRange: {
     from: string
     to: string
@@ -49,6 +60,7 @@ interface FilterState {
 
 const filters = ref<FilterState>({
   athletes: [],
+  athleteNames: [],
   dateRange: {
     from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]!,
     to: new Date().toISOString().split('T')[0]!,
@@ -130,13 +142,18 @@ function updateMetricRange(metric: keyof FilterState['metrics'], min: number, ma
 }
 
 function applyFilters() {
-  emit('apply', filters.value)
+  // Resolve names here where we have athletesStore access — the store uses names directly
+  const resolvedNames = athletesStore.items
+    .filter(a => filters.value.athletes.includes(a.id || 0))
+    .map(a => a.fullName)
+  emit('apply', { ...filters.value, athleteNames: resolvedNames })
   emit('close')
 }
 
 function resetFilters() {
   filters.value = {
     athletes: [],
+    athleteNames: [],
     dateRange: {
       from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]!,
       to: new Date().toISOString().split('T')[0]!,
