@@ -92,12 +92,12 @@ function applyFilters() {
 }
 
 watch(() => props.athleteId, (id) => {
-  if (id) {
-    filterFrom.value = defaultFrom()
-    filterTo.value = defaultTo()
-    selectedDate.value = null
-    loadHistory()
-  }
+  // Reset immediately so stale data from previous athlete is never visible
+  sleepSvc.reset()
+  selectedDate.value = null
+  filterFrom.value = defaultFrom()
+  filterTo.value = defaultTo()
+  if (id) loadHistory()
 })
 
 onMounted(() => {

@@ -1,8 +1,10 @@
 // src/config/index.js
 const config = {
   siteName: import.meta.env.VITE_ATHLETE_HUB_SITE_NAME || 'Athlete Hub',
-  siteDescription: import.meta.env.VITE_ATHLETE_HUB_SITE_DESCRIPTION || 'Your Ultimate Resource...',
-  siteKeywords: import.meta.env.VITE_ATHLETE_HUB_SITE_KEYWORDS || 'athlete, sports...',
+  siteDescription: import.meta.env.VITE_ATHLETE_HUB_SITE_DESCRIPTION
+    || 'Athlete Hub — Professional sports performance monitoring platform. Track ACWR, RPE, injuries, sleep and athlete readiness in real time.',
+  siteKeywords: import.meta.env.VITE_ATHLETE_HUB_SITE_KEYWORDS
+    || 'athlete monitoring, sports performance, ACWR, RPE, injury prevention, sleep tracking, sports science, team management, athlete health, readiness score',
   // VITE_ATHLETE_HUB_API must be set:
   //  - Local dev:  .env.development (http://localhost:PORT/api/v1)
   //  - Production: Vercel Dashboard > Environment Variables

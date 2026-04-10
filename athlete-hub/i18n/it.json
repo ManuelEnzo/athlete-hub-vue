@@ -87,9 +87,73 @@
     },
     "settings": {
       "title": "Impostazioni",
+      "nav": {
+        "profile": "Profilo",
+        "appearance": "Aspetto",
+        "notifications": "Notifiche",
+        "display": "Dashboard"
+      },
+      "appearance": {
+        "subtitle": "Personalizza l\u2019aspetto dell\u2019app",
+        "modeTitle": "Tema",
+        "modeDesc": "Scegli se usare il tema chiaro, scuro o quello del sistema operativo",
+        "light": "Chiaro",
+        "dark": "Scuro",
+        "system": "Sistema",
+        "colorTitle": "Colore principale",
+        "colorDesc": "Scegli il colore accent dell\u2019interfaccia",
+        "languageTitle": "Lingua",
+        "languageDesc": "Seleziona la lingua dell\u2019interfaccia"
+      },
+      "display": {
+        "title": "Dashboard",
+        "subtitle": "Configura la tua dashboard e l\u2019aggiornamento automatico",
+        "widgetsTitle": "Widget visibili",
+        "widgetsDesc": "Attiva o disattiva i widget mostrati nella dashboard",
+        "refreshTitle": "Aggiornamento automatico",
+        "refreshDesc": "Ogni quanto la dashboard si aggiorna automaticamente",
+        "widgets": {
+          "kpi": "Metriche KPI",
+          "kpiDesc": "Atleti monitorati, readiness media, ACWR critici",
+          "workload": "Andamento Carico",
+          "workloadDesc": "Grafico del carico di lavoro settimanale",
+          "risk": "Valutazione Rischio",
+          "riskDesc": "Atleti a rischio e alerting ACWR",
+          "athleteTable": "Stato Atleti",
+          "athleteTableDesc": "Tabella readiness e stato per atleta",
+          "health": "Salute del Team",
+          "healthDesc": "Distribuzione della salute del gruppo",
+          "agenda": "Agenda",
+          "agendaDesc": "Prossimi eventi e scadenze"
+        }
+      },
+      "notifications": {
+        "title": "Notifiche",
+        "subtitle": "Scegli quali alert ricevere e come",
+        "alertsTitle": "Tipologie di avvisi",
+        "alertsDesc": "Attiva o disattiva le notifiche per ciascun tipo di evento",
+        "acwr": "Alert ACWR",
+        "acwrDesc": "Notifica quando un atleta supera la soglia di rischio ACWR",
+        "rpe": "Promemoria RPE mancanti",
+        "rpeDesc": "Avvisa se un atleta non ha compilato il diario degli sforzi",
+        "injury": "Alert infortuni",
+        "injuryDesc": "Notifica per nuovi infortuni o aggiornamenti del registro lesioni",
+        "sleep": "Alert qualità del sonno",
+        "sleepDesc": "Avvisa quando la qualità del sonno scende sotto la soglia ottimale",
+        "thresholdTitle": "Sensibilità alert ACWR",
+        "thresholdDesc": "Imposta quanto deve essere critico un valore ACWR per ricevere una notifica",
+        "thresholdLow": "Alta (solo casi gravi)",
+        "thresholdMedium": "Media (consigliata)",
+        "thresholdHigh": "Bassa (tutti gli avvisi)",
+        "channelTitle": "Canale di notifica",
+        "channelDesc": "Scegli come ricevere gli avvisi",
+        "sound": "Suono",
+        "soundDesc": "Riproduci un suono quando arriva una notifica",
+        "browser": "Notifiche browser",
+        "browserDesc": "Invia notifiche push al browser anche a scheda in background"
+      },
       "advanced": "Avanzate",
       "alerts": "Avvisi",
-      "display": "Visualizzazione",
       "autoRefresh": "Aggiornamento automatico",
       "compactLayout": "Layout compatto",
       "darkMode": "Tema scuro",
@@ -342,7 +406,13 @@
     "sportCategory": "Categoria Sportiva",
     "sportCategoryPlaceholder": "Seleziona categoria sportiva",
     "email": "email",
-    "readiness": "readiness"
+    "readiness": "readiness",
+    "sleepSource": "Fonte dati sonno",
+    "sleepSourceHint": "Indica come l\u2019atleta monitora il sonno",
+    "sleepSourceDevice": "Dispositivo",
+    "sleepSourceQuestionnaire": "Questionario",
+    "sleepSourceMixed": "Misto",
+    "sleepSourceUnknown": "Non specificato"
   },
   "athlete": {
     "deleteWarning": "Questa azione eliminerà in modo permanente l'atleta e tutti i suoi dati associati. Sei sicuro di voler procedere?",
@@ -357,7 +427,8 @@
     "unknown": "Atleta sconosciuto",
     "email": {
       "tokenSubject": "Token Sleep ID",
-      "tokenBody": "Ciao {name}, il tuo Token Sleep ID è: {token}. Salvalo per utilizzarlo nell'app."
+      "tokenBody": "Ciao {name}, il tuo Token Sleep ID è: {token}. Salvalo per utilizzarlo nell'app.",
+      "sendTokenTooltip": "Invia mail token"
     },
     "details": {
       "readinessTitle": "Stato di Prontezza (Readiness)",
@@ -1132,7 +1203,15 @@
     "roleAdmin": "Amministratore",
     "roleUser": "Utente",
     "passwordPlaceholder": "••••••••",
-    "username": "username"
+    "username": "username",
+    "passwordOptional": "(opzionale)",
+    "confirmModDesc": "Inserisci la tua password attuale per confermare le modifiche.",
+    "strength": {
+      "weak": "Debole",
+      "fair": "Sufficiente",
+      "good": "Buona",
+      "strong": "Forte"
+    }
   },
   "dataPolicy": {
     "backHome": "Torna alla Home",
@@ -1458,6 +1537,8 @@
   "-": " ",
   "/Auth/forgot-password": "/ Auth/forgot password",
   "/Auth/reset-password-execution": "/ Auth/reset password execution",
+  "/Sleep/Questionnaire": "/ Sleep/Questionnaire",
+  "/Questionnaire": "/ Questionnaire",
   "LayoutSidebarNavGroup": " Layout Sidebar Nav Group",
   "LayoutSidebarNavLink": " Layout Sidebar Nav Link",
   "_": " ",
@@ -1503,8 +1584,25 @@
     "notes": "Note",
     "questionnaire": {
       "title": "Questionario Sonno",
+      "description": "Per favore compila il questionario sul sonno per aiutare gli allenatori a monitorare il recupero.",
       "qualityTitle": "Qualità Percepita",
-      "noNotes": "Nessuna nota registrata"
+      "submit": "Invia",
+      "sent": "Inviato",
+      "success": "Grazie — questionario inviato con successo.",
+      "noNotes": "Nessuna nota registrata",
+      "errors": {
+        "requireHours": "Per favore inserisci le ore di sonno.",
+        "requireQuality": "Per favore inserisci la qualità del sonno (1-10).",
+        "qualityRange": "La qualità del sonno deve essere un numero compreso tra 1 e 10.",
+        "sending": "Errore durante l'invio del questionario. Riprova più tardi."
+      },
+      "dto": {
+        "Token": "Token (string|null)",
+        "Date": "Data (YYYY-MM-DD)",
+        "HoursSlept": "OreDormite (number, es. 7.5)",
+        "SleepQuality": "QualitàSonno (1-10)",
+        "Notes": "Note (string|null)"
+      }
     },
     "kpi": {
       "hoursSlept": "Ore Dormite",
@@ -1543,6 +1641,11 @@
       "hours": "Ore (h)",
       "qualityScale": "Qualità (/10)",
       "optimalZone": "Zona ottimale (7–9h)"
+    },
+    "fields": {
+      "date": "Data",
+      "hoursSlept": "Ore dormite",
+      "sleepQuality": "Qualità del sonno (1-10)"
     },
     "timeline": {
       "title": "Timeline Fasi del Sonno",

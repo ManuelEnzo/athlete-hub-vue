@@ -1,54 +1,84 @@
-![nuxt-shadcn-dashboard-social-card](https://nuxt-shadcn-dashboard.vercel.app/social-card.png)
+# Athlete Hub
 
-# Nuxt Shadcn Vue TailwindCSS 4 - Dashboard
+[![Built with Nuxt][nuxt-src]][nuxt-href]
 
-[![built with nuxt][nuxt-src]][nuxt-href]
+**Athlete Hub** is a professional sports performance monitoring platform designed to help coaches and sport scientists track athlete health, readiness, workload, and injury risk in real time.
 
-- [Live demo](https://nuxt-shadcn-dashboard.vercel.app)
-- [Component Documentation](https://shadcn-vue.com/docs/introduction)
+## Features
 
-## Quick Start
+- **ACWR Monitoring** — Acute:Chronic Workload Ratio tracking with zone-based risk alerts
+- **RPE Collection** — Email-based RPE submission workflow with automated reminders
+- **Injury Management** — Injury log with timeline, severity and recovery tracking
+- **Sleep History** — Nightly sleep quality data and trend visualization
+- **Athlete Dashboard** — Central readiness overview with performance matrix
+- **Agenda** — Session scheduling and upcoming appointment management
+- **Multi-language** — English and Italian (i18n)
 
-```bash [Terminal]
-npx nuxi@latest init -t github:dianprata/nuxt-shadcn-dashboard my-dashboard-app
-cd my-dashboard-app
-pnpm i # If you don't have pnpm installed, run: npm install -g pnpm
+## Getting Started
+
+### Prerequisites
+
+- Node.js 22.x
+- pnpm >= 9
+
+### Installation
+
+```bash
+git clone https://github.com/manuelenzo/athlete-hub.git
+cd athlete-hub
+pnpm install
+```
+
+### Environment Variables
+
+Copy `.env.development` and configure:
+
+```env
+VITE_ATHLETE_HUB_API=http://localhost:PORT/api/v1
+VITE_ATHLETE_HUB_SITE_NAME=Athlete Hub
+VITE_ATHLETE_HUB_SITE_DESCRIPTION=Professional sports performance monitoring platform
+```
+
+### Development
+
+```bash
+pnpm dev
+```
+
+### Build
+
+```bash
+pnpm build
 ```
 
 ## App Settings
-You can change the app settings in `app.config.ts` file.
-If you want to change app settings, you have to clear cookie 'app_settings' first.
-```
+
+Sidebar and theme can be configured in `app.config.ts`:
+
+```ts
 export default defineAppConfig({
   appSettings: {
     sidebar: {
       collapsible: 'offcanvas', // 'offcanvas' | 'icon' | 'none'
-      side: 'left', // 'left' | 'right'
-      variant: 'inset', // 'sidebar' | 'floating' | 'inset'
+      side: 'left',             // 'left' | 'right'
+      variant: 'sidebar',       // 'sidebar' | 'floating' | 'inset'
     },
-    theme: {
-      color: 'default', // 'default' | 'blue' | 'green' | 'orange' | 'purple' | 'red' | 'teal' | 'yellow' | 'rose'
-      type: 'scaled', // 'default' | 'mono' | 'scaled'
-    }
   },
 })
 ```
 
-## Contributing
+## Tech Stack
 
-1. Clone this repository.
-2. Install dependencies `pnpm install`.
-3. Use `pnpm run dev` to start dev server.
-
-## Credits
-
-- [Nuxt.js](https://nuxtjs.org/)
-- [Shadcn Vue](https://shadcn-vue.com/)
-- [TailwindCSS](https://tailwindcss.com/)
+- [Nuxt 4](https://nuxt.com/) — SSR/SPA framework
+- [Vue 3](https://vuejs.org/) — UI framework
+- [Shadcn Vue](https://shadcn-vue.com/) — Component library
+- [TailwindCSS 4](https://tailwindcss.com/) — Utility-first CSS
+- [Pinia](https://pinia.vuejs.org/) — State management
+- [vue-i18n](https://vue-i18n.intlify.dev/) — Internationalization
 
 ## License
 
-MIT
+MIT — © Manuel Enzo
 
 [nuxt-src]: https://img.shields.io/badge/Built%20With%20Nuxt-18181B?logo=nuxt.js
 [nuxt-href]: https://nuxt.com/

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { AthleteCreateRequest, AthleteResponse, MailRequestDto } from '../../types/api'
-import { Edit3, Loader2, Plus, Trash2, User } from 'lucide-vue-next'
-import { nextTick, onMounted, reactive, ref, watch } from 'vue'
+import type { AthleteCreateRequest, AthleteResponse, MailRequestDto, PreferredSleepSource } from '../../types/api'
+import { Clipboard, ClipboardCheck, ClipboardList, Edit3, HelpCircle, Loader2, Mail, Plus, Search, Smartphone, Trash2, User, X } from 'lucide-vue-next'
+import { nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useErrorHandler } from '~/composables/useErrorHandler'
@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 
 const props = defineProps<{ showForm: boolean }>()
 const emit = defineEmits(['update:showForm'])
@@ -29,6 +30,7 @@ const athletes = computed(() => athletesStore.items)
 const loading = computed(() => athletesStore.loading)
 
 const editingId = ref<number | null>(null)
+const tokenCopied = ref(false)
 const formCardRef = ref<HTMLElement | null>(null)
 const athleteToDelete = ref<AthleteResponse | null>(null)
 const isDeleteDialogOpen = ref(false)
@@ -43,10 +45,17 @@ const form = reactive({
   height: 0,
   gender: 'F',
   tokenSleepId: '',
+  preferredSleepSource: 0 as PreferredSleepSource,
 })
 
 // UI state
 const searchQuery = ref('')
+
+const sleepSourceOptions = computed(() => [
+  { value: 1 as PreferredSleepSource, label: t('fields.sleepSourceDevice'), icon: Smartphone },
+  { value: 2 as PreferredSleepSource, label: t('fields.sleepSourceQuestionnaire'), icon: ClipboardList },
+  { value: 0 as PreferredSleepSource, label: t('fields.sleepSourceUnknown'), icon: HelpCircle },
+])
 
 const displayedAthletes = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
@@ -202,6 +211,7 @@ function editAthlete(a: AthleteResponse) {
     height: a.height,
     gender: a.gender || 'F',
     tokenSleepId: a.tokenSleepId,
+    preferredSleepSource: (a.preferredSleepSource ?? 0) as PreferredSleepSource,
   })
 
   emit('update:showForm', true)
@@ -251,6 +261,7 @@ function resetForm() {
     height: 0,
     gender: 'F',
     tokenSleepId: '',
+    preferredSleepSource: 0 as PreferredSleepSource,
   })
 
   emit('update:showForm', false)
@@ -273,7 +284,9 @@ async function copyToken(token: string) {
     return
   try {
     await navigator.clipboard.writeText(token)
+    tokenCopied.value = true
     notifications.success('', t('athlete.success.tokenCopied'))
+    setTimeout(() => { tokenCopied.value = false }, 2000)
   }
   catch (err) {
     handler.handleError(err instanceof Error ? err : new Error(String(err)))
@@ -303,14 +316,42 @@ async function sendTokenEmail() {
   }
 }
 
-onMounted(fetchAthletes)
+function handleEscape(e: KeyboardEvent) {
+  if (e.key === 'Escape' && props.showForm) resetForm()
+}
+
+onMounted(() => {
+  fetchAthletes()
+  window.addEventListener('keydown', handleEscape)
+})
+onUnmounted(() => window.removeEventListener('keydown', handleEscape))
 </script>
 
 <template>
   <div class="w-full flex flex-col gap-8 mx-auto p-4 relative">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div class="flex items-center gap-3 w-full md:w-auto">
-        <Input v-model="searchQuery" :placeholder="t('athlete.search')" class="w-full md:w-64" aria-label="Search athletes" />
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <div class="relative flex-1 sm:w-72">
+          <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
+            v-model="searchQuery"
+            :placeholder="t('athlete.search')"
+            class="pl-9 h-10 w-full"
+            :class="searchQuery ? 'pr-8' : ''"
+            aria-label="Search athletes"
+          />
+          <button
+            v-if="searchQuery"
+            type="button"
+            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground rounded transition-colors"
+            @click="searchQuery = ''"
+          >
+            <X class="h-3.5 w-3.5" />
+          </button>
+        </div>
+        <span v-if="searchQuery" class="text-xs text-muted-foreground whitespace-nowrap shrink-0">
+          {{ displayedAthletes.length }}/{{ athletes.length }}
+        </span>
       </div>
     </div>
 
@@ -373,18 +414,44 @@ onMounted(fetchAthletes)
               Token Sleep ID
             </label>
 
-            <div class="flex items-center gap-2">
-              <!-- readonly -->
-              <Input :model-value="form.tokenSleepId" readonly class="h-10 font-mono text-xs" />
-              <!-- copy -->
-              <Button type="button" size="icon" variant="ghost" class="h-9 w-9" @click="copyToken(form.tokenSleepId)">
-                📋
-              </Button>
-              <!-- email -->
-              <Button type="button" size="icon" variant="ghost" class="h-9 w-9" @click="sendTokenEmail">
-                ✉️
-              </Button>
-            </div>
+            <TooltipProvider :delay-duration="300">
+              <div class="flex items-center gap-2">
+                <!-- readonly -->
+                <Input :model-value="form.tokenSleepId" readonly class="h-10 font-mono text-xs" />
+                <!-- copy -->
+                <Tooltip>
+                  <TooltipTrigger as-child>
+                    <Button
+                      type="button" size="icon" variant="ghost"
+                      class="h-9 w-9 shrink-0 transition-colors"
+                      :class="tokenCopied ? 'text-green-600 hover:text-green-600' : ''"
+                      @click="copyToken(form.tokenSleepId)"
+                    >
+                      <ClipboardCheck v-if="tokenCopied" class="h-4 w-4" />
+                      <Clipboard v-else class="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    {{ tokenCopied ? t('athlete.success.tokenCopied') : t('athlete.success.tokenCopied').replace('copiato', 'Copia') }}
+                  </TooltipContent>
+                </Tooltip>
+                <!-- email -->
+                <Tooltip>
+                  <TooltipTrigger as-child>
+                    <Button
+                      type="button" size="icon" variant="ghost"
+                      class="h-9 w-9 shrink-0"
+                      @click="sendTokenEmail"
+                    >
+                      <Mail class="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    {{ t('athlete.email.sendTokenTooltip') }}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
           </div>
 
           <div class="space-y-1.5">
@@ -406,6 +473,27 @@ onMounted(fetchAthletes)
                 </SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <!-- Sleep source selector — full width row -->
+          <div class="space-y-1.5 col-span-full">
+            <label class="text-[11px] font-bold uppercase ml-1 text-muted-foreground block h-4">{{ t('fields.sleepSource') }}</label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="opt in sleepSourceOptions"
+                :key="opt.value"
+                type="button"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all"
+                :class="form.preferredSleepSource === opt.value
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  : 'bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground'"
+                @click="form.preferredSleepSource = opt.value"
+              >
+                <component :is="opt.icon" class="h-3.5 w-3.5" />
+                {{ opt.label }}
+              </button>
+            </div>
+            <p class="text-[10px] text-muted-foreground ml-1 mt-0.5">{{ t('fields.sleepSourceHint') }}</p>
           </div>
         </CardContent>
 
@@ -487,7 +575,7 @@ onMounted(fetchAthletes)
             class="h-9 w-9 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
             @click="editAthlete(athlete)"
             :aria-label="t('common.edit')"
-            title="{{ t('common.edit') }}"
+            :title="t('common.edit')"
           >
             <Edit3 class="h-4 w-4" />
           </Button>
@@ -496,13 +584,22 @@ onMounted(fetchAthletes)
             variant="ghost" size="icon" class="h-9 w-9 rounded-full text-destructive"
             @click="athleteToDelete = athlete; isDeleteDialogOpen = true"
             :aria-label="t('common.delete')"
-            title="{{ t('common.delete') }}"
+            :title="t('common.delete')"
           >
             <Trash2 class="h-4 w-4" />
           </Button>
         </div>
       </Card>
     </TransitionGroup>
+
+    <div
+      v-if="!loading && athletes.length > 0 && displayedAthletes.length === 0"
+      class="text-center py-16 bg-muted/10 rounded-xl border-2 border-dashed"
+    >
+      <Search class="h-10 w-10 mx-auto text-muted-foreground opacity-40 mb-3" />
+      <p class="font-medium text-muted-foreground">{{ t('common.noRecords') }}</p>
+      <button type="button" class="mt-2 text-sm text-primary hover:underline" @click="searchQuery = ''">{{ t('common.close') }}</button>
+    </div>
 
     <div
       v-if="!loading && athletes.length === 0"
@@ -512,6 +609,10 @@ onMounted(fetchAthletes)
       <p class="text-muted-foreground">
         {{ t('athlete.noData') }}
       </p>
+      <Button class="mt-5 gap-1.5" size="sm" @click="openNewAthlete">
+        <Plus class="h-4 w-4" />
+        {{ t('athlete.new') }}
+      </Button>
     </div>
   </div>
 
@@ -578,4 +679,15 @@ input[type='number']::-webkit-outer-spin-button {
 
 .card-interactive:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(2,6,23,0.08); }
 .card-interactive:focus-within { outline: 2px solid rgba(99,102,241,0.12); }
+
+.actions-overlay {
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.group:hover .actions-overlay,
+.group:focus-within .actions-overlay {
+  opacity: 1;
+}
 </style>

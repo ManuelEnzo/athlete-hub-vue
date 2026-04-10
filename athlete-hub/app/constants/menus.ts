@@ -78,11 +78,11 @@ export const navMenuBottom: NavMenuItems = [
   {
     title: 'Help & Support',
     icon: 'i-lucide-circle-help',
-    link: 'https://github.com/dianprata/nuxt-shadcn-dashboard',
+    link: 'mailto:athletehub.sport@gmail.com',
   },
   {
     title: 'Feedback',
     icon: 'i-lucide-send',
-    link: 'https://github.com/dianprata/nuxt-shadcn-dashboard',
+    link: 'mailto:athletehub.sport@gmail.com',
   },
 ]

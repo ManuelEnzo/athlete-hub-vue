@@ -31,6 +31,51 @@ const { t } = useI18n({ useScope: 'global' })
 
 const handler = useErrorHandler({ component: 'LandingPage' })
 
+const siteUrl = import.meta.env.VITE_ATHLETE_HUB_SITE_URL || 'https://athletehub.sport'
+
+// Page-level SEO
+useSeoMeta({
+  title: 'Athlete Hub — Sports Performance Monitoring Platform',
+  description: 'Athlete Hub helps coaches and sport scientists monitor athlete readiness, ACWR, RPE, sleep and injuries in real time. Start for free.',
+  ogTitle: 'Athlete Hub — Sports Performance Monitoring Platform',
+  ogDescription: 'Monitor athlete readiness, ACWR, RPE, sleep and injuries in real time. The professional platform for sports performance management.',
+  ogUrl: siteUrl,
+  ogImage: `${siteUrl}/social-card.png`,
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Athlete Hub — Sports Performance Monitoring',
+  twitterDescription: 'Monitor athlete readiness, ACWR, RPE, sleep and injuries in real time.',
+  twitterImage: `${siteUrl}/social-card.png`,
+})
+
+useHead({
+  link: [{ rel: 'canonical', href: siteUrl }],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        'name': 'Athlete Hub',
+        'description': 'Professional sports performance monitoring platform for coaches and sport scientists.',
+        'url': siteUrl,
+        'applicationCategory': 'SportsApplication',
+        'operatingSystem': 'Web',
+        'offers': {
+          '@type': 'Offer',
+          'price': '0',
+          'priceCurrency': 'EUR',
+        },
+        'author': {
+          '@type': 'Person',
+          'name': 'Manuel Enzo',
+          'email': 'athletehub.sport@gmail.com',
+        },
+      }),
+    },
+  ],
+})
+
 // Gestione Tema (Nuxt Color Mode)
 const colorMode = useColorMode()
 function toggleTheme() {

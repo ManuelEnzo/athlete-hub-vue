@@ -6,19 +6,21 @@
   "description": "Athlete-Hub",
   "author": "Manuel Enzo (manuelenzo2000@gmail.com)",
   "license": "MIT",
-  "homepage": "https://dashboard.dianprata.com/",
+  "homepage": "https://athletehub.sport/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dianprata/nuxt-shadcn-dashboard.git"
+    "url": "git+https://github.com/manuelenzo/athlete-hub.git"
   },
   "keywords": [
-    "dashboard",
-    "admin-dashboard",
-    "vue",
+    "athlete-monitoring",
+    "sports-performance",
+    "acwr",
+    "rpe",
+    "injury-prevention",
+    "sports-science",
+    "team-management",
     "nuxt",
-    "shadcn-vue",
-    "shadcn-nuxt",
-    "shadcn-dashboard",
+    "vue",
     "tailwindcss"
   ],
   "main": "./nuxt.config.ts",

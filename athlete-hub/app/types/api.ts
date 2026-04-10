@@ -49,6 +49,8 @@ export interface UserProfileResponse {
   createdAt: string // Arriva come stringa ISO dal JSON
 }
 
+export type PreferredSleepSource = 0 | 1 | 2 | 3 // Unknown=0, Device=1, Questionnaire=2, Mixed=3
+
 export interface AthleteResponse {
   id: number
   firstName: string
@@ -63,6 +65,7 @@ export interface AthleteResponse {
   createdAt: string // Arriva come stringa ISO dal JSON,
   dateOfBirth: string // Arriva come stringa ISO dal JSON
   tokenSleepId: string
+  preferredSleepSource?: PreferredSleepSource | null
 }
 
 export interface AthleteCreateRequest {
@@ -74,6 +77,7 @@ export interface AthleteCreateRequest {
   weight: number
   height: number
   sportCategory?: string
+  preferredSleepSource?: PreferredSleepSource
 }
 
 // Per l'update possiamo riutilizzare il create o renderlo parziale
@@ -520,6 +524,14 @@ export interface SleepResponseDto {
   deepSleepHours?: number
   remSleepHours?: number
   awakeTime?: number
+}
+
+export interface SleepQuestionnaireSubmitDto {
+  Token: string | null
+  Date: string // YYYY-MM-DD
+  HoursSlept: number
+  SleepQuality: number // 1-10
+  Notes: string | null
 }
 
 // Dashboard Filter State

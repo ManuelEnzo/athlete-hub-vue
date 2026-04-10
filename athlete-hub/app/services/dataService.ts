@@ -619,6 +619,12 @@ export function useSleepService() {
     selected.value = entry
   }
 
+  const reset = () => {
+    history.value = []
+    selected.value = null
+    error.value = null
+  }
+
   return {
     history: computed(() => history.value),
     selected: computed(() => selected.value),
@@ -628,6 +634,7 @@ export function useSleepService() {
     fetchHistory,
     fetchDay,
     setSelected,
+    reset,
   }
 }
 

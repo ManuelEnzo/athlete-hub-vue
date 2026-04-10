@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Allow: /landingpage
+Disallow: /settings/
+Disallow: /api/
+
+Sitemap: https://athletehub.sport/sitemap.xml

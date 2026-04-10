@@ -22,6 +22,7 @@ import type {
   RpeLastSessionOverviewDto,
   RpeLinkQueueResponseDto,
   RpeLinkQueueSubmitRpeDto,
+  SleepQuestionnaireSubmitDto,
   SleepResponseDto,
   TestDefinitionDto,
   TestEntryGridDto,
@@ -29,6 +30,8 @@ import type {
   TestManagementUpdateRequest,
   TestResultSaveDto
 } from '../types/api'
+import axios from 'axios'
+import config from '@/config'
 import api from './client-optimized'
 
 export const athleteApi = {
@@ -182,5 +185,12 @@ export const athleteApi = {
     const params = { params: { ...(from && { from }), ...(to && { to }) } }
     return api.get<Result<SleepResponseDto[]>>(`/Sleep/${athleteId}/history`, params)
   },
+
+  // Public anonymous endpoint — uses plain axios to avoid Pinia/auth interceptor
+  submitQuestionnaire: (data: SleepQuestionnaireSubmitDto) =>
+    axios.post<Result<boolean>>(`${config.apiEndpoint}/Sleep/Questionnaire`, data, {
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: false,
+    }),
 
 }

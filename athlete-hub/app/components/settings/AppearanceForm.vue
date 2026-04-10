@@ -1,152 +1,123 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
-import * as z from 'zod'
-import notifications from '@/lib/notificationService'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '~/components/ui/button'
+import type { ThemeColor } from '@/constants/themes'
+import { Check, Moon, Monitor, Palette, Sun } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+import { THEME_COLORS } from '@/constants/themes'
+import { Separator } from '@/components/ui/separator'
 
-const appearanceFormSchema = toTypedSchema(z.object({
-  theme: z.enum(['light', 'dark'] as const),
-  font: z.enum(['inter', 'manrope', 'system'] as const),
-}))
+const { t, locale } = useI18n()
+const colorMode = useColorMode()
+const { theme, updateAppSettings } = useAppSettings()
 
-const { handleSubmit } = useForm({
-  validationSchema: appearanceFormSchema,
-  initialValues: {
-    theme: 'light',
-    font: 'inter',
-  },
-})
+// ─── Theme mode ───────────────────────────────────────────────────────────────
+const modes = computed(() => [
+  { value: 'light', label: t('settings.appearance.light'), icon: Sun },
+  { value: 'dark', label: t('settings.appearance.dark'), icon: Moon },
+  { value: 'system', label: t('settings.appearance.system'), icon: Monitor },
+])
 
-const color = useColorMode()
+// ─── Accent color ─────────────────────────────────────────────────────────────
+const allColors = THEME_COLORS.map(c => ({ name: c.name as ThemeColor, value: c.value }))
 
-const onSubmit = handleSubmit((values) => {
-  notifications.info('You submitted the following values:', JSON.stringify(values, null, 2))
-  if (values.theme === 'dark') {
-    color.preference = 'dark'
-  }
-  else {
-    color.preference = 'light'
-  }
-})
+function backgroundColor(color: ThemeColor) {
+  return THEME_COLORS.find(c => c.name === color)?.value
+}
+
+// ─── Language ────────────────────────────────────────────────────────────────
+const languages = [
+  { code: 'it', label: 'Italiano', flag: '🇮🇹' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+]
+
+function setLanguage(code: string) {
+  locale.value = code
+  if (import.meta.client)
+    localStorage.setItem('lang', code)
+}
 </script>
 
 <template>
-  <div>
-    <h3 class="text-lg font-medium">
-      Appearance
-    </h3>
-    <p class="text-sm text-muted-foreground">
-      Customize the appearance of the app. Automatically switch between day and night themes.
-    </p>
-  </div>
-  <Separator />
-  <form class="space-y-8" @submit="onSubmit">
-    <FormField v-slot="{ field }" name="font">
-      <FormItem>
-        <FormLabel>Font</FormLabel>
-        <div class="relative w-[200px]">
-          <FormControl>
-            <select
-              :class="cn(
-                buttonVariants({ variant: 'outline' }),
-                'w-[200px] appearance-none font-normal',
-              )"
-              v-bind="field"
-            >
-              <option value="inter">
-                Inter
-              </option>
-              <option value="manrope">
-                Manrope
-              </option>
-              <option value="system">
-                System
-              </option>
-            </select>
-          </FormControl>
-          <Icon name="i-radix-icons-chevron-down" class="pointer-events-none absolute right-3 top-2.5 h-4 w-4 opacity-50" />
-        </div>
-        <FormDescription>
-          Set the font you want to use in the dashboard.
-        </FormDescription>
-        <FormMessage />
-      </FormItem>
-    </FormField>
-
-    <FormField v-slot="{ componentField }" type="radio" name="theme">
-      <FormItem class="space-y-1">
-        <FormLabel>Theme</FormLabel>
-        <FormDescription>
-          Select the theme for the dashboard.
-        </FormDescription>
-        <FormMessage />
-
-        <RadioGroup
-          class="grid grid-cols-2 max-w-md gap-8 pt-2"
-          v-bind="componentField"
-        >
-          <FormItem>
-            <FormLabel class="[&:has([data-state=checked])>div]:border-primary">
-              <FormControl>
-                <RadioGroupItem value="light" class="sr-only" />
-              </FormControl>
-              <div class="items-center border-2 border-muted rounded-md p-1 hover:border-accent">
-                <div class="rounded-sm bg-[#ecedef] p-2 space-y-2">
-                  <div class="rounded-md bg-white p-2 shadow-sm space-y-2">
-                    <div class="h-2 w-20 rounded-lg bg-[#ecedef]" />
-                    <div class="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                  </div>
-                  <div class="flex items-center rounded-md bg-white p-2 shadow-sm space-x-2">
-                    <div class="h-4 w-4 rounded-full bg-[#ecedef]" />
-                    <div class="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                  </div>
-                  <div class="flex items-center rounded-md bg-white p-2 shadow-sm space-x-2">
-                    <div class="h-4 w-4 rounded-full bg-[#ecedef]" />
-                    <div class="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                  </div>
-                </div>
-              </div>
-              <span class="block w-full p-2 text-center font-normal">
-                Light
-              </span>
-            </FormLabel>
-          </FormItem>
-          <FormItem>
-            <FormLabel class="[&:has([data-state=checked])>div]:border-primary">
-              <FormControl>
-                <RadioGroupItem value="dark" class="sr-only" />
-              </FormControl>
-              <div class="items-center border-2 border-muted rounded-md bg-popover p-1 hover:bg-accent hover:text-accent-foreground">
-                <div class="rounded-sm bg-slate-950 p-2 space-y-2">
-                  <div class="rounded-md bg-slate-800 p-2 shadow-sm space-y-2">
-                    <div class="h-2 w-20 rounded-lg bg-slate-400" />
-                    <div class="h-2 w-[100px] rounded-lg bg-slate-400" />
-                  </div>
-                  <div class="flex items-center rounded-md bg-slate-800 p-2 shadow-sm space-x-2">
-                    <div class="h-4 w-4 rounded-full bg-slate-400" />
-                    <div class="h-2 w-[100px] rounded-lg bg-slate-400" />
-                  </div>
-                  <div class="flex items-center rounded-md bg-slate-800 p-2 shadow-sm space-x-2">
-                    <div class="h-4 w-4 rounded-full bg-slate-400" />
-                    <div class="h-2 w-[100px] rounded-lg bg-slate-400" />
-                  </div>
-                </div>
-              </div>
-              <span class="block w-full p-2 text-center font-normal">
-                Dark
-              </span>
-            </FormLabel>
-          </FormItem>
-        </RadioGroup>
-      </FormItem>
-    </FormField>
-
-    <div class="flex justify-start">
-      <Button type="submit">
-        Update preferences
-      </Button>
+  <div class="w-full flex flex-col gap-8">
+    <!-- Header -->
+    <div>
+      <h2 class="text-2xl font-black uppercase tracking-tighter flex items-center gap-3">
+        <Palette class="h-7 w-7 text-primary" />
+        {{ t('settings.nav.appearance') }}
+      </h2>
+      <p class="text-muted-foreground text-sm mt-1">{{ t('settings.appearance.subtitle') }}</p>
     </div>
-  </form>
+
+    <!-- Mode -->
+    <div class="space-y-3">
+      <div>
+        <h3 class="text-[11px] font-black uppercase tracking-widest text-muted-foreground">{{ t('settings.appearance.modeTitle') }}</h3>
+        <p class="text-xs text-muted-foreground mt-0.5">{{ t('settings.appearance.modeDesc') }}</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button
+          v-for="m in modes"
+          :key="m.value"
+          type="button"
+          class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all w-28"
+          :class="colorMode.preference === m.value
+            ? 'border-primary bg-primary/5'
+            : 'border-border hover:border-primary/40 bg-card'"
+          @click="colorMode.preference = m.value"
+        >
+          <component :is="m.icon" class="h-5 w-5" :class="colorMode.preference === m.value ? 'text-primary' : 'text-muted-foreground'" />
+          <span class="text-xs font-semibold" :class="colorMode.preference === m.value ? 'text-foreground' : 'text-muted-foreground'">{{ m.label }}</span>
+        </button>
+      </div>
+    </div>
+
+    <Separator class="opacity-40" />
+
+    <!-- Accent color -->
+    <div class="space-y-3">
+      <div>
+        <h3 class="text-[11px] font-black uppercase tracking-widest text-muted-foreground">{{ t('settings.appearance.colorTitle') }}</h3>
+        <p class="text-xs text-muted-foreground mt-0.5">{{ t('settings.appearance.colorDesc') }}</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-for="col in allColors"
+          :key="col.name"
+          type="button"
+          class="h-9 w-9 rounded-full border-2 transition-all flex items-center justify-center"
+          :class="theme?.color === col.name ? 'border-foreground scale-110 shadow-md' : 'border-transparent hover:scale-105'"
+          :style="{ backgroundColor: backgroundColor(col.name) }"
+          :title="col.name"
+          @click="updateAppSettings({ theme: { color: col.name } })"
+        >
+          <Check v-if="theme?.color === col.name" class="h-3.5 w-3.5 text-white drop-shadow" />
+        </button>
+      </div>
+    </div>
+
+    <Separator class="opacity-40" />
+
+    <!-- Language -->
+    <div class="space-y-3">
+      <div>
+        <h3 class="text-[11px] font-black uppercase tracking-widest text-muted-foreground">{{ t('settings.appearance.languageTitle') }}</h3>
+        <p class="text-xs text-muted-foreground mt-0.5">{{ t('settings.appearance.languageDesc') }}</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button
+          v-for="lang in languages"
+          :key="lang.code"
+          type="button"
+          class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all"
+          :class="locale === lang.code
+            ? 'border-primary bg-primary/5 text-foreground'
+            : 'border-border hover:border-primary/40 text-muted-foreground bg-card'"
+          @click="setLanguage(lang.code)"
+        >
+          <span class="text-lg leading-none">{{ lang.flag }}</span>
+          {{ lang.label }}
+          <Check v-if="locale === lang.code" class="h-3.5 w-3.5 text-primary ml-1" />
+        </button>
+      </div>
+    </div>
+  </div>
 </template>

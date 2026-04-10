@@ -7,16 +7,33 @@ import { useDashboardStore } from '~/stores/dashboardStore'
 const { t } = useI18n()
 const dashboardStore = useDashboardStore()
 
-// riskTrend: 0=Stabile, 1=InAumento, 2=Alto, 3=Critico
+// Backend RiskManagementAction enum values:
+//   0=InsufficientData, 1=BaselinePhase, 2=LoadRising,
+//   3=DangerSpike, 4=ModerateRisk, 5=HighFatigue, 6=Optimal
+// Display scale: 0=Stabile, 1=InAumento, 2=Alto, 3=Critico
+function toTrendLevel(riskAction: number): number {
+  switch (riskAction) {
+    case 3: // DangerSpike
+    case 5: // HighFatigue
+      return 3
+    case 4: // ModerateRisk
+      return 2
+    case 2: // LoadRising
+      return 1
+    default: // InsufficientData(0), BaselinePhase(1), Optimal(6)
+      return 0
+  }
+}
+
 const riskAlerts = computed(() => dashboardStore.filteredData?.riskAlerts ?? [])
 
-const criticalCount = computed(() => riskAlerts.value.filter(r => Number(r.riskTrend) >= 3).length)
-const warningCount = computed(() => riskAlerts.value.filter(r => Number(r.riskTrend) === 1 || Number(r.riskTrend) === 2).length)
-const safeCount = computed(() => riskAlerts.value.filter(r => Number(r.riskTrend) === 0).length)
+const criticalCount = computed(() => riskAlerts.value.filter(r => toTrendLevel(Number(r.riskTrend)) >= 3).length)
+const warningCount = computed(() => riskAlerts.value.filter(r => { const l = toTrendLevel(Number(r.riskTrend)); return l === 1 || l === 2 }).length)
+const safeCount = computed(() => riskAlerts.value.filter(r => toTrendLevel(Number(r.riskTrend)) === 0).length)
 
 const sortedAlerts = computed(() => {
   return [...riskAlerts.value].sort((a, b) => {
-    const trendDiff = Number(b.riskTrend) - Number(a.riskTrend)
+    const trendDiff = toTrendLevel(Number(b.riskTrend)) - toTrendLevel(Number(a.riskTrend))
     if (trendDiff !== 0)
       return trendDiff
     return b.acwrValue - a.acwrValue
@@ -117,7 +134,7 @@ function trendTextClass(trend: number): string {
         v-for="alert in sortedAlerts"
         :key="alert.athleteName"
         class="rounded-lg border p-3"
-        :class="trendRowClass(Number(alert.riskTrend))"
+        :class="trendRowClass(toTrendLevel(Number(alert.riskTrend)))"
       >
         <div class="flex items-center justify-between gap-2">
           <div class="flex-1 min-w-0">
@@ -136,12 +153,12 @@ function trendTextClass(trend: number): string {
           </span>
           <span
             class="text-xs font-semibold shrink-0 flex items-center gap-0.5"
-            :class="trendTextClass(Number(alert.riskTrend))"
+            :class="trendTextClass(toTrendLevel(Number(alert.riskTrend)))"
           >
-            <AlertTriangle v-if="Number(alert.riskTrend) >= 2" class="h-3.5 w-3.5" />
-            <TrendingUp v-else-if="Number(alert.riskTrend) === 1" class="h-3.5 w-3.5" />
+            <AlertTriangle v-if="toTrendLevel(Number(alert.riskTrend)) >= 2" class="h-3.5 w-3.5" />
+            <TrendingUp v-else-if="toTrendLevel(Number(alert.riskTrend)) === 1" class="h-3.5 w-3.5" />
             <CheckCircle2 v-else class="h-3.5 w-3.5" />
-            {{ trendLabel(Number(alert.riskTrend)) }}
+            {{ trendLabel(toTrendLevel(Number(alert.riskTrend))) }}
           </span>
         </div>
       </div>

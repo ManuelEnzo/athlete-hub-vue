@@ -69,8 +69,31 @@ export default defineNuxtConfig({
     dirs: ['./lib'],
   },
 
+  app: {
+    head: {
+      htmlAttrs: { lang: 'en' },
+      meta: [
+        { name: 'robots', content: 'index, follow' },
+        { name: 'format-detection', content: 'telephone=no' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'sitemap', type: 'application/xml', href: '/sitemap.xml' },
+      ],
+    },
+  },
+
   compatibilityDate: '2024-12-14',
   nitro: {
     preset: 'vercel-static',
+    routeRules: {
+      '/**': {
+        headers: {
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY',
+          'Referrer-Policy': 'strict-origin-when-cross-origin',
+        },
+      },
+    },
   },
 })

@@ -129,9 +129,73 @@
     },
     "settings": {
       "title": "Settings",
+      "nav": {
+        "profile": "Profile",
+        "appearance": "Appearance",
+        "notifications": "Notifications",
+        "display": "Dashboard"
+      },
+      "appearance": {
+        "subtitle": "Customize the look and feel of the app",
+        "modeTitle": "Theme",
+        "modeDesc": "Choose between light, dark or your system theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System",
+        "colorTitle": "Accent color",
+        "colorDesc": "Pick the accent color for the interface",
+        "languageTitle": "Language",
+        "languageDesc": "Select the interface language"
+      },
+      "display": {
+        "title": "Dashboard",
+        "subtitle": "Configure your dashboard layout and auto-refresh",
+        "widgetsTitle": "Visible widgets",
+        "widgetsDesc": "Toggle which widgets appear on the dashboard",
+        "refreshTitle": "Auto-refresh",
+        "refreshDesc": "How often the dashboard refreshes automatically",
+        "widgets": {
+          "kpi": "KPI Metrics",
+          "kpiDesc": "Monitored athletes, avg readiness, critical ACWR",
+          "workload": "Workload trend",
+          "workloadDesc": "Weekly workload chart",
+          "risk": "Risk Assessment",
+          "riskDesc": "At-risk athletes and ACWR alerting",
+          "athleteTable": "Athlete Status",
+          "athleteTableDesc": "Per-athlete readiness and status table",
+          "health": "Team Health",
+          "healthDesc": "Team health distribution overview",
+          "agenda": "Agenda",
+          "agendaDesc": "Upcoming events and deadlines"
+        }
+      },
+      "notifications": {
+        "title": "Notifications",
+        "subtitle": "Choose which alerts to receive and how",
+        "alertsTitle": "Alert types",
+        "alertsDesc": "Enable or disable notifications for each event type",
+        "acwr": "ACWR alerts",
+        "acwrDesc": "Notify when an athlete exceeds the ACWR risk threshold",
+        "rpe": "Missing RPE reminders",
+        "rpeDesc": "Alert when an athlete has not submitted their effort log",
+        "injury": "Injury alerts",
+        "injuryDesc": "Notify on new injuries or injury log updates",
+        "sleep": "Sleep quality alerts",
+        "sleepDesc": "Alert when sleep quality drops below optimal threshold",
+        "thresholdTitle": "ACWR alert sensitivity",
+        "thresholdDesc": "Set how critical an ACWR value must be to trigger a notification",
+        "thresholdLow": "High (critical cases only)",
+        "thresholdMedium": "Medium (recommended)",
+        "thresholdHigh": "Low (all alerts)",
+        "channelTitle": "Notification channel",
+        "channelDesc": "Choose how you receive alerts",
+        "sound": "Sound",
+        "soundDesc": "Play a sound when a notification arrives",
+        "browser": "Browser notifications",
+        "browserDesc": "Send push notifications to the browser even in background tabs"
+      },
       "advanced": "Advanced",
       "alerts": "Alerts",
-      "display": "Display",
       "autoRefresh": "Auto refresh",
       "compactLayout": "Compact layout",
       "darkMode": "Dark mode",
@@ -312,7 +376,13 @@
     "height": "height",
     "readiness": "readiness",
     "status": "status",
-    "weight": "weight"
+    "weight": "weight",
+    "sleepSource": "Sleep data source",
+    "sleepSourceHint": "Indicate how the athlete monitors their sleep",
+    "sleepSourceDevice": "Device",
+    "sleepSourceQuestionnaire": "Questionnaire",
+    "sleepSourceMixed": "Mixed",
+    "sleepSourceUnknown": "Not specified"
   },
   "athlete": {
     "deleteWarning": "This action will permanently delete the athlete and all associated data. Are you sure you want to proceed?",
@@ -327,7 +397,8 @@
     "unknown": "Unknown Athlete",
     "email": {
       "tokenSubject": "Sleep Token ID",
-      "tokenBody": "Hi {name}, your Sleep Token ID is: {token}. Save it to use in the app."
+      "tokenBody": "Hi {name}, your Sleep Token ID is: {token}. Save it to use in the app.",
+      "sendTokenTooltip": "Send token email"
     },
     "details": {
       "readinessTitle": "Readiness Status",
@@ -1096,7 +1167,15 @@
     "roleAdmin": "Administrator",
     "roleUser": "User",
     "passwordPlaceholder": "••••••••",
-    "username": "username"
+    "username": "username",
+    "passwordOptional": "(optional)",
+    "confirmModDesc": "Enter your current password to confirm the changes.",
+    "strength": {
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    }
   },
   "dataPolicy": {
     "backHome": "Back to Home",
@@ -1383,6 +1462,8 @@
   "-": " ",
   "/Auth/forgot-password": "/ Auth/forgot password",
   "/Auth/reset-password-execution": "/ Auth/reset password execution",
+  "/Sleep/Questionnaire": "/ Sleep/Questionnaire",
+  "/Questionnaire": "/ Questionnaire",
   "LayoutSidebarNavGroup": " Layout Sidebar Nav Group",
   "LayoutSidebarNavLink": " Layout Sidebar Nav Link",
   "_": " ",
@@ -1428,8 +1509,25 @@
     "notes": "Notes",
     "questionnaire": {
       "title": "Sleep Survey",
+      "description": "Please fill out the sleep questionnaire to help coaches monitor recovery.",
       "qualityTitle": "Perceived Quality",
-      "noNotes": "No notes recorded"
+      "submit": "Submit",
+      "sent": "Sent",
+      "success": "Thank you — questionnaire submitted successfully.",
+      "noNotes": "No notes recorded",
+      "errors": {
+        "requireHours": "Please enter hours slept.",
+        "requireQuality": "Please enter sleep quality (1-10).",
+        "qualityRange": "Sleep quality must be a number between 1 and 10.",
+        "sending": "Error sending questionnaire. Please try again later."
+      },
+      "dto": {
+        "Token": "Token (string|null)",
+        "Date": "Date (YYYY-MM-DD)",
+        "HoursSlept": "HoursSlept (number, e.g. 7.5)",
+        "SleepQuality": "SleepQuality (1-10)",
+        "Notes": "Notes (string|null)"
+      }
     },
     "kpi": {
       "hoursSlept": "Hours Slept",
@@ -1468,6 +1566,11 @@
       "hours": "Hours (h)",
       "qualityScale": "Quality (/10)",
       "optimalZone": "Optimal zone (7–9h)"
+    },
+    "fields": {
+      "date": "Date",
+      "hoursSlept": "Hours slept",
+      "sleepQuality": "Sleep quality (1-10)"
     },
     "timeline": {
       "title": "Sleep Stages Timeline",
