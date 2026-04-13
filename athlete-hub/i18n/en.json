@@ -1515,17 +1515,17 @@
       "sent": "Sent",
       "success": "Thank you — questionnaire submitted successfully.",
       "noNotes": "No notes recorded",
-      "errors": {
+        "errors": {
         "requireHours": "Please enter hours slept.",
-        "requireQuality": "Please enter sleep quality (1-10).",
-        "qualityRange": "Sleep quality must be a number between 1 and 10.",
+        "requireQuality": "Please enter sleep quality (0-100).",
+        "qualityRange": "Sleep quality must be a number between 0 and 100.",
         "sending": "Error sending questionnaire. Please try again later."
       },
       "dto": {
         "Token": "Token (string|null)",
         "Date": "Date (YYYY-MM-DD)",
         "HoursSlept": "HoursSlept (number, e.g. 7.5)",
-        "SleepQuality": "SleepQuality (1-10)",
+        "SleepQuality": "SleepQuality (0-100)",
         "Notes": "Notes (string|null)"
       }
     },
@@ -1558,19 +1558,19 @@
       "device": "Device",
       "mixed": "Mixed"
     },
-    "chart": {
+      "chart": {
       "trendTitle": "Sleep Trend",
       "distributionTitle": "Stage Distribution",
       "hoursSlept": "Hours Slept",
       "quality": "Quality",
       "hours": "Hours (h)",
-      "qualityScale": "Quality (/10)",
+      "qualityScale": "Quality (/100)",
       "optimalZone": "Optimal zone (7–9h)"
     },
     "fields": {
       "date": "Date",
       "hoursSlept": "Hours slept",
-      "sleepQuality": "Sleep quality (1-10)"
+      "sleepQuality": "Sleep quality (0-100)"
     },
     "timeline": {
       "title": "Sleep Stages Timeline",

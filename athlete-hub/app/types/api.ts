@@ -530,7 +530,7 @@ export interface SleepQuestionnaireSubmitDto {
   Token: string | null
   Date: string // YYYY-MM-DD
   HoursSlept: number
-  SleepQuality: number // 1-10
+  SleepQuality: number // 0-100
   Notes: string | null
 }
 

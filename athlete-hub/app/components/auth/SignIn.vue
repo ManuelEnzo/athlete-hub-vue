@@ -27,6 +27,8 @@ async function onSubmit(event: Event) {
     return
   }
 
+  // mostra subito il loader anche se l'interceptor axios gestisce lo stato
+  loadingStore.start()
   try {
     const response = await authApi.signIn({
       email: email.value,
@@ -48,6 +50,9 @@ async function onSubmit(event: Event) {
     // The axios plugin wraps server errors in err.payload (see axios.client.ts)
     const serverMessage = err?.payload?.error?.message || err?.response?.data?.error?.message || err?.message
     notifications.error(serverMessage || t('auth.errors.genericLogin'))
+  }
+  finally {
+    loadingStore.stop()
   }
 }
 </script>

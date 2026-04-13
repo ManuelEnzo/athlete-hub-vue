@@ -37,7 +37,7 @@ function validate() {
     return false
   }
   const q = Number(form.sleepQuality)
-  if (isNaN(q) || q < 1 || q > 10) {
+  if (isNaN(q) || q < 0 || q > 100) {
     notifications.error(t('sleep.questionnaire.errors.qualityRange'))
     return false
   }
@@ -96,8 +96,8 @@ onMounted(() => {
         </div>
 
         <div>
-          <Label class="text-xs">{{ t('sleep.fields.sleepQuality') }} (1-10)</Label>
-          <Input v-model="form.sleepQuality" type="number" min="1" max="10" placeholder="7" />
+          <Label class="text-xs">{{ t('sleep.fields.sleepQuality') }} (0-100)</Label>
+          <Input v-model="form.sleepQuality" type="number" min="0" max="100" step="1" placeholder="70" />
         </div>
 
         <div>

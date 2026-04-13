@@ -1592,15 +1592,15 @@
       "noNotes": "Nessuna nota registrata",
       "errors": {
         "requireHours": "Per favore inserisci le ore di sonno.",
-        "requireQuality": "Per favore inserisci la qualità del sonno (1-10).",
-        "qualityRange": "La qualità del sonno deve essere un numero compreso tra 1 e 10.",
+        "requireQuality": "Per favore inserisci la qualità del sonno (0-100).",
+        "qualityRange": "La qualità del sonno deve essere un numero compreso tra 0 e 100.",
         "sending": "Errore durante l'invio del questionario. Riprova più tardi."
       },
       "dto": {
         "Token": "Token (string|null)",
         "Date": "Data (YYYY-MM-DD)",
         "HoursSlept": "OreDormite (number, es. 7.5)",
-        "SleepQuality": "QualitàSonno (1-10)",
+        "SleepQuality": "QualitàSonno (0-100)",
         "Notes": "Note (string|null)"
       }
     },
@@ -1639,13 +1639,13 @@
       "hoursSlept": "Ore Dormite",
       "quality": "Qualità",
       "hours": "Ore (h)",
-      "qualityScale": "Qualità (/10)",
+      "qualityScale": "Qualità (/100)",
       "optimalZone": "Zona ottimale (7–9h)"
     },
     "fields": {
       "date": "Data",
       "hoursSlept": "Ore dormite",
-      "sleepQuality": "Qualità del sonno (1-10)"
+      "sleepQuality": "Qualità del sonno (0-100)"
     },
     "timeline": {
       "title": "Timeline Fasi del Sonno",
