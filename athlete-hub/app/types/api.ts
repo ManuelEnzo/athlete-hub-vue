@@ -224,6 +224,38 @@ export interface TestResultSaveDto {
   note?: string
 }
 
+// -------------------- TEST COMPARISON DTOs (from backend Calendar.TestProcessor) --------------------
+export interface TestMetricComparisonDto {
+  id: number
+  name: string
+  unit: string
+  standardValue?: number | null
+  isBetterHigher: boolean
+}
+
+export interface AthleteMetricComparisonDto {
+  metricId: number
+  value?: number | null
+  standardValue?: number | null
+  delta?: number | null
+  percentOfStandard?: number | null
+  status: string
+  note?: string | null
+}
+
+export interface AthleteComparisonDto {
+  athleteId: number
+  athleteName: string
+  results: AthleteMetricComparisonDto[]
+}
+
+export interface TestComparisonDto {
+  eventId: number
+  testName: string
+  metrics: TestMetricComparisonDto[]
+  athleteComparisons: AthleteComparisonDto[]
+}
+
 export interface TestDefinitionDto {
   id: number
   name: string

@@ -70,6 +70,12 @@ export const navMenu: NavMenu[] = [
         icon: 'i-lucide-settings-2',
         link: '/testmanagement',
       },
+      {
+        title: 'Test Comparison',
+        icon: 'i-lucide-list-check',
+        // example link to an event id — replace with a specific id when available
+        link: '/calendar/test-comparison',
+      },
     ],
   },
 ]

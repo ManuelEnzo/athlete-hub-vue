@@ -552,6 +552,31 @@
     "validationError": "Per favore compila tutti i campi obbligatori e aggiungi almeno una metrica",
     "configureProtocol": "Configura i protocolli e definisci le metriche di input."
   },
+  "testComparison": {
+    "title": "Confronto Test",
+    "selectAthletePrompt": "Seleziona un atleta per visualizzare i confronti",
+    "selectTest": "Seleziona un test",
+    "metric": "Metrica",
+    "value": "Valore",
+    "delta": "Delta",
+    "percent": "Percentuale Std",
+    "status": "Stato",
+    "noData": "Nessun dato di confronto disponibile",
+    "metricsCount": "Metriche",
+    "eventId": "Evento",
+    "kpi": {
+      "testsCount": "Test",
+      "avgDelta": "Delta Medio",
+      "bestMetric": "Migliore Metrica"
+    }
+    ,
+    "statuses": {
+      "Better": "Migliorato",
+      "Worse": "Peggiorato",
+      "Equal": "Invariato",
+      "Unknown": "Sconosciuto"
+    }
+  },
   "calendar": {
     "grid": {
       "athlete": "Atleta",

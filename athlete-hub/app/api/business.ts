@@ -30,6 +30,7 @@ import type {
   TestManagementUpdateRequest,
   TestResultSaveDto
 } from '../types/api'
+import type { TestComparisonDto } from '../types/api'
 import axios from 'axios'
 import config from '@/config'
 import api from './client-optimized'
@@ -165,6 +166,14 @@ export const athleteApi = {
   // Elimina una codifica test
   testDefDelete: (id: number) =>
     api.delete<Result<boolean>>(`/TestDefinitions/${id}`),
+
+  // Recupera il confronto risultati per un evento di test (CalendarController [HttpGet("{id}/test-comparison")])
+  getTestComparison: (eventId: number) =>
+    api.get<Result<TestComparisonDto>>(`/Calendar/${eventId}/test-comparison`),
+
+  // New: Recupera i confronti (tutti i test) per un atleta
+  getTestComparisons: (athleteId: number) =>
+    api.get<Result<TestComparisonDto[]>>(`/Athletes/${athleteId}/test-comparisons`),
 
   getInfoForEmailStatus: (pageIndex: number, pageSize: number) =>
     api.get<Result<Pagination<RpeEmailStatus>>>(`/RpeLinkQueue/get-info-status-email`, {
