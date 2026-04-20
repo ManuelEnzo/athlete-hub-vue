@@ -142,9 +142,25 @@ const metricAvgSeries = computed(() => {
 const metricAvgOptions = computed<ApexOptions>(() => ({
   chart: { type: 'bar', toolbar: { show: false } },
   plotOptions: { bar: { borderRadius: 6 } },
-  xaxis: { categories: metrics.value.map((m: any) => m.name) },
-  yaxis: { labels: { formatter: (v: number) => `${v}%` } },
-  tooltip: { y: { formatter: (v: number) => `${v}%` } },
+  xaxis: {
+    categories: metrics.value.map((m: any) => m.name),
+    labels: { rotate: -35, hideOverlappingLabels: true },
+    title: { text: t('testComparison.metric') },
+  },
+  yaxis: {
+    labels: { formatter: (v: number) => `${v}%` },
+    title: { text: t('testComparison.percent') },
+  },
+  tooltip: {
+    shared: true,
+    intersect: false,
+    y: { formatter: (v: number) => (v == null ? '-' : `${v}%`) },
+  },
+  dataLabels: { enabled: true, formatter: (v: number) => (v == null ? '-' : `${v}%`) },
+  legend: { show: false },
+  responsive: [
+    { breakpoint: 768, options: { plotOptions: { bar: { borderRadius: 4 } }, xaxis: { labels: { rotate: -25 } } } },
+  ],
 }))
 
 const metricDeltaSeries = computed(() => {
@@ -168,9 +184,26 @@ const metricDeltaSeries = computed(() => {
 const metricDeltaOptions = computed<ApexOptions>(() => ({
   chart: { type: 'line', toolbar: { show: false } },
   stroke: { curve: 'smooth', width: 3 },
-  xaxis: { categories: metrics.value.map((m: any) => m.name) },
-  yaxis: { labels: { formatter: (v: number) => `${v}` } },
-  tooltip: { y: { formatter: (v: number) => `${v}` } },
+  markers: { size: 4 },
+  xaxis: {
+    categories: metrics.value.map((m: any) => m.name),
+    labels: { rotate: -35, hideOverlappingLabels: true },
+    title: { text: t('testComparison.metric') },
+  },
+  yaxis: {
+    labels: { formatter: (v: number) => `${v}` },
+    title: { text: t('testComparison.delta') },
+  },
+  tooltip: {
+    shared: true,
+    intersect: false,
+    y: { formatter: (v: number) => (v == null ? '-' : `${v}`) },
+  },
+  dataLabels: { enabled: true, formatter: (v: number) => (v == null ? '-' : `${v}`) },
+  legend: { show: false },
+  responsive: [
+    { breakpoint: 768, options: { markers: { size: 3 }, xaxis: { labels: { rotate: -25 } } } },
+  ],
 }))
 
 function getStatusLabel(status?: string | null) {
@@ -263,27 +296,27 @@ const tableRows = computed(() => {
 
         <!-- KPI summary row -->
         <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4">
-          <div class="p-4 bg-white/60 rounded border">
+          <div class="p-4 bg-background/60 rounded border">
             <div class="text-sm text-muted-foreground">{{ t('testComparison.kpi.testsCount') }}</div>
             <div class="text-2xl font-bold">{{ kpiTestsCount }}</div>
           </div>
 
-          <div class="p-4 bg-white/60 rounded border">
+          <div class="p-4 bg-background/60 rounded border">
             <div class="text-sm text-muted-foreground">{{ t('testComparison.kpi.avgDelta') }}</div>
             <div class="text-2xl font-bold">{{ kpiAvgDelta !== null ? kpiAvgDelta : '-' }}</div>
           </div>
 
-          <div class="p-4 bg-white/60 rounded border">
+          <div class="p-4 bg-background/60 rounded border">
             <div class="text-sm text-muted-foreground">{{ t('testComparison.kpi.bestMetric') }}</div>
             <div class="text-2xl font-bold">{{ kpiBestMetric ?? '-' }}</div>
           </div>
 
-          <div class="p-4 bg-white/60 rounded border">
+          <div class="p-4 bg-background/60 rounded border">
             <div class="text-sm text-muted-foreground">Positive</div>
             <div class="text-2xl font-bold text-green-600">{{ positiveCount }}</div>
           </div>
 
-          <div class="p-4 bg-white/60 rounded border">
+          <div class="p-4 bg-background/60 rounded border">
             <div class="text-sm text-muted-foreground">Negative</div>
             <div class="text-2xl font-bold text-red-600">{{ negativeCount }}</div>
           </div>
@@ -341,7 +374,7 @@ const tableRows = computed(() => {
                 </tr>
               </thead>
               <tbody>
-                  <tr v-for="row in tableRows" :key="row.metric.id" class="odd:bg-white even:bg-slate-50">
+                  <tr v-for="row in tableRows" :key="row.metric.id" class="border-b border-border/50">
                   <td class="p-2 border-b align-top">
                     <div class="font-semibold">{{ row.metric.name }}</div>
                     <div class="text-xs text-muted-foreground">{{ row.metric.unit }} · std: {{ row.metric.standardValue ?? '-' }}</div>
