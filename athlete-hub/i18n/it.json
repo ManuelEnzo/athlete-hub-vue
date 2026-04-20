@@ -1,4 +1,4 @@
-﻿{
+{
   "dashboard": {
     "title": "Athlete Hub Dashboard",
     "export": "Esporta Dati",
@@ -94,20 +94,20 @@
         "display": "Dashboard"
       },
       "appearance": {
-        "subtitle": "Personalizza l\u2019aspetto dell\u2019app",
+        "subtitle": "Personalizza l’aspetto dell’app",
         "modeTitle": "Tema",
         "modeDesc": "Scegli se usare il tema chiaro, scuro o quello del sistema operativo",
         "light": "Chiaro",
         "dark": "Scuro",
         "system": "Sistema",
         "colorTitle": "Colore principale",
-        "colorDesc": "Scegli il colore accent dell\u2019interfaccia",
+        "colorDesc": "Scegli il colore accent dell’interfaccia",
         "languageTitle": "Lingua",
-        "languageDesc": "Seleziona la lingua dell\u2019interfaccia"
+        "languageDesc": "Seleziona la lingua dell’interfaccia"
       },
       "display": {
         "title": "Dashboard",
-        "subtitle": "Configura la tua dashboard e l\u2019aggiornamento automatico",
+        "subtitle": "Configura la tua dashboard e l’aggiornamento automatico",
         "widgetsTitle": "Widget visibili",
         "widgetsDesc": "Attiva o disattiva i widget mostrati nella dashboard",
         "refreshTitle": "Aggiornamento automatico",
@@ -173,13 +173,16 @@
       }
     },
     "widget": {
+      "workloadAnalysis": "Carico settimanale",
+      "athleteStatus": "Stato atleti",
+      "kpi": "Schede KPI",
       "readiness": "Panoramica Readiness",
       "aiInsights": "AI Insights",
       "healthAssessment": "Valutazione Salute",
       "performanceTrends": "Andamento Performance",
       "riskAssessment": "Valutazione Rischio",
       "teamComparison": "Confronto Team",
-      "workloadAnalysis": "Analisi Carico"
+      "agenda": "Prossimi appuntamenti"
     },
     "team": {
       "comparing": "Confronto atleti...",
@@ -189,18 +192,12 @@
     },
     "workload": {
       "title": "Carico",
-      "loading": "Caricamento...",
-      "acwrOptimal": "ACWR Ottimale",
-      "acwrStatus": "Stato ACWR",
-      "averageWorkload": "Carico medio",
-      "individualStatus": "Stato individuale",
-      "peakWorkload": "Carico massimo",
-      "spikesDetected": "Picchi rilevati",
-      "weeklyTrend": "Andamento settimanale",
-      "fromLastWeek": "rispetto alla settimana scorsa",
-      "byPeakAthlete": "di {name}",
-      "spikeIncrease": "{name}: incremento {value}%",
-      "acwrValue": "ACWR: {value}"
+      "totalWeekly": "totale settimana",
+      "avgLabel": "media/giorno",
+      "peak": "Picco",
+      "legendNormal": "Normale",
+      "legendMedium": "Medio",
+      "legendHigh": "Elevato"
     },
     "athletes": "Atleti",
     "acwrZone": {
@@ -237,27 +234,6 @@
       "today": "Oggi",
       "tomorrow": "Domani",
       "appointments": "appuntamenti"
-    },
-    "widget": {
-      "workloadAnalysis": "Carico settimanale",
-      "athleteStatus": "Stato atleti",
-      "kpi": "Schede KPI",
-      "readiness": "Panoramica Readiness",
-      "aiInsights": "AI Insights",
-      "healthAssessment": "Valutazione Salute",
-      "performanceTrends": "Andamento Performance",
-      "riskAssessment": "Valutazione Rischio",
-      "teamComparison": "Confronto Team",
-      "agenda": "Prossimi appuntamenti"
-    },
-    "workload": {
-      "title": "Carico",
-      "totalWeekly": "totale settimana",
-      "avgLabel": "media/giorno",
-      "peak": "Picco",
-      "legendNormal": "Normale",
-      "legendMedium": "Medio",
-      "legendHigh": "Elevato"
     },
     "autoRefresh": {
       "auto": "auto",
@@ -408,7 +384,7 @@
     "email": "email",
     "readiness": "readiness",
     "sleepSource": "Fonte dati sonno",
-    "sleepSourceHint": "Indica come l\u2019atleta monitora il sonno",
+    "sleepSourceHint": "Indica come l’atleta monitora il sonno",
     "sleepSourceDevice": "Dispositivo",
     "sleepSourceQuestionnaire": "Questionario",
     "sleepSourceMixed": "Misto",
@@ -568,8 +544,7 @@
       "testsCount": "Test",
       "avgDelta": "Delta Medio",
       "bestMetric": "Migliore Metrica"
-    }
-    ,
+    },
     "statuses": {
       "Better": "Migliorato",
       "Worse": "Peggiorato",
@@ -738,8 +713,8 @@
     },
     "notSpecified": "not Specified",
     "out_of_100": "out of 100",
-    "out_of_2": "out of 2"
-    ,"more": "Altro",
+    "out_of_2": "out of 2",
+    "more": "Altro",
     "edit": "Modifica",
     "export": "Esporta",
     "message": "Messaggio",
@@ -863,7 +838,7 @@
     "Conditioning": "Condizionamento",
     "Match": "Partita",
     "Technical": "Tecnico",
-    "Test" : "Test"
+    "Test": "Test"
   },
   "genders": {
     "genderPlaceholder": "Seleziona sesso",
@@ -1072,7 +1047,7 @@
     "readiness_moderate": "Prontezza Moderata",
     "readiness_low": "Prontezza Bassa",
     "acwr_alert_title": "Attenzione: Carico Eccessivo",
-    "acwr_alert_desc": "L\u2019ACWR supera la soglia critica. Valutare una riduzione del carico di allenamento.",
+    "acwr_alert_desc": "L’ACWR supera la soglia critica. Valutare una riduzione del carico di allenamento.",
     "last_90_days": "90 giorni",
     "section_overview": "Panoramica",
     "section_load": "Carico & ACWR",
@@ -1559,6 +1534,129 @@
       "test": "Test Fitness"
     }
   },
+  "monitoringDoc": {
+    "title": "Come funziona il monitoraggio atleti",
+    "subtitle": "Spiegazione dei punteggi, delle formule e delle regole di calcolo",
+    "lastUpdated": "Ultimo aggiornamento",
+    "summary": "Questa pagina spiega come la piattaforma calcola ogni punteggio e indice mostrato nella dashboard di monitoraggio atleti. Nessuna competenza tecnica richiesta  ogni sezione descrive la logica in modo chiaro.",
+    "backToDashboard": "Torna alla Dashboard",
+    "sections": {
+      "s1": {
+        "title": "Finestre temporali usate nei calcoli"
+      },
+      "s2": {
+        "title": "Carico di allenamento (Workload)"
+      },
+      "s3": {
+        "title": "ACWR  Rapporto Carico Acuto:Cronico"
+      },
+      "s4": {
+        "title": "Monotonia dell'allenamento"
+      },
+      "s5": {
+        "title": "Fattore Sonno"
+      },
+      "s6": {
+        "title": "Punteggio di Prontezza (Readiness)"
+      },
+      "s7": {
+        "title": "Penalità per Infortuni"
+      },
+      "s8": {
+        "title": "Come viene costruito lo stato globale"
+      },
+      "s9": {
+        "title": "Previsioni di carico e sonno"
+      },
+      "s10": {
+        "title": "Confronto risultati test di performance"
+      },
+      "s11": {
+        "title": "Disponibilità dei dati e fallback"
+      },
+      "s12": {
+        "title": "Riepilogo rapido"
+      }
+    },
+    "s1": {
+      "referenceDate": "Tutti i calcoli sono ancorati alla data di riferimento selezionata (di default oggi). I dati futuri sono sempre esclusi.",
+      "rpeWindow": "La piattaforma analizza le sessioni RPE degli ultimi 28 giorni.",
+      "acute": "Carico acuto: somma dei carichi giornalieri degli ultimi 7 giorni.",
+      "chronic": "Carico cronico: somma dei carichi giornalieri degli ultimi 28 giorni.",
+      "sleepWindow": "Dati sonno: i 7 giorni che precedono e includono la data di riferimento."
+    },
+    "s2": {
+      "intro": "Ogni sessione di allenamento produce un valore di carico che combina durata e sforzo percepito.",
+      "missingWorkload": "Se durata o RPE mancano, quella sessione contribuisce 0 al carico.",
+      "formula": "Carico = Durata (minuti)  RPE",
+      "exampleWorkload": "Esempio: sessione di 90 minuti con RPE 6  Carico = 90  6 = 540"
+    },
+    "s3": {
+      "intro": "L'ACWR confronta il carico recente (ultimi 7 giorni) con la media settimanale del mese scorso. Indica se l'atleta sta facendo significativamente più o meno del solito.",
+      "formula": "ACWR = Carico Acuto  (Carico Cronico  4)",
+      "acwrFallback": "Se non ci sono dati di carico cronico, l'ACWR vale 1.0 (neutro  nessun segnale di rischio).",
+      "interpretation": "Zona sicura: 0.8  1.3. Rischio moderato: oltre 1.3. Rischio alto: oltre 1.5."
+    },
+    "s4": {
+      "intro": "La monotonia misura quanto è variato il carico giorno per giorno. Un valore alto indica che l'atleta svolge circa lo stesso carico ogni giorno, senza variazione.",
+      "formula": "Monotonia = Media carico giornaliero  Deviazione standard del carico giornaliero",
+      "note": "Un valore 0 significa deviazione standard nulla (tutti i giorni identici). Valori più alti segnalano mancanza di varietà."
+    },
+    "s5": {
+      "intro": "Il Fattore Sonno riassume la qualità del sonno in un unico valore tra 0 e 1. Viene usato per calcolare recupero e prontezza.",
+      "componentsTitle": "Cosa lo compone:",
+      "components": "Ore di sonno, qualità soggettiva (scala 15), efficienza del sonno (%), e punteggio opzionale da wearable (0100).",
+      "weightsTitle": "Come viene pesata ogni componente:",
+      "calculation": "Vengono usate solo le componenti con dati disponibili. I contributi pesati vengono sommati e normalizzati nell'intervallo [0, 1]."
+    },
+    "s6": {
+      "intro": "La Prontezza riassume quanto l'atleta è pronto ad allenarsi oggi. Combina recupero, fatica e fitness accumulato.",
+      "recovery": "Punteggio Recupero = Fattore Sonno  100 (massimo 100)",
+      "fatigue": "Punteggio Fatica = guidato dall'eccesso di ACWR sopra 1.0 e dal sonno insufficiente (massimo 100)",
+      "fitness": "Termine Fitness = bonus di fitness a lungo termine basato sull'accumulo di carico cronico (020 punti)",
+      "formula": "Prontezza = Recupero  0.6  Fatica + Fitness, poi ridotta per eventuali penalità infortuni. Valore finale compreso tra 0 e 100."
+    },
+    "s7": {
+      "intro": "Gli infortuni attivi riducono il punteggio di prontezza dell'atleta. La penalità dipende dallo stato e dalla gravità dell'infortunio.",
+      "statusReturned": "Gli atleti segnati come Rientrati (pienamente recuperati) non ricevono alcuna penalità.",
+      "basePenalty": "Penalità base per stato: Infortuno attivo = 70 pt, In riabilitazione = 35 pt.",
+      "severityMultiplier": "Moltiplicatore gravità: Fine carriera = 1.5, Grave = 1.3, Moderato = 1.1, Lieve = 0.8.",
+      "recoveryDecay": "La penalità si riduce linearmente all'avanzare del recupero rispetto alla durata prevista.",
+      "penaltyFormula": "Penalità finale = Base  Moltiplicatore Gravità  Fattore Recupero (massimo 100)"
+    },
+    "s8": {
+      "intro": "Quando si richiede lo stato di un atleta, la piattaforma esegue automaticamente i seguenti passi:",
+      "step1": "Raccoglie tutti i dati rilevanti: sessioni RPE, registrazioni sonno e infortuni attivi per la finestra della data di riferimento.",
+      "step2": "Calcola i carichi acuto e cronico, seleziona la registrazione sonno più recente se quella odierna è assente, e valuta le penalità per infortuni.",
+      "step3": "Esegue tutte le formule (ACWR, Fattore Sonno, Recupero, Fatica, Fitness, Prontezza) e produce i punteggi finali di monitoraggio."
+    },
+    "s9": {
+      "description": "Le previsioni usano la media del carico degli ultimi 7 giorni come carico giornaliero atteso, e la media del Fattore Sonno come qualità del sonno prevista (default 0.75 se non ci sono dati recenti). Carico acuto e cronico vengono poi ricalcolati per ogni giorno futuro previsto."
+    },
+    "s10": {
+      "description": "I test di performance (velocità, forza, resistenza, ecc.) vengono confrontati con standard di riferimento. Ogni metrica viene etichettata come Sopra Standard, Nella Norma o Sotto Standard in base al valore obiettivo e a se un risultato più alto o più basso è migliore per quel test."
+    },
+    "s11": {
+      "missingData": "Quando i dati sono parzialmente mancanti, la piattaforma applica valori predefiniti sicuri invece di bloccare il calcolo:",
+      "fallback1": "RPE o durata sessione mancanti  quella sessione contribuisce 0 al carico.",
+      "fallback2": "Nessun dato di carico cronico  ACWR = 1.0 (neutro).",
+      "fallback3": "Nessuna registrazione sonno per oggi  viene usata la registrazione più recente disponibile.",
+      "fallback4": "Nessun dato sonno  Fattore Sonno predefinito a 0.75."
+    },
+    "s12": {
+      "summary": "In sintesi: le date sono sempre normalizzate a UTC. L'ACWR divide il carico cronico per 4 per ottenere una media settimanale. La prontezza combina sonno, fatica e fitness. I dati mancanti vengono gestiti con fallback sicuri invece di errori."
+    }
+  },
+  "s2": {
+    "missingWorkload": "Se rpe o duration mancanti → workload = 0",
+    "exampleWorkload": "Esempio: sessione 1h30 (90 min) con RPE 6 → Workload = 90 * 6 = 540"
+  },
+  "s3": {
+    "acwrFallback": "Se chronicLoad <= 0 → ACWR = 1.0 (neutral)"
+  },
+  "s7": {
+    "statusReturned": "Se status == Returned o null → penalty = 0"
+  },
   "-": " ",
   "/Auth/forgot-password": "/ Auth/forgot password",
   "/Auth/reset-password-execution": "/ Auth/reset password execution",
@@ -1690,5 +1788,42 @@
       "loadHistory": "Errore nel caricamento dello storico sonno",
       "loadDetail": "Errore nel caricamento del dettaglio sonno"
     }
+  },
+  "aiChat": {
+    "pageTitle": "Assistente AI",
+    "pageSubtitle": "Fai domande o comandi in linguaggio naturale (italiano o inglese)",
+    "title": "Assistente AthleteHub",
+    "placeholder": "Scrivi un comando o una domanda…",
+    "emptyHint": "Chiedimi qualsiasi cosa sui tuoi atleti — stato, sonno, carico, infortuni, calendario…",
+    "clearChat": "Svuota chat",
+    "networkError": "Errore di connessione. Riprova.",
+    "fatigue": "Fatica",
+    "activeInjury": "Infortunio attivo",
+    "noInjury": "Nessun infortunio",
+    "avgHours": "Ore medie",
+    "quality": "Qualità",
+    "acuteLoad": "Carico acuto",
+    "chronicLoad": "Carico cronico",
+    "lastTest": "Ultimo test",
+    "metric": "Metrica",
+    "value": "Valore",
+    "unit": "Unità",
+    "result": "Esito",
+    "injury": "Infortunio",
+    "status": "Stato",
+    "daysOut": "Giorni fuori",
+    "noInjuryRegistered": "Nessun infortunio registrato.",
+    "eventsFound": "eventi trovati",
+    "weight": "Peso",
+    "height": "Altezza",
+    "athleteCreated": "Atleta creato",
+    "eventScheduled": "Evento pianificato",
+    "trend": {
+      "improving": "In miglioramento",
+      "declining": "In peggioramento",
+      "stable": "Stabile",
+      "noData": "N/D"
+    },
+    "replyPlaceholder": "Rispondi alla domanda..."
   }
 }

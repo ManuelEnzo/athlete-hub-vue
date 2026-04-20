@@ -125,6 +125,18 @@
       "riskFactors": "Risk factors",
       "riskFactorsHeader": "Risk factors",
       "updated": "updated",
+      "monitoringDoc": {
+        "s2": {
+          "missingWorkload": "If rpe or duration missing → workload = 0",
+          "exampleWorkload": "Example: 1h30 (90 min) session with RPE 6 → Workload = 90 * 6 = 540"
+        },
+        "s3": {
+          "acwrFallback": "If chronicLoad <= 0 → ACWR = 1.0 (neutral)"
+        },
+        "s7": {
+          "statusReturned": "If status == Returned or null → penalty = 0"
+        }
+      },
       "warning": "warning"
     },
     "settings": {
@@ -134,6 +146,12 @@
         "appearance": "Appearance",
         "notifications": "Notifications",
         "display": "Dashboard"
+      },
+      "s8": {
+        "title": "8) Building AthleteStateDto (pipeline)",
+        "step1": "Normalize referenceDate, fetch RPE sessions in the window, build recentLoads, fetch sleep logs, compute injuryPenalty and call BuildStateFromAggregates.",
+        "step2": "Compute acute/chronic, select sleepForDate (fallback to last available), then call BuildState.",
+        "step3": "Compute ACWR, SF, RecoveryScore, Fatigue, FitnessTerm, Readiness and construct the AthleteStateDto."
       },
       "appearance": {
         "subtitle": "Customize the look and feel of the app",
@@ -798,8 +816,8 @@
       "backToLogin": "Back to login",
       "title": "Welcome Back",
       "subtitle": "Login with your Apple or Google account",
-      "terms": "By continuing you agree to our {terms} and {privacy}."
-      ,"company":"Acme Inc."
+      "terms": "By continuing you agree to our {terms} and {privacy}.",
+      "company": "Acme Inc."
     },
     "forgotPassword": {
       "title": "Recover Credentials",
@@ -830,7 +848,7 @@
     "Sport di Squadra": "Team Sport",
     "Checkup": "Check-Up",
     "Controllo": "Check-Up",
-    "Test" : "Test"
+    "Test": "Test"
   },
   "genders": {
     "genderPlaceholder": "Select gender",
@@ -1483,6 +1501,130 @@
       "calendar": "calendar"
     }
   },
+  "monitoringDoc": {
+    "title": "How Athlete Monitoring Works",
+    "subtitle": "Explanation of scores, formulas, and calculation rules",
+    "lastUpdated": "Last updated",
+    "summary": "This page explains how the platform calculates every score and index shown in the athlete monitoring dashboard. No technical background required  each section describes the logic in plain language.",
+    "backToDashboard": "Back to Dashboard",
+    "sections": {
+      "s1": {
+        "title": "Time windows used for calculations"
+      },
+      "s2": {
+        "title": "Training Load (Workload)"
+      },
+      "s3": {
+        "title": "ACWR  Acute:Chronic Workload Ratio"
+      },
+      "s4": {
+        "title": "Training Monotony"
+      },
+      "s5": {
+        "title": "Sleep Factor"
+      },
+      "s6": {
+        "title": "Readiness Score"
+      },
+      "s7": {
+        "title": "Injury Penalty"
+      },
+      "s8": {
+        "title": "How the overall state is assembled"
+      },
+      "s9": {
+        "title": "Load & sleep predictions"
+      },
+      "s10": {
+        "title": "Performance test comparisons"
+      },
+      "s11": {
+        "title": "Data availability & fallbacks"
+      },
+      "s12": {
+        "title": "Quick reference summary"
+      }
+    },
+    "s1": {
+      "referenceDate": "All calculations are anchored to the selected reference date (today by default). Data from future dates is always excluded.",
+      "rpeWindow": "The platform looks back 28 days to collect RPE training sessions.",
+      "acute": "Acute load: sum of all daily training loads in the last 7 days.",
+      "chronic": "Chronic load: sum of all daily training loads in the last 28 days.",
+      "sleepWindow": "Sleep data: the 7 days leading up to and including the reference date."
+    },
+    "s2": {
+      "intro": "Each training session produces a load value that combines duration and perceived effort.",
+      "missingWorkload": "If either duration or RPE is missing, that session contributes 0 to the load.",
+      "formula": "Training Load = Duration (minutes)  RPE",
+      "exampleWorkload": "Example: a 90-minute session rated RPE 6  Load = 90  6 = 540"
+    },
+    "s3": {
+      "intro": "The ACWR compares the recent training load (last 7 days) against the average weekly load of the past month. It indicates whether the athlete is doing significantly more or less than usual.",
+      "formula": "ACWR = Acute Load  (Chronic Load  4)",
+      "acwrFallback": "If no chronic load data is available, ACWR defaults to 1.0 (neutral  no risk signal).",
+      "interpretation": "Safe zone: 0.8  1.3. Moderate risk: above 1.3. High risk: above 1.5."
+    },
+    "s4": {
+      "intro": "Monotony measures how varied the training load is day by day. High monotony means the athlete is doing roughly the same load every day without variation.",
+      "formula": "Monotony = Average daily load  Standard deviation of daily loads",
+      "note": "A value of 0 means standard deviation is zero (all days identical). Higher values signal lack of variety."
+    },
+    "s5": {
+      "intro": "The Sleep Factor summarises sleep quality into a single value between 0 and 1. It is used to compute recovery and readiness.",
+      "componentsTitle": "What goes into it:",
+      "components": "Hours slept, subjective quality (15 scale), sleep efficiency (%), and optional wearable score (0100).",
+      "weightsTitle": "How each component is weighted:",
+      "calculation": "Only components with available data are used. Their weighted contributions are summed and normalised to the [0, 1] range."
+    },
+    "s6": {
+      "intro": "Readiness summarises how ready the athlete is to train today. It combines recovery, fatigue, and accumulated fitness.",
+      "recovery": "Recovery Score = Sleep Factor  100 (capped at 100)",
+      "fatigue": "Fatigue Score = driven by ACWR excess above 1.0 and poor sleep (capped at 100)",
+      "fitness": "Fitness Term = long-term fitness bonus based on chronic load accumulation (020 points)",
+      "formula": "Readiness = Recovery  0.6  Fatigue + Fitness Term, then reduced by any Injury Penalty. Final value capped between 0 and 100."
+    },
+    "s7": {
+      "intro": "Active injuries reduce the athlete's readiness score. The penalty depends on the injury status and severity.",
+      "statusReturned": "Athletes marked as Returned (fully recovered) receive no penalty.",
+      "basePenalty": "Base penalty by status: Active injury = 70 pts, In rehabilitation = 35 pts.",
+      "severityMultiplier": "Severity multiplier: Career-ending = 1.5, Severe = 1.3, Moderate = 1.1, Minor = 0.8.",
+      "recoveryDecay": "The penalty decreases linearly as recovery time progresses relative to the expected recovery duration.",
+      "penaltyFormula": "Final Penalty = Base  Severity Multiplier  Recovery Factor (capped at 100)"
+    },
+    "s8": {
+      "intro": "When you request an athlete's state, the platform executes the following steps automatically:",
+      "step1": "Collect all relevant data: RPE sessions, sleep logs, and active injuries for the reference date window.",
+      "step2": "Compute acute and chronic loads, select the most recent sleep record if today's is missing, and evaluate injury penalties.",
+      "step3": "Run all formulas (ACWR, Sleep Factor, Recovery, Fatigue, Fitness, Readiness) and produce the final monitoring scores."
+    },
+    "s9": {
+      "description": "Future-day predictions use the average load of the last 7 days as the expected daily load, and the average Sleep Factor as the expected sleep quality (defaulting to 0.75 if no recent data). Acute and chronic loads are then recalculated for each predicted day."
+    },
+    "s10": {
+      "description": "Performance tests (speed, strength, endurance, etc.) are compared to reference standards. Each metric is labelled as Above Standard, Within Range, or Below Standard based on the target value and whether a higher or lower result is better for that test."
+    },
+    "s11": {
+      "title": "Data availability & fallbacks",
+      "missingData": "When data is partially missing, the platform applies safe defaults rather than blocking the calculation:",
+      "fallback1": "Missing RPE or session duration  that session contributes 0 to the load.",
+      "fallback2": "No chronic load data  ACWR = 1.0 (neutral).",
+      "fallback3": "No sleep record for today  the most recent available record is used.",
+      "fallback4": "No sleep data at all  Sleep Factor defaults to 0.75."
+    },
+    "s12": {
+      "summary": "In short: dates are always normalised to UTC. ACWR divides chronic load by 4 to get a weekly average. Readiness combines sleep, fatigue, and fitness. Missing data is handled with safe fallbacks rather than errors."
+    }
+  },
+  "s2": {
+    "missingWorkload": "If rpe or duration are missing → workload = 0",
+    "exampleWorkload": "Example: 1h30 session (90 min) with RPE 6 → Workload = 90 * 6 = 540"
+  },
+  "s3": {
+    "acwrFallback": "If chronicLoad <= 0 → ACWR = 1.0 (neutral)"
+  },
+  "s7": {
+    "statusReturned": "If status == Returned or null → penalty = 0"
+  },
   "-": " ",
   "/Auth/forgot-password": "/ Auth/forgot password",
   "/Auth/reset-password-execution": "/ Auth/reset password execution",
@@ -1539,7 +1681,7 @@
       "sent": "Sent",
       "success": "Thank you — questionnaire submitted successfully.",
       "noNotes": "No notes recorded",
-        "errors": {
+      "errors": {
         "requireHours": "Please enter hours slept.",
         "requireQuality": "Please enter sleep quality (0-100).",
         "qualityRange": "Sleep quality must be a number between 0 and 100.",
@@ -1582,7 +1724,7 @@
       "device": "Device",
       "mixed": "Mixed"
     },
-      "chart": {
+    "chart": {
       "trendTitle": "Sleep Trend",
       "distributionTitle": "Stage Distribution",
       "hoursSlept": "Hours Slept",
@@ -1614,5 +1756,42 @@
       "loadHistory": "Error loading sleep history",
       "loadDetail": "Error loading sleep detail"
     }
+  },
+  "aiChat": {
+    "pageTitle": "AI Assistant",
+    "pageSubtitle": "Ask questions or commands in natural language (Italian or English)",
+    "title": "AthleteHub Assistant",
+    "placeholder": "Write a command or question…",
+    "emptyHint": "Ask me anything about your athletes — status, sleep, workload, injuries, calendar…",
+    "clearChat": "Clear chat",
+    "networkError": "Connection error. Please try again.",
+    "fatigue": "Fatigue",
+    "activeInjury": "Active Injury",
+    "noInjury": "No Injury",
+    "avgHours": "Avg Hours",
+    "quality": "Quality",
+    "acuteLoad": "Acute Load",
+    "chronicLoad": "Chronic Load",
+    "lastTest": "Last test",
+    "metric": "Metric",
+    "value": "Value",
+    "unit": "Unit",
+    "result": "Result",
+    "injury": "Injury",
+    "status": "Status",
+    "daysOut": "Days out",
+    "noInjuryRegistered": "No injuries registered.",
+    "eventsFound": "events found",
+    "weight": "Weight",
+    "height": "Height",
+    "athleteCreated": "Athlete created",
+    "eventScheduled": "Event scheduled",
+    "trend": {
+      "improving": "Improving",
+      "declining": "Declining",
+      "stable": "Stable",
+      "noData": "N/A"
+    },
+    "replyPlaceholder": "Reply to the question..."
   }
 }

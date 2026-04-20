@@ -2,6 +2,16 @@ import type { NavMenu, NavMenuItems } from '~/types/nav'
 
 export const navMenu: NavMenu[] = [
   {
+    heading: 'AI',
+    items: [
+      {
+        title: 'AI Assistant',
+        icon: 'i-lucide-bot',
+        link: '/ai-chat',
+      },
+    ],
+  },
+  {
     heading: 'General',
     items: [
       {
@@ -75,6 +85,11 @@ export const navMenu: NavMenu[] = [
         icon: 'i-lucide-list-check',
         // example link to an event id — replace with a specific id when available
         link: '/calendar/test-comparison',
+      },
+      {
+        title: 'Formule',
+        icon: 'i-lucide-file-text',
+        link: '/dashboard/monitoraggio-calcoli',
       },
     ],
   },

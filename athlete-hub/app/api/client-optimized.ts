@@ -35,7 +35,6 @@ const api = axios.create({
     'Content-Type': 'application/json',
     'ngrok-skip-browser-warning': 'true',
   },
-  withCredentials: true,
   timeout: 30000, // 30 second timeout
 })
 
@@ -279,7 +278,6 @@ api.interceptors.response.use(
             { refreshToken: authStore.refreshToken },
             {
               timeout: REQUEST_TIMEOUT,
-              withCredentials: true,
             },
           )
 
