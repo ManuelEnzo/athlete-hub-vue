@@ -23,8 +23,7 @@ import { useErrorHandler } from '~/composables/useErrorHandler'
 
 definePageMeta({
   layout: 'blank',
-  auth: false,
-  guestOnly: false,
+  auth: false
 })
 
 const { t } = useI18n({ useScope: 'global' })
