@@ -20,7 +20,7 @@ const { t } = useI18n()
             {{ t('dataPolicy.privacyMatters') }}
           </p>
         </div>
-        <NuxtLink to="/landingpage" class="mt-2 md:mt-0 inline-flex items-center gap-2 text-primary hover:opacity-80 transition text-sm font-semibold">
+        <NuxtLink to="/landing/landingpage" class="mt-2 md:mt-0 inline-flex items-center gap-2 text-primary hover:opacity-80 transition text-sm font-semibold">
           <Icon name="lucide:arrow-left" class="w-4 h-4" />
           {{ t('dataPolicy.backHome') }}
         </NuxtLink>
