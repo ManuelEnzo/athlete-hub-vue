@@ -1,4 +1,8 @@
 {
-  "buildCommand": "pnpm run generate",
-  "framework": null
+  "buildCommand": "pnpm run build",
+  "outputDirectory": ".output/public",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
