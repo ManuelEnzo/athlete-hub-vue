@@ -21,10 +21,7 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { useErrorHandler } from '~/composables/useErrorHandler'
 
-definePageMeta({
-  layout: 'blank',
-  auth: false
-})
+definePageMeta({ layout: 'blank', auth: false })
 
 const { t } = useI18n({ useScope: 'global' })
 
