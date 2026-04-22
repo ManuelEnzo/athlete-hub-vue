@@ -394,8 +394,11 @@
     "deleteWarning": "Questa azione eliminerà in modo permanente l'atleta e tutti i suoi dati associati. Sei sicuro di voler procedere?",
     "noData": "Nessun atleta disponibile. Per favore aggiungi nuovi atleti.",
     "pageTitle": "Dati Atleti",
+    "pageDescription": "Gestisci gli atleti, i profili e le informazioni del team",
     "search": "Cerca per nome, email o sport",
     "visualizer": "Visualizzatore Atleta",
+    "visualizerDescription": "Analizza le performance e i dati di salute degli atleti",
+    "selectPrompt": "Seleziona un atleta dal menu in alto per visualizzare i dati",
     "new": "Nuovo Atleta",
     "edit": "Modifica Atleta",
     "deleteConfirm": "Conferma eliminazione",
@@ -529,6 +532,8 @@
     "configureProtocol": "Configura i protocolli e definisci le metriche di input."
   },
   "testComparison": {
+    "pageTitle": "Confronto Test",
+    "pageDescription": "Analizza e confronta i risultati dei test atletici per metrica",
     "title": "Confronto Test",
     "selectAthletePrompt": "Seleziona un atleta per visualizzare i confronti",
     "selectTest": "Seleziona un test",
@@ -568,6 +573,7 @@
       "saveResults": "Errore nel salvataggio dei risultati"
     },
     "title": "Sessioni e Appuntamenti",
+    "description": "Pianifica e gestisci gli allenamenti e gli eventi del team",
     "infoTooltip": "Una volta inserita l'attività, se è completata, potrai aprirla in modifica tramite il tasto pennina e marcarla come conclusa per inviare la RPE all'atleta.",
     "placeholders": {
       "timeFormat": "00:00.00",
@@ -1065,9 +1071,14 @@
     "predicted_title": "Metriche Previste - Prossimi 7 Giorni",
     "predicted_subtitle": "Proiezione basata su carico attuale e trend di recupero"
   },
+  "testManagement": {
+    "pageTitle": "Gestione Test",
+    "pageDescription": "Configura i protocolli e i modelli di test atletici"
+  },
   "injuries": {
     "title": "Centro Medico",
     "management_title": "Centro Medico",
+    "pageDescription": "Monitora e gestisci gli infortuni degli atleti",
     "subtitle": "Monitoraggio clinico e tempi di recupero",
     "history_title": "Registro Infortuni Atleta",
     "add_new": "Nuovo Infortunio",

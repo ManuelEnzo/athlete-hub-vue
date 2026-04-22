@@ -17,8 +17,8 @@ import { athleteApi } from '@/api/business'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useErrorHandler } from '~/composables/useErrorHandler'
 import { useAuthStore } from '~/stores/auth'
 import { useNotificationStore } from '~/stores/notificationStore'
@@ -38,8 +38,8 @@ const totalItems = ref(0)
 const totalPages = ref(1)
 
 const searchQuery = ref('')
-const selectedStatus = ref<string | number>('')
-const selectedAthlete = ref<string>('')
+const selectedStatus = ref<string>('__all__')
+const selectedAthlete = ref<string>('__all__')
 
 // STATUS CONFIG
 function getStatusConfig(status: number) {
@@ -138,9 +138,9 @@ const athleteOptions = computed(() => {
 const filtered = computed(() => {
   const q = searchQuery.value?.toString().trim().toLowerCase() || ''
   return rawData.value.filter((r) => {
-    if (selectedAthlete.value && r.nomeAtleta !== selectedAthlete.value)
+    if (selectedAthlete.value !== '__all__' && r.nomeAtleta !== selectedAthlete.value)
       return false
-    if (selectedStatus.value !== '' && String(r.statoEmail) !== String(selectedStatus.value))
+    if (selectedStatus.value !== '__all__' && String(r.statoEmail) !== String(selectedStatus.value))
       return false
 
     if (!q)
@@ -161,128 +161,193 @@ const displayedData = computed(() => filtered.value)
 watch([searchQuery, selectedStatus, selectedAthlete], () => {
   pageIndex.value = 1
 })
+
+// STATS
+const stats = computed(() => {
+  const all = rawData.value
+  return {
+    total: totalItems.value,
+    completed: all.filter(r => r.statoEmail === 2).length,
+    pending: all.filter(r => r.statoEmail === 0).length,
+    failed: all.filter(r => r.statoEmail === 3).length,
+  }
+})
 </script>
 
 <template>
-  <div class="p-4 md:p-6 space-y-4 md:space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col gap-4">
-      <div>
-        <h1 class="text-xl md:text-2xl font-bold tracking-tight flex items-center gap-2">
-          <Mail class="h-5 w-5 md:h-6 md:w-6 text-primary" />
-          {{ t('rpe.pageTitle') }}
-        </h1>
-        <p class="text-xs md:text-sm text-muted-foreground mt-1">
-          {{ t('rpe.pageDescription') }}
-        </p>
-      </div>
-
-      <!-- Filters & Search -->
-      <div class="flex flex-col md:flex-row md:items-center gap-3">
-        <div class="flex flex-col sm:flex-row gap-2">
-          <select v-model="selectedAthlete" class="px-3 py-2 md:py-1 bg-background border rounded text-sm">
-            <option value="">
-              {{ t('rpe.filters.allAthletes') || 'All athletes' }}
-            </option>
-            <option v-for="name in athleteOptions" :key="name" :value="name">
-              {{ name }}
-            </option>
-          </select>
-
-          <select v-model="selectedStatus" class="px-3 py-2 md:py-1 bg-background border rounded text-sm">
-            <option value="">
-              {{ t('rpe.filters.allStatuses') || 'All statuses' }}
-            </option>
-            <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
-            </option>
-          </select>
+  <div class="min-h-full bg-background">
+    <!-- Page Header -->
+    <div class="border-b border-border/60 bg-background/95 backdrop-blur-sm sticky top-0 z-10">
+      <div class="px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10 border border-primary/20">
+            <Mail class="h-4.5 w-4.5 text-primary" />
+          </div>
+          <div>
+            <h1 class="text-base font-semibold tracking-tight text-foreground leading-none">
+              {{ t('rpe.pageTitle') }}
+            </h1>
+            <p class="text-xs text-muted-foreground mt-0.5">
+              {{ t('rpe.pageDescription') }}
+            </p>
+          </div>
         </div>
-
-        <div class="relative flex-1 md:w-64">
-          <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
-          <Input
-            v-model="searchQuery" :placeholder="t('rpe.searchPlaceholder')"
-            class="pl-9 w-full bg-background border-foreground/10 focus-visible:ring-primary text-sm"
-          />
-        </div>
-        <Button variant="outline" size="icon" :disabled="isLoading" class="border-foreground/10 h-10 w-10" @click="fetchStatuses">
-          <RefreshCcw class="h-4 w-4" :class="{ 'animate-spin': isLoading }" />
+        <Button
+          variant="outline"
+          size="sm"
+          :disabled="isLoading"
+          class="gap-1.5 h-8 text-xs font-medium border-border/60 self-start sm:self-auto"
+          @click="fetchStatuses"
+        >
+          <RefreshCcw class="h-3.5 w-3.5" :class="{ 'animate-spin': isLoading }" />
+          {{ t('common.refresh') || 'Aggiorna' }}
         </Button>
       </div>
     </div>
 
-    <!-- Desktop Table View -->
-    <Card class="border border-foreground/10 shadow-md overflow-hidden hidden md:block">
-      <CardContent class="p-0">
-        <div class="overflow-x-auto">
+    <div class="px-6 py-6 space-y-6">
+      <!-- Stats Row -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="rounded-xl border border-border/60 bg-card p-4 flex flex-col gap-1">
+          <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Totale</span>
+          <span class="text-2xl font-bold text-foreground tabular-nums">{{ stats.total }}</span>
+        </div>
+        <div class="rounded-xl border border-green-500/20 bg-green-500/5 p-4 flex flex-col gap-1">
+          <span class="text-xs font-medium text-green-600 uppercase tracking-wider">Completati</span>
+          <span class="text-2xl font-bold text-green-600 tabular-nums">{{ stats.completed }}</span>
+        </div>
+        <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 flex flex-col gap-1">
+          <span class="text-xs font-medium text-amber-600 uppercase tracking-wider">In attesa</span>
+          <span class="text-2xl font-bold text-amber-600 tabular-nums">{{ stats.pending }}</span>
+        </div>
+        <div class="rounded-xl border border-red-500/20 bg-red-500/5 p-4 flex flex-col gap-1">
+          <span class="text-xs font-medium text-red-600 uppercase tracking-wider">Falliti</span>
+          <span class="text-2xl font-bold text-red-600 tabular-nums">{{ stats.failed }}</span>
+        </div>
+      </div>
+
+      <!-- Filters Bar -->
+      <div class="flex flex-col sm:flex-row gap-2.5">
+        <div class="relative flex-1 max-w-xs">
+          <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50 pointer-events-none" />
+          <Input
+            v-model="searchQuery"
+            :placeholder="t('rpe.searchPlaceholder')"
+            class="pl-9 h-9 text-sm bg-background border-border/60 focus-visible:ring-primary/30"
+          />
+        </div>
+
+        <Select v-model="selectedAthlete">
+          <SelectTrigger class="h-9 w-full sm:w-44 text-sm border-border/60">
+            <SelectValue :placeholder="t('rpe.filters.allAthletes') || 'Tutti gli atleti'" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">
+              {{ t('rpe.filters.allAthletes') || 'Tutti gli atleti' }}
+            </SelectItem>
+            <SelectItem v-for="name in athleteOptions" :key="name" :value="name">
+              {{ name }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select v-model="selectedStatus">
+          <SelectTrigger class="h-9 w-full sm:w-44 text-sm border-border/60">
+            <SelectValue :placeholder="t('rpe.filters.allStatuses') || 'Tutti gli stati'" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">
+              {{ t('rpe.filters.allStatuses') || 'Tutti gli stati' }}
+            </SelectItem>
+            <SelectItem v-for="opt in statusOptions" :key="opt.value" :value="String(opt.value)">
+              {{ opt.label }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <!-- Desktop Table -->
+      <Card class="hidden md:block border border-border/60 shadow-sm overflow-hidden">
+        <CardContent class="p-0">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="bg-muted/30 border-b border-foreground/5">
-                <th class="p-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  {{
-                    t('rpe.table.athlete') }}
+              <tr class="border-b border-border/60 bg-muted/40">
+                <th class="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {{ t('rpe.table.athlete') }}
                 </th>
-                <th class="p-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  {{
-                    t('rpe.table.emailStatus') }}
+                <th class="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {{ t('rpe.table.emailStatus') }}
                 </th>
-                <th class="p-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  {{
-                    t('rpe.table.lastSent') }}
+                <th class="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {{ t('rpe.table.lastSent') }}
                 </th>
-                <th class="p-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  {{
-                    t('rpe.table.submission') }}
+                <th class="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {{ t('rpe.table.submission') }}
                 </th>
-                <th class="p-4 text-right" />
+                <th class="px-5 py-3 w-12" />
               </tr>
             </thead>
-            <tbody class="divide-y divide-foreground/5">
+            <tbody>
+              <!-- Loading skeleton -->
               <template v-if="isLoading">
-                <tr v-for="i in 5" :key="`skeleton-${i}`" class="animate-pulse">
-                  <td colspan="5" class="p-6">
-                    <div class="h-6 bg-muted/50 rounded-full w-full" />
+                <tr v-for="i in 6" :key="`sk-${i}`" class="border-b border-border/40 last:border-0">
+                  <td class="px-5 py-4">
+                    <div class="space-y-1.5">
+                      <div class="h-3.5 bg-muted animate-pulse rounded-full w-32" />
+                      <div class="h-2.5 bg-muted animate-pulse rounded-full w-44 opacity-60" />
+                    </div>
                   </td>
+                  <td class="px-5 py-4">
+                    <div class="h-5 bg-muted animate-pulse rounded-full w-20" />
+                  </td>
+                  <td class="px-5 py-4">
+                    <div class="h-3.5 bg-muted animate-pulse rounded-full w-24" />
+                  </td>
+                  <td class="px-5 py-4">
+                    <div class="h-3.5 bg-muted animate-pulse rounded-full w-24" />
+                  </td>
+                  <td class="px-5 py-4" />
                 </tr>
               </template>
 
+              <!-- Data rows -->
               <template v-else-if="displayedData.length > 0">
                 <tr
-                  v-for="(row, idx) in displayedData" :key="`${row.emailAtleta || 'noemail'}::${row.nomeAtleta || 'noname'}::${idx}`"
-                  class="hover:bg-muted/30 transition-colors group"
+                  v-for="(row, idx) in displayedData"
+                  :key="`${row.emailAtleta || 'noemail'}::${row.nomeAtleta || 'noname'}::${idx}`"
+                  class="border-b border-border/40 last:border-0 hover:bg-muted/30 transition-colors group"
                 >
-                  <td class="p-4">
-                    <div class="flex flex-col">
-                      <span class="font-semibold text-sm text-foreground">{{ row.nomeAtleta }}</span>
-                      <span class="text-xs text-muted-foreground/70">{{ row.emailAtleta }}</span>
+                  <td class="px-5 py-4">
+                    <div class="flex flex-col gap-0.5">
+                      <span class="text-sm font-semibold text-foreground leading-none">{{ row.nomeAtleta }}</span>
+                      <span class="text-xs text-muted-foreground">{{ row.emailAtleta }}</span>
                     </div>
                   </td>
-                  <td class="p-4">
+                  <td class="px-5 py-4">
                     <Badge
-                      variant="outline" class="gap-1.5 px-2 py-0.5 font-bold text-[10px] border shadow-none"
+                      variant="outline"
+                      class="gap-1.5 px-2.5 py-1 text-[11px] font-semibold border rounded-md shadow-none"
                       :class="getStatusConfig(row.statoEmail).color"
                     >
                       <component :is="getStatusConfig(row.statoEmail).icon" class="h-3 w-3" />
                       {{ getStatusConfig(row.statoEmail).label }}
                     </Badge>
                   </td>
-                  <td class="p-4 text-sm font-medium text-muted-foreground">
-                    {{ formatDate(row.dataInvio) }}
+                  <td class="px-5 py-4">
+                    <span class="text-sm text-muted-foreground tabular-nums">{{ formatDate(row.dataInvio) }}</span>
                   </td>
-                  <td class="p-4 text-sm font-bold text-primary">
-                    <div v-if="row.dataInserimento" class="flex items-center gap-1.5">
-                      <CheckCircle2 class="h-3.5 w-3.5" /> {{ formatDate(row.dataInserimento) }}
+                  <td class="px-5 py-4">
+                    <div v-if="row.dataInserimento" class="flex items-center gap-1.5 text-green-600">
+                      <CheckCircle2 class="h-3.5 w-3.5 shrink-0" />
+                      <span class="text-sm font-medium tabular-nums">{{ formatDate(row.dataInserimento) }}</span>
                     </div>
-                    <span v-else class="text-xs font-medium text-muted-foreground/40 italic">
-                      {{ t('rpe.status.waiting') }}
-                    </span>
+                    <span v-else class="text-xs text-muted-foreground/50 italic">{{ t('rpe.status.waiting') }}</span>
                   </td>
-                  <td class="p-4 text-right">
+                  <td class="px-5 py-4">
                     <Button
                       variant="ghost"
                       size="icon"
-                      class="h-8 w-8 opacity-0 group-hover:opacity-100 transition-all"
+                      class="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/10 hover:text-primary"
                       :title="t('rpe.actions.resend')"
                       @click="handleResend(row.emailId)"
                     >
@@ -292,126 +357,141 @@ watch([searchQuery, selectedStatus, selectedAthlete], () => {
                 </tr>
               </template>
 
+              <!-- Empty state -->
               <template v-else>
                 <tr>
-                  <td colspan="5" class="p-20 text-center">
-                    <div class="flex flex-col items-center gap-2 opacity-40">
-                      <Mail class="h-10 w-10" />
-                      <span class="text-sm font-bold uppercase tracking-widest">{{ t('common.noRecords') }}</span>
+                  <td colspan="5" class="py-20">
+                    <div class="flex flex-col items-center gap-3 text-muted-foreground/40">
+                      <div class="w-12 h-12 rounded-full border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">
+                        <Mail class="h-5 w-5" />
+                      </div>
+                      <div class="text-center">
+                        <p class="text-sm font-semibold">{{ t('common.noRecords') }}</p>
+                        <p class="text-xs mt-0.5 opacity-70">Nessuna email trovata per i filtri selezionati</p>
+                      </div>
                     </div>
                   </td>
                 </tr>
               </template>
             </tbody>
           </table>
-        </div>
-      </CardContent>
+        </CardContent>
 
-      <div class="p-4 border-t border-foreground/5 flex items-center justify-between bg-muted/10">
-        <span class="text-xs font-medium text-muted-foreground">
-          {{ t('common.paginationInfo', { current: pageIndex, total: totalPages, count: totalItems }) }}
-        </span>
-        <div class="flex gap-2">
-          <Button
-            variant="outline" size="sm" class="h-8 border-foreground/10 font-semibold text-xs"
-            :disabled="pageIndex === 1" @click="pageIndex--"
-          >
-            <ChevronLeft class="h-4 w-4 mr-1" /> {{ t('common.prev') }}
-          </Button>
-          <Button
-            variant="outline" size="sm" class="h-8 border-foreground/10 font-semibold text-xs"
-            :disabled="pageIndex === totalPages" @click="pageIndex++"
-          >
-            {{ t('common.next') }}
-            <ChevronRight class="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-      </div>
-    </Card>
-
-    <!-- Mobile Card View -->
-    <div class="md:hidden space-y-3">
-      <div v-if="isLoading" class="space-y-3">
-        <div v-for="i in 5" :key="`skeleton-${i}`" class="animate-pulse">
-          <div class="h-24 bg-muted/50 rounded-lg" />
-        </div>
-      </div>
-
-      <div v-else-if="displayedData.length > 0" class="space-y-3">
-        <Card
-          v-for="(row, idx) in displayedData" :key="`${row.emailAtleta || 'noemail'}::${row.nomeAtleta || 'noname'}::${idx}`"
-          class="border border-foreground/10 shadow-sm"
-        >
-          <CardContent class="p-4 space-y-3">
-            <!-- Athlete Name & Email -->
-            <div>
-              <span class="font-semibold text-sm text-foreground">{{ row.nomeAtleta }}</span>
-              <span class="text-xs text-muted-foreground/70 block mt-1">{{ row.emailAtleta }}</span>
-            </div>
-
-            <!-- Status Badge -->
-            <Badge
-              variant="outline" class="gap-1.5 px-2 py-1 font-bold text-xs border shadow-none inline-flex"
-              :class="getStatusConfig(row.statoEmail).color"
-            >
-              <component :is="getStatusConfig(row.statoEmail).icon" class="h-3 w-3" />
-              {{ getStatusConfig(row.statoEmail).label }}
-            </Badge>
-
-            <!-- Dates Info -->
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <span class="text-muted-foreground/70 block mb-1">{{ t('rpe.table.lastSent') }}</span>
-                <span class="font-medium">{{ formatDate(row.dataInvio) }}</span>
-              </div>
-              <div>
-                <span class="text-muted-foreground/70 block mb-1">{{ t('rpe.table.submission') }}</span>
-                <span v-if="row.dataInserimento" class="font-bold text-primary flex items-center gap-1">
-                  <CheckCircle2 class="h-3 w-3" /> {{ formatDate(row.dataInserimento) }}
-                </span>
-                <span v-else class="text-muted-foreground/40 italic">{{ t('rpe.status.waiting') }}</span>
-              </div>
-            </div>
-
-            <!-- Resend Button -->
+        <!-- Pagination footer -->
+        <div class="px-5 py-3 border-t border-border/60 bg-muted/20 flex items-center justify-between">
+          <span class="text-xs text-muted-foreground">
+            {{ t('common.paginationInfo', { current: pageIndex, total: totalPages, count: totalItems }) }}
+          </span>
+          <div class="flex items-center gap-1.5">
             <Button
-              variant="default"
-              class="w-full mt-2 h-9"
-              :title="t('rpe.actions.resend')"
-              @click="handleResend(row.emailId)"
+              variant="outline" size="sm"
+              class="h-7 px-2.5 text-xs font-medium border-border/60"
+              :disabled="pageIndex === 1"
+              @click="pageIndex--"
             >
-              <Send class="h-3.5 w-3.5 mr-2" />
-              {{ t('rpe.actions.resend') }}
+              <ChevronLeft class="h-3.5 w-3.5 mr-1" />{{ t('common.prev') }}
             </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div v-else class="p-20 text-center">
-        <div class="flex flex-col items-center gap-2 opacity-40">
-          <Mail class="h-10 w-10" />
-          <span class="text-sm font-bold uppercase tracking-widest">{{ t('common.noRecords') }}</span>
+            <span class="text-xs font-medium text-muted-foreground px-2">{{ pageIndex }} / {{ totalPages }}</span>
+            <Button
+              variant="outline" size="sm"
+              class="h-7 px-2.5 text-xs font-medium border-border/60"
+              :disabled="pageIndex === totalPages"
+              @click="pageIndex++"
+            >
+              {{ t('common.next') }}<ChevronRight class="h-3.5 w-3.5 ml-1" />
+            </Button>
+          </div>
         </div>
-      </div>
+      </Card>
 
-      <!-- Mobile Pagination -->
-      <div class="flex items-center justify-between gap-2 mt-4">
-        <span class="text-xs font-medium text-muted-foreground">
-          {{ t('common.paginationInfo', { current: pageIndex, total: totalPages, count: totalItems }) }}
-        </span>
-        <div class="flex gap-1">
-          <Button
-            variant="outline" size="sm" class="h-8 px-2 border-foreground/10 font-semibold text-xs"
-            :disabled="pageIndex === 1" @click="pageIndex--"
+      <!-- Mobile Card View -->
+      <div class="md:hidden space-y-2.5">
+        <!-- Loading -->
+        <div v-if="isLoading" class="space-y-2.5">
+          <div v-for="i in 4" :key="`sk-m-${i}`" class="h-28 bg-muted/40 rounded-xl animate-pulse border border-border/40" />
+        </div>
+
+        <!-- Data -->
+        <template v-else-if="displayedData.length > 0">
+          <Card
+            v-for="(row, idx) in displayedData"
+            :key="`${row.emailAtleta || 'noemail'}::${row.nomeAtleta || 'noname'}::${idx}`"
+            class="border border-border/60 shadow-none overflow-hidden"
           >
-            <ChevronLeft class="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="outline" size="sm" class="h-8 px-2 border-foreground/10 font-semibold text-xs"
-            :disabled="pageIndex === totalPages" @click="pageIndex++"
-          >
-            <ChevronRight class="h-3.5 w-3.5" />
-          </Button>
+            <CardContent class="p-4 space-y-3">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex flex-col gap-0.5 min-w-0">
+                  <span class="text-sm font-semibold text-foreground truncate">{{ row.nomeAtleta }}</span>
+                  <span class="text-xs text-muted-foreground truncate">{{ row.emailAtleta }}</span>
+                </div>
+                <Badge
+                  variant="outline"
+                  class="shrink-0 gap-1.5 px-2 py-0.5 text-[11px] font-semibold border shadow-none"
+                  :class="getStatusConfig(row.statoEmail).color"
+                >
+                  <component :is="getStatusConfig(row.statoEmail).icon" class="h-2.5 w-2.5" />
+                  {{ getStatusConfig(row.statoEmail).label }}
+                </Badge>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-0.5">
+                  <p class="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{{ t('rpe.table.lastSent') }}</p>
+                  <p class="text-xs font-medium tabular-nums">{{ formatDate(row.dataInvio) }}</p>
+                </div>
+                <div class="space-y-0.5">
+                  <p class="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{{ t('rpe.table.submission') }}</p>
+                  <div v-if="row.dataInserimento" class="flex items-center gap-1 text-green-600">
+                    <CheckCircle2 class="h-3 w-3 shrink-0" />
+                    <span class="text-xs font-medium tabular-nums">{{ formatDate(row.dataInserimento) }}</span>
+                  </div>
+                  <span v-else class="text-xs text-muted-foreground/50 italic">{{ t('rpe.status.waiting') }}</span>
+                </div>
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                class="w-full h-8 text-xs font-medium gap-1.5 border-border/60"
+                @click="handleResend(row.emailId)"
+              >
+                <Send class="h-3 w-3" />{{ t('rpe.actions.resend') }}
+              </Button>
+            </CardContent>
+          </Card>
+        </template>
+
+        <!-- Empty -->
+        <div v-else class="py-20 flex flex-col items-center gap-3 text-muted-foreground/40">
+          <div class="w-12 h-12 rounded-full border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">
+            <Mail class="h-5 w-5" />
+          </div>
+          <p class="text-sm font-semibold">{{ t('common.noRecords') }}</p>
+        </div>
+
+        <!-- Mobile Pagination -->
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-xs text-muted-foreground">
+            {{ t('common.paginationInfo', { current: pageIndex, total: totalPages, count: totalItems }) }}
+          </span>
+          <div class="flex gap-1.5">
+            <Button
+              variant="outline" size="icon"
+              class="h-8 w-8 border-border/60"
+              :disabled="pageIndex === 1"
+              @click="pageIndex--"
+            >
+              <ChevronLeft class="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="outline" size="icon"
+              class="h-8 w-8 border-border/60"
+              :disabled="pageIndex === totalPages"
+              @click="pageIndex++"
+            >
+              <ChevronRight class="h-3.5 w-3.5" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

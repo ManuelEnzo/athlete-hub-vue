@@ -43,13 +43,6 @@ const toc = [
         <span class="text-xs text-muted-foreground hidden md:block">
           {{ t('monitoringDoc.lastUpdated') }}: {{ new Date().toLocaleDateString() }}
         </span>
-        <NuxtLink
-          to="/dashboard"
-          class="inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition text-xs font-bold uppercase tracking-tight"
-        >
-          <Icon name="lucide:arrow-left" class="w-3.5 h-3.5" />
-          {{ t('monitoringDoc.backToDashboard') }}
-        </NuxtLink>
       </div>
     </div>
 

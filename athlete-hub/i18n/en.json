@@ -406,8 +406,11 @@
     "deleteWarning": "This action will permanently delete the athlete and all associated data. Are you sure you want to proceed?",
     "noData": "No athletes available. Please add new athletes.",
     "pageTitle": "Athletes' Personal Data",
+    "pageDescription": "Manage athletes, profiles and team information",
     "search": "Search by name, email or sport",
     "visualizer": "Athlete Visualizer",
+    "visualizerDescription": "Analyse athlete performance and health data",
+    "selectPrompt": "Select an athlete from the menu above to view their data",
     "new": "New Athlete",
     "edit": "Edit Athlete",
     "deleteConfirm": "Confirm Deletion",
@@ -539,6 +542,8 @@
     "configureProtocol": "Configura i protocolli e definisci le metriche di input."
   },
   "testComparison": {
+    "pageTitle": "Test Comparison",
+    "pageDescription": "Analyse and compare athletic test results by metric",
     "title": "Test Comparison",
     "selectAthletePrompt": "Select an athlete to view comparisons",
     "selectTest": "Select a test",
@@ -578,6 +583,7 @@
       "saveResults": "Error saving results"
     },
     "infoTooltip": "Once you've entered the activity, if it's completed you can open it for editing using the edit (pen) button and mark it as completed to send the RPE to the athlete.",
+    "description": "Plan and manage team training sessions and events",
     "placeholders": {
       "timeFormat": "00:00.00",
       "level": "LV.SH",
@@ -1075,9 +1081,14 @@
     "predicted_title": "Predicted Metrics — Next 7 Days",
     "predicted_subtitle": "Projection based on current load and recovery trends"
   },
+  "testManagement": {
+    "pageTitle": "Test Management",
+    "pageDescription": "Configure athletic test protocols and templates"
+  },
   "injuries": {
     "title": "Medical Center",
     "management_title": "Medical Center",
+    "pageDescription": "Monitor and manage athlete injuries",
     "subtitle": "Clinical monitoring and recovery times",
     "history_title": "Athlete Injury Record",
     "add_new": "New Injury",

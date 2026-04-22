@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { NavGroup, NavLink, NavSectionTitle } from '~/types/nav'
-import { navMenu } from '~/constants/menus'
+import { navMenu, navMenuBottom } from '~/constants/menus'
 import { useAuthStore } from '~/stores/auth'
 
 const { sidebar } = useAppSettings()
@@ -67,7 +67,7 @@ function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): an
         />
       </SidebarGroup>
 
-      <!-- <SidebarGroup class="mt-auto">
+      <SidebarGroup class="mt-auto">
         <component
           :is="resolveNavItemComponent(item)"
           v-for="(item, index) in navMenuBottom"
@@ -75,7 +75,7 @@ function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): an
           :item="item"
           size="sm"
         />
-      </SidebarGroup> -->
+      </SidebarGroup>
     </SidebarContent>
 
     <SidebarFooter>

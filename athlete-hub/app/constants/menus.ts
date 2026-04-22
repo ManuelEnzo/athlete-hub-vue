@@ -76,20 +76,20 @@ export const navMenu: NavMenu[] = [
         link: '/sleephistory',
       },
       {
-        title: 'Test Settings',
-        icon: 'i-lucide-settings-2',
-        link: '/testmanagement',
-      },
-      {
-        title: 'Test Comparison',
-        icon: 'i-lucide-list-check',
-        // example link to an event id — replace with a specific id when available
-        link: '/calendar/test-comparison',
-      },
-      {
-        title: 'Formule',
-        icon: 'i-lucide-file-text',
-        link: '/dashboard/monitoraggio-calcoli',
+        title: 'Tests',
+        icon: 'i-lucide-clipboard-list',
+        children: [
+          {
+            title: 'Test Settings',
+            icon: 'i-lucide-settings-2',
+            link: '/testmanagement',
+          },
+          {
+            title: 'Test Comparison',
+            icon: 'i-lucide-bar-chart-2',
+            link: '/test-comparison',
+          },
+        ],
       },
     ],
   },
@@ -97,9 +97,9 @@ export const navMenu: NavMenu[] = [
 
 export const navMenuBottom: NavMenuItems = [
   {
-    title: 'Help & Support',
-    icon: 'i-lucide-circle-help',
-    link: 'mailto:athletehub.sport@gmail.com',
+    title: 'Formule',
+    icon: 'i-lucide-book-open',
+    link: '/monitoraggio-calcoli',
   },
   {
     title: 'Feedback',

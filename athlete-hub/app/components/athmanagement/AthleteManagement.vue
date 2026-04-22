@@ -328,7 +328,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleEscape))
 </script>
 
 <template>
-  <div class="w-full flex flex-col gap-8 mx-auto p-4 relative">
+  <div class="w-full flex flex-col gap-6 mx-auto px-6 py-6 relative">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div class="flex items-center gap-2 w-full sm:w-auto">
         <div class="relative flex-1 sm:w-72">
