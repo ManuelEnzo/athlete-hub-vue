@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { ApexOptions } from 'apexcharts'
 import type { Pagination, RpeHistoricalEntryDto, RpeLastSessionOverviewDto } from '../../types/api'
-
+import { ClientOnly } from '#components'
 import { Activity, ArrowLeft, ChevronLeft, ChevronRight, History, TrendingUp, User2 } from 'lucide-vue-next'
-import { computed, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import notifications from '@/lib/notificationService'
@@ -16,6 +17,7 @@ import { Card, CardContent } from '../ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 const { t } = useI18n()
+const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'))
 
 // --------------------
 // STATE
@@ -159,6 +161,76 @@ const athleteFilterOptions = computed(() => [
   ...athletesOverview.value.map(a => ({ id: String(a.athleteId), name: a.athleteName })),
 ])
 
+// --------------------
+// STATS & CHARTS
+// --------------------
+const rpeStats = computed(() => {
+  const items = athletesOverview.value
+  if (!items.length) return null
+  const avg = items.reduce((s, a) => s + a.rpe, 0) / items.length
+  const atRisk = items.filter(a => a.rpe >= 7).length
+  const safe = items.filter(a => a.rpe > 0 && a.rpe <= 4).length
+  return { total: items.length, avg: +avg.toFixed(1), atRisk, safe }
+})
+
+const rpeDistributionSeries = computed<number[]>(() => {
+  const counts: [number, number, number, number, number, number] = [0, 0, 0, 0, 0, 0]
+  for (const a of athletesOverview.value) {
+    if (a.rpe === 0) counts[0]++
+    else if (a.rpe <= 2) counts[1]++
+    else if (a.rpe <= 4) counts[2]++
+    else if (a.rpe <= 6) counts[3]++
+    else if (a.rpe <= 8) counts[4]++
+    else counts[5]++
+  }
+  return counts
+})
+
+const rpeDistributionOptions = computed<ApexOptions>(() => ({
+  chart: { type: 'donut', background: 'transparent', toolbar: { show: false } },
+  labels: ['Riposo (0)', 'Leggero (1–2)', 'Moderato (3–4)', 'Impegnativo (5–6)', 'Duro (7–8)', 'Massimale (9–10)'],
+  colors: ['#94a3b8', '#22c55e', '#eab308', '#f97316', '#ef4444', '#b91c1c'],
+  legend: { show: false },
+  dataLabels: { enabled: false },
+  plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: { show: true, label: 'Atleti', fontSize: '11px', fontWeight: 700, color: '#64748b', formatter: () => String(athletesOverview.value.length) } } } } },
+  tooltip: { y: { formatter: (v: number) => `${v} atleti` } },
+  stroke: { show: false },
+}))
+
+const historySparklineSeries = computed(() => {
+  if (!historicalPagination.value?.items?.length) return []
+  const items = [...historicalPagination.value.items].reverse()
+  return [{ name: 'RPE', data: items.map(e => e.rpe) }]
+})
+
+const historySparklineCategories = computed(() => {
+  if (!historicalPagination.value?.items?.length) return []
+  return [...historicalPagination.value.items].reverse().map(e => formatDate(e.sessionDate))
+})
+
+const historySparklineOptions = computed<ApexOptions>(() => ({
+  chart: { type: 'area', background: 'transparent', toolbar: { show: false }, animations: { enabled: true } },
+  stroke: { curve: 'smooth', width: 2.5 },
+  fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.25, opacityTo: 0.02 } },
+  colors: ['#6366f1'],
+  xaxis: {
+    categories: historySparklineCategories.value,
+    labels: { style: { fontSize: '10px' }, rotate: -30 },
+    axisBorder: { show: false },
+    axisTicks: { show: false },
+  },
+  yaxis: { min: 0, max: 10, tickAmount: 5, labels: { style: { fontSize: '10px' }, formatter: (v: number) => v.toFixed(0) } },
+  grid: { borderColor: 'rgba(148,163,184,0.2)', strokeDashArray: 4 },
+  markers: { size: 4, strokeWidth: 0 },
+  tooltip: { y: { formatter: (v: number) => `RPE ${v}/10` } },
+  dataLabels: { enabled: false },
+  annotations: {
+    yaxis: [
+      { y: 7, borderColor: '#ef4444', borderWidth: 1, strokeDashArray: 4, label: { text: 'Soglia rischio', style: { fontSize: '10px', color: '#ef4444', background: 'transparent' } } },
+    ],
+  },
+}))
+
 onMounted(fetchOverview)
 </script>
 
@@ -210,6 +282,46 @@ onMounted(fetchOverview)
             <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-orange-500 inline-block" />5–6 {{ t('rpe.labels.challenging') }}</span>
             <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 inline-block" />7–8 {{ t('rpe.labels.hard') }}</span>
             <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-700 inline-block" />9–10 {{ t('rpe.labels.maximal') }}</span>
+          </div>
+        </div>
+
+        <!-- Stats + Distribution Chart -->
+        <div v-if="!loading && rpeStats" class="flex flex-col lg:flex-row gap-4">
+          <!-- Stat cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 flex-1">
+            <div class="rounded-xl border border-border/60 bg-card p-4 flex flex-col gap-1.5">
+              <p class="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Atleti totali</p>
+              <p class="text-2xl font-black text-foreground">{{ rpeStats.total }}</p>
+            </div>
+            <div class="rounded-xl border border-border/60 bg-card p-4 flex flex-col gap-1.5">
+              <p class="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">RPE medio</p>
+              <p
+                class="text-2xl font-black"
+                :class="rpeStats.avg >= 7 ? 'text-red-600 dark:text-red-400' : rpeStats.avg >= 5 ? 'text-orange-500' : 'text-green-600 dark:text-green-400'"
+              >
+                {{ rpeStats.avg }}
+              </p>
+            </div>
+            <div class="rounded-xl border border-border/60 bg-card p-4 flex flex-col gap-1.5">
+              <p class="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">A rischio (≥7)</p>
+              <p class="text-2xl font-black" :class="rpeStats.atRisk > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
+                {{ rpeStats.atRisk }}
+              </p>
+            </div>
+            <div class="rounded-xl border border-border/60 bg-card p-4 flex flex-col gap-1.5">
+              <p class="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Zona verde (≤4)</p>
+              <p class="text-2xl font-black text-green-600 dark:text-green-400">{{ rpeStats.safe }}</p>
+            </div>
+          </div>
+          <!-- Donut chart -->
+          <div class="rounded-xl border border-border/60 bg-card p-4 lg:w-56 shrink-0">
+            <p class="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">Zone RPE</p>
+            <ClientOnly>
+              <VueApexCharts type="donut" height="168" :options="rpeDistributionOptions" :series="rpeDistributionSeries" />
+              <template #fallback>
+                <div class="h-[168px] flex items-center justify-center text-xs text-muted-foreground">Caricamento...</div>
+              </template>
+            </ClientOnly>
           </div>
         </div>
 
@@ -313,6 +425,18 @@ onMounted(fetchOverview)
       </div>
 
       <div class="px-6 py-6 space-y-3">
+        <!-- RPE Trend Sparkline -->
+        <div v-if="!loadingHistory && hasHistoryItems" class="rounded-xl border border-border/60 bg-card p-4">
+          <p class="text-xs font-semibold text-foreground leading-none">Andamento RPE</p>
+          <p class="text-[10px] text-muted-foreground mt-0.5 mb-2">Sessioni in ordine cronologico · soglia rischio a 7</p>
+          <ClientOnly>
+            <VueApexCharts type="area" height="150" :options="historySparklineOptions" :series="historySparklineSeries" />
+            <template #fallback>
+              <div class="h-[150px] flex items-center justify-center text-xs text-muted-foreground">Caricamento grafico...</div>
+            </template>
+          </ClientOnly>
+        </div>
+
         <!-- Loading -->
         <div v-if="loadingHistory" class="space-y-3">
           <div v-for="i in 5" :key="i" class="h-24 bg-muted/30 rounded-xl animate-pulse border border-border/40" />

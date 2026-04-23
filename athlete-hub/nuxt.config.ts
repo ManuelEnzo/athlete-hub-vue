@@ -62,8 +62,7 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/components': { redirect: '/components/accordion' },
-    '/settings': { redirect: '/settings/profile' },
-    '/landingpage': { redirect: '/landing/landingpage' },
+    '/settings': { redirect: '/settings/profile' }
   },
 
   imports: {
@@ -87,9 +86,6 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-12-14',
   nitro: {
     preset: 'static',
-    prerender: {
-      routes: ['/landing/landingpage'],
-    },
     routeRules: {
       '/**': {
         headers: {
