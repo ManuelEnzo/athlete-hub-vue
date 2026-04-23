@@ -648,66 +648,7 @@ const roadmapSteps = [
       </section>
 
       <!-- ─── WAITLIST ──────────────────────────────────────────────────── -->
-      <section id="waitlist" class="py-28 px-6 border-t border-border/40">
-        <div class="container mx-auto max-w-2xl">
-          <div class="relative rounded-3xl border border-border/60 bg-gradient-to-b from-accent/40 to-transparent p-10 md:p-16 text-center overflow-hidden">
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-indigo-500/10 blur-3xl -z-10" />
 
-            <!-- Success state -->
-            <div v-if="isSubmitted" class="space-y-5 animate-in fade-in zoom-in duration-500">
-              <div class="size-16 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto">
-                <CheckCircle2 class="size-8" />
-              </div>
-              <h2 class="text-3xl font-black uppercase italic">
-                {{ t('landingpage.waitlist.successTitle') }}
-              </h2>
-              <p class="text-muted-foreground text-sm">{{ t('landingpage.waitlist.successMessage') }}</p>
-              <Button
-                variant="ghost"
-                class="text-muted-foreground text-xs uppercase tracking-widest"
-                @click="isSubmitted = false; email = ''"
-              >
-                {{ t('landingpage.waitlist.sendAgain') }}
-              </Button>
-            </div>
-
-            <!-- Form state -->
-            <div v-else>
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-6">
-                <Star class="h-3 w-3" />
-                {{ t('landingpage.waitlist.badgeLabel') }}
-              </div>
-              <h2 class="text-4xl md:text-5xl font-black tracking-tight uppercase leading-tight mb-4">
-                {{ t('landingpage.waitlist.title') }}
-              </h2>
-              <p class="text-muted-foreground text-sm mb-8">{{ t('landingpage.waitlist.subtitle') }}</p>
-
-              <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" @submit.prevent="handleFormSubmit">
-                <div class="flex-1">
-                  <Label class="sr-only">{{ t('landingpage.waitlist.emailLabel') }}</Label>
-                  <Input
-                    v-model="email"
-                    type="email"
-                    required
-                    :disabled="isSubmitting"
-                    :placeholder="t('landingpage.waitlist.placeholder')"
-                    class="h-12 bg-background/60 border-border/60 rounded-xl focus:ring-2 focus:ring-indigo-500/30 transition-all"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  :disabled="isSubmitting"
-                  class="h-12 px-6 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-400 hover:to-violet-500 text-white font-bold shadow-lg shadow-indigo-500/25 border-0 transition-all hover:-translate-y-0.5 shrink-0"
-                >
-                  <Loader2 v-if="isSubmitting" class="size-4 animate-spin" />
-                  <span v-else>{{ t('landingpage.waitlist.submitButton') }}</span>
-                </Button>
-              </form>
-              <p class="mt-4 text-xs text-muted-foreground/50">{{ t('landingpage.waitlist.noSpam') }}</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <!-- ─── FOOTER ────────────────────────────────────────────────────── -->
       <footer class="py-10 border-t border-border/40">
