@@ -1433,23 +1433,68 @@
   "landingpage": {
     "navbar": {
       "clientLogin": "Client Log in",
-      "demo": "Prenota Demo"
+      "demo": "Prenota Demo",
+      "features": "Funzionalità",
+      "product": "Prodotto",
+      "pricing": "Prezzi",
+      "roadmap": "Roadmap"
     },
     "hero": {
       "subtitle": "MVP 1.0.2 Open for Early Adopters",
       "title": "DATI D'ÉLITE PER ATLETI D'ÉLITE.",
       "description": "Athlete Hub trasforma la complessità della preparazione atletica in una dashboard intuitiva, sicura e scientificamente rigorosa.",
       "ctaStart": "Inizia come Coach",
-      "ctaExplore": "Esplora le Funzioni"
+      "ctaExplore": "Esplora le Funzioni",
+      "trustNoCreditCard": "Nessuna carta di credito",
+      "trustSetup": "Setup in 2 minuti",
+      "trustGdpr": "GDPR Compliant",
+      "browserUrl": "athletehub.sport / home"
+    },
+    "stats": {
+      "webBased": "Web-based · No install",
+      "realtimeLabel": "Real-time",
+      "realtimeDesc": "RPE & Load Monitor",
+      "aiLabel": "AI-powered",
+      "aiDesc": "Analytics & Assistant",
+      "gdprLabel": "GDPR",
+      "gdprDesc": "Data Compliant"
     },
     "features": {
+      "badgeLabel": "Funzionalità chiave",
+      "title": "Tutto ciò che serve",
+      "titleSub": "per gestire il tuo team",
+      "subtitle": "Una piattaforma all-in-one per monitorare, analizzare e ottimizzare le performance dei tuoi atleti.",
       "precisioneACWR": "Precisione ACWR",
       "feedbackLoop": "Feedback Loop",
+      "pianificazione": "Pianificazione",
       "clinicalData": "Clinical Data",
       "descPrecisioneACWR": "Monitoraggio scientifico del rapporto tra carico acuto e cronico.",
       "descFeedbackLoop": "Automazione totale della raccolta RPE tramite email.",
       "descPianificazione": "Gestione sessioni multi-atleta con target definiti.",
-      "descClinicalData": "Hub centralizzato per infortuni e protocolli Return To Play."
+      "descClinicalData": "Hub centralizzato per infortuni e protocolli Return To Play.",
+      "sleepTitle": "Sleep Monitoring",
+      "sleepDesc": "Analisi del sonno completa: ore dormite, fasi REM, sonno profondo e qualità del recupero nel tempo.",
+      "aiTitle": "AI Assistant",
+      "aiDesc": "Comandi in linguaggio naturale per gestire eventi, consultare statistiche e ricevere suggerimenti intelligenti.",
+      "injuryTitle": "Injury Tracking",
+      "injuryDesc": "Storico infortuni, gestione rientro e alert automatici per ridurre il rischio di recidive."
+    },
+    "comparison": {
+      "colExcel": "Excel / Carta",
+      "colUs": "Athlete Hub",
+      "row1": "Raccolta RPE dagli atleti",
+      "row2": "ACWR automatico (carico acuto:cronico)",
+      "row3": "Alert rischio infortuni in tempo reale",
+      "row4": "Storico sonno e recupero",
+      "row5": "Grafici e analytics integrati",
+      "row6": "Agenda sessioni con link RPE",
+      "row7": "Accessibile da qualsiasi dispositivo",
+      "row8": "AI assistant per query in linguaggio naturale"
+    },
+    "showcase": {
+      "badgeLabel": "Product Tour",
+      "title": "Vedi la piattaforma",
+      "titleSub": "in azione"
     },
     "dashboard": {
       "preview": "Anteprima della dashboard",
@@ -1489,31 +1534,57 @@
       "loadData": "Carica dati"
     },
     "scalability": {
+      "badgeLabel": "Architettura",
       "title": "COSTRUITO PER LA SCALABILITÀ ESTREMA.",
       "description": "Sfruttiamo Nuxt 3 e database crittografati per garantire che i dati dei tuoi atleti siano sempre accessibili, veloci e protetti.",
       "dataIntegrity": "Data Integrity",
       "dataIntegrityDesc": "Backup orari automatizzati e sincronizzazione cloud.",
       "securityDesc": "Crittografia 256-bit per la massima privacy.",
-      "security": "security"
+      "security": "Sicurezza"
+    },
+    "pricing": {
+      "badgeLabel": "Prezzi",
+      "title": "Semplice e trasparente",
+      "titleSub": "piano prezzi — in arrivo",
+      "subtitle": "Durante la beta tutte le funzionalità sono completamente gratuite. I prezzi verranno introdotti dopo il lancio ufficiale.",
+      "lockedBadge": "Bloccato · Disponibile al lancio",
+      "betaBadge": "Attivo ora · Gratuito",
+      "betaTitle": "Beta",
+      "betaPrice": "€0",
+      "betaPricePer": "/ mese",
+      "betaDesc": "Accesso completo a tutte le funzionalità. Riservato agli early adopters.",
+      "starterTitle": "Starter",
+      "starterPrice": "€29",
+      "starterPricePer": "/ mese",
+      "starterDesc": "Per coach individuali che gestiscono un piccolo team.",
+      "proTitle": "Pro",
+      "proPrice": "€89",
+      "proPricePer": "/ mese",
+      "proDesc": "Per club e staff di scienze dello sport con esigenze multi-team.",
+      "feature1": "Atleti illimitati",
+      "feature2": "Raccolta RPE automatizzata",
+      "feature3": "Monitoraggio ACWR e carico",
+      "feature4": "Tracking sonno e recupero",
+      "feature5": "AI Assistant",
+      "feature6": "Storico infortuni e RTP",
+      "feature7": "Supporto prioritario",
+      "feature8": "Brand personalizzato",
+      "ctaBeta": "Unisciti alla waitlist →",
+      "ctaLocked": "Disponibile al lancio",
+      "earlyAdopterNote": "Gli early adopter mantengono il prezzo beta a vita."
     },
     "roadmap": {
       "title": "Roadmap di Sviluppo",
+      "subtitle": "Le prossime funzionalità in arrivo sulla piattaforma",
+      "comingSoon": "Coming soon",
       "steps": [
-        {
-          "title": "Wearable Sync",
-          "date": "Q3 2026"
-        },
-        {
-          "title": "AI Insights",
-          "date": "Q4 2026"
-        },
-        {
-          "title": "Mobile App",
-          "date": "Q1 2027"
-        }
+        { "title": "Wearable Sync", "date": "Q3 2026" },
+        { "title": "AI Insights", "date": "Q4 2026" },
+        { "title": "Mobile App", "date": "Q1 2027" }
       ]
     },
     "waitlist": {
+      "badgeLabel": "Early Access",
       "title": "Partecipa alla Beta",
       "subtitle": "Posti limitati per i primi 20 coach partner.",
       "emailLabel": "Email Professionale",
@@ -1523,11 +1594,13 @@
       "invalidEmail": "Inserisci un indirizzo email valido",
       "successTitle": "Richiesta Ricevuta",
       "successMessage": "Grazie Coach. Ti contatteremo entro 48 ore per l'accesso prioritario.",
-      "sendAgain": "Invia un'altra mail"
+      "sendAgain": "Invia un'altra mail",
+      "noSpam": "Nessuno spam. Cancellazione immediata."
     },
     "footer": {
       "athleteHub": "Athlete Hub",
       "privacy": "Privacy & Data Policy",
+      "contact": "Contatti",
       "version": "v1.0.2 // Developed by Manuel Enzo",
       "github": "github"
     },

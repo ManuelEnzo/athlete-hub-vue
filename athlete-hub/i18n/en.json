@@ -1437,16 +1437,37 @@
   "landingpage": {
     "navbar": {
       "clientLogin": "Client Log in",
-      "demo": "Book Demo"
+      "demo": "Book Demo",
+      "features": "Features",
+      "product": "Product",
+      "pricing": "Pricing",
+      "roadmap": "Roadmap"
     },
     "hero": {
       "subtitle": "MVP 1.0.2 Open for Early Adopters",
       "title": "ELITE DATA FOR ELITE ATHLETES.",
       "description": "Athlete Hub transforms the complexity of athletic preparation into an intuitive, secure, and scientifically rigorous dashboard.",
       "ctaStart": "Start as Coach",
-      "ctaExplore": "Explore Features"
+      "ctaExplore": "Explore Features",
+      "trustNoCreditCard": "No credit card required",
+      "trustSetup": "Setup in 2 minutes",
+      "trustGdpr": "GDPR Compliant",
+      "browserUrl": "athletehub.sport / home"
+    },
+    "stats": {
+      "webBased": "Web-based · No install",
+      "realtimeLabel": "Real-time",
+      "realtimeDesc": "RPE & Load Monitor",
+      "aiLabel": "AI-powered",
+      "aiDesc": "Analytics & Assistant",
+      "gdprLabel": "GDPR",
+      "gdprDesc": "Data Compliant"
     },
     "features": {
+      "badgeLabel": "Key features",
+      "title": "Everything you need",
+      "titleSub": "to manage your team",
+      "subtitle": "An all-in-one platform to monitor, analyse and optimise your athletes' performance.",
       "precisioneACWR": "ACWR Precision",
       "feedbackLoop": "Feedback Loop",
       "pianificazione": "Planning",
@@ -1454,37 +1475,86 @@
       "descPrecisioneACWR": "Scientific monitoring of acute vs chronic load ratio.",
       "descFeedbackLoop": "Total automation of RPE collection via email.",
       "descPianificazione": "Manage multi-athlete sessions with defined targets.",
-      "descClinicalData": "Centralized hub for injuries and Return To Play protocols."
+      "descClinicalData": "Centralized hub for injuries and Return To Play protocols.",
+      "sleepTitle": "Sleep Monitoring",
+      "sleepDesc": "Full sleep analysis: hours slept, REM phases, deep sleep and recovery quality over time.",
+      "aiTitle": "AI Assistant",
+      "aiDesc": "Natural language commands to manage events, query statistics and receive smart suggestions.",
+      "injuryTitle": "Injury Tracking",
+      "injuryDesc": "Injury history, return management and automatic alerts to reduce recurrence risk."
+    },
+    "comparison": {
+      "colExcel": "Excel / Spreadsheet",
+      "colUs": "Athlete Hub",
+      "row1": "RPE collection from athletes",
+      "row2": "Automatic ACWR (acute:chronic load)",
+      "row3": "Real-time injury risk alerts",
+      "row4": "Sleep and recovery history",
+      "row5": "Integrated charts and analytics",
+      "row6": "Session agenda with RPE links",
+      "row7": "Accessible from any device",
+      "row8": "AI assistant with natural language queries"
+    },
+    "showcase": {
+      "badgeLabel": "Product Tour",
+      "title": "See the platform",
+      "titleSub": "in action"
     },
     "dashboard": {
       "preview": "Dashboard Preview Mode"
     },
     "scalability": {
+      "badgeLabel": "Architecture",
       "title": "BUILT FOR EXTREME SCALABILITY.",
       "description": "We use Nuxt 3 and encrypted databases to ensure your athletes' data is always accessible, fast, and secure.",
       "dataIntegrity": "Data Integrity",
       "dataIntegrityDesc": "Automated hourly backups and cloud sync.",
       "securityDesc": "256-bit encryption for maximum privacy.",
-      "security": "security"
+      "security": "Security"
+    },
+    "pricing": {
+      "badgeLabel": "Pricing",
+      "title": "Simple, transparent",
+      "titleSub": "pricing — coming soon",
+      "subtitle": "During the beta all features are completely free. Pricing will be introduced after the official launch.",
+      "lockedBadge": "Locked · Available at launch",
+      "betaBadge": "Active now · Free",
+      "betaTitle": "Beta",
+      "betaPrice": "€0",
+      "betaPricePer": "/ mo",
+      "betaDesc": "Full access to all features. Reserved for early adopters.",
+      "starterTitle": "Starter",
+      "starterPrice": "€29",
+      "starterPricePer": "/ mo",
+      "starterDesc": "For individual coaches managing a small team.",
+      "proTitle": "Pro",
+      "proPrice": "€89",
+      "proPricePer": "/ mo",
+      "proDesc": "For clubs and sport science staff with multi-team needs.",
+      "feature1": "Unlimited athletes",
+      "feature2": "Automated RPE collection",
+      "feature3": "ACWR & load monitoring",
+      "feature4": "Sleep & recovery tracking",
+      "feature5": "AI Assistant",
+      "feature6": "Injury history & RTP",
+      "feature7": "Priority support",
+      "feature8": "Custom branding",
+      "ctaBeta": "Join the waitlist →",
+      "ctaLocked": "Coming at launch",
+      "earlyAdopterNote": "Early adopters keep beta pricing for life."
     },
     "roadmap": {
       "title": "Development Roadmap",
+      "subtitle": "Upcoming features arriving on the platform",
+      "comingSoon": "Coming soon",
       "steps": [
-        {
-          "title": "Wearable Sync",
-          "date": "Q3 2026"
-        },
-        {
-          "title": "AI Insights",
-          "date": "Q4 2026"
-        },
-        {
-          "title": "Mobile App",
-          "date": "Q1 2027"
-        }
+        { "title": "Wearable Sync", "date": "Q3 2026" },
+        { "title": "AI Insights", "date": "Q4 2026" },
+        { "title": "Mobile App", "date": "Q1 2027" }
       ]
     },
     "waitlist": {
+      "badgeLabel": "Early Access",
       "title": "Join the Beta",
       "subtitle": "Limited seats for the first 20 partner coaches.",
       "emailLabel": "Professional Email",
@@ -1494,11 +1564,13 @@
       "invalidEmail": "Please enter a valid email address",
       "successTitle": "Request Received",
       "successMessage": "Thanks Coach. We will contact you within 48 hours for priority access.",
-      "sendAgain": "Send another email"
+      "sendAgain": "Send another email",
+      "noSpam": "No spam. Unsubscribe any time."
     },
     "footer": {
       "athleteHub": "Athlete Hub",
       "privacy": "Privacy & Data Policy",
+      "contact": "Contact",
       "version": "v1.0.2 // Developed by Manuel Enzo",
       "github": "github"
     },
@@ -1509,7 +1581,7 @@
       "title": "Feature Preview",
       "details": "Athlete Details",
       "test": "Fitness Test",
-      "calendar": "calendar"
+      "calendar": "Calendar"
     }
   },
   "monitoringDoc": {
