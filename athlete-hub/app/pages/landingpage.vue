@@ -437,7 +437,71 @@ const roadmapSteps = [
       </section>
 
       <!-- ─── PRODUCT SHOWCASE ─────────────────────────────────────────── -->
+      <section id="showcase" class="py-28 px-6 border-t border-border/40 bg-accent/[0.04]">
+        <div class="container mx-auto max-w-5xl">
+          <div class="text-center mb-14">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent border border-border/60 text-muted-foreground text-xs font-medium mb-5">
+              <BarChart3 class="h-3 w-3" />
+              {{ t('landingpage.showcase.badgeLabel') }}
+            </div>
+            <h2 class="text-4xl md:text-5xl font-black tracking-tight uppercase leading-tight mb-4">
+              {{ t('landingpage.showcase.title') }}
+              <span class="block text-muted-foreground font-light normal-case tracking-normal">{{ t('landingpage.showcase.titleSub') }}</span>
+            </h2>
+          </div>
 
+          <!-- Tab buttons -->
+          <div class="flex flex-wrap justify-center gap-2 mb-10">
+            <button
+              v-for="(tab, i) in showcaseTabs"
+              :key="i"
+              :class="[
+                'px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border',
+                activeTab === i
+                  ? 'bg-foreground text-background border-foreground shadow-sm'
+                  : 'bg-transparent text-muted-foreground border-border/60 hover:border-border hover:text-foreground hover:bg-accent/30',
+              ]"
+              @click="activeTab = i"
+            >
+              {{ tab.label }}
+            </button>
+          </div>
+
+          <!-- Screenshot display with transition -->
+          <div class="relative">
+            <Transition name="fade-tab" mode="out-in">
+              <div :key="activeTab">
+                <!-- Browser chrome -->
+                <div class="rounded-t-2xl px-4 py-2.5 bg-[#181818] border border-border/30 border-b-0 flex items-center gap-3">
+                  <div class="flex gap-1.5 shrink-0">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                  </div>
+                  <div class="flex-1 bg-[#262626] rounded py-1 px-3">
+                    <span class="text-[10px] text-muted-foreground/40 font-mono">
+                      athletehub.sport / {{ showcaseTabs[activeTab]?.label.toLowerCase().replace(/\s+/g, '-') }}
+                    </span>
+                  </div>
+                </div>
+                <!-- Screenshot -->
+                <div class="relative overflow-hidden rounded-b-2xl border border-border/30 border-t-0 shadow-2xl shadow-black/50">
+                  <img
+                    :src="showcaseTabs[activeTab]?.img"
+                    :alt="showcaseTabs[activeTab]?.label"
+                    class="w-full object-cover object-top max-h-[500px]"
+                  >
+                  <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-background to-transparent" />
+                </div>
+                <!-- Tab description -->
+                <p class="text-center text-sm text-muted-foreground mt-5 max-w-xl mx-auto">
+                  {{ showcaseTabs[activeTab]?.desc }}
+                </p>
+              </div>
+            </Transition>
+          </div>
+        </div>
+      </section>
 
       <!-- ─── SCALABILITY ──────────────────────────────────────────────── -->
       <section class="py-28 px-6 border-t border-border/40">
