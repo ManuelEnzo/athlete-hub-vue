@@ -33,19 +33,19 @@ const handler = useErrorHandler({ component: 'LandingPage' })
 const siteUrl = import.meta.env.VITE_ATHLETE_HUB_SITE_URL || 'https://athletehub.sport'
 
 // Page-level SEO
-// // useSeoMeta({
-// //   title: 'Athlete Hub — Sports Performance Monitoring Platform',
-// //   description: 'Athlete Hub helps coaches and sport scientists monitor athlete readiness, ACWR, RPE, sleep and injuries in real time. Start for free.',
-// //   ogTitle: 'Athlete Hub — Sports Performance Monitoring Platform',
-// //   ogDescription: 'Monitor athlete readiness, ACWR, RPE, sleep and injuries in real time. The professional platform for sports performance management.',
-// //   ogUrl: siteUrl,
-// //   ogImage: `${siteUrl}/social-card.png`,
-// //   ogType: 'website',
-// //   twitterCard: 'summary_large_image',
-// //   twitterTitle: 'Athlete Hub — Sports Performance Monitoring',
-// //   twitterDescription: 'Monitor athlete readiness, ACWR, RPE, sleep and injuries in real time.',
-// //   twitterImage: `${siteUrl}/social-card.png`,
-// // })
+// useSeoMeta({
+//   title: 'Athlete Hub — Sports Performance Monitoring Platform',
+//   description: 'Athlete Hub helps coaches and sport scientists monitor athlete readiness, ACWR, RPE, sleep and injuries in real time. Start for free.',
+//   ogTitle: 'Athlete Hub — Sports Performance Monitoring Platform',
+//   ogDescription: 'Monitor athlete readiness, ACWR, RPE, sleep and injuries in real time. The professional platform for sports performance management.',
+//   ogUrl: siteUrl,
+//   ogImage: `${siteUrl}/social-card.png`,
+//   ogType: 'website',
+//   twitterCard: 'summary_large_image',
+//   twitterTitle: 'Athlete Hub — Sports Performance Monitoring',
+//   twitterDescription: 'Monitor athlete readiness, ACWR, RPE, sleep and injuries in real time.',
+//   twitterImage: `${siteUrl}/social-card.png`,
+// })
 
 // // // // // // useHead({
 // // // // // //   link: [{ rel: 'canonical', href: siteUrl }],
@@ -436,6 +436,7 @@ const roadmapSteps = [
         </div>
       </section>
 
+      <!-- ─── PRODUCT SHOWCASE ─────────────────────────────────────────── -->
 
 
       <!-- ─── SCALABILITY ──────────────────────────────────────────────── -->
