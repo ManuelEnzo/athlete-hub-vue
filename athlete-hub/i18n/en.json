@@ -1596,7 +1596,7 @@
       "emailLabel": "Your professional email",
       "submitButton": "I want my free access",
       "submitting": "Sending...",
-      "placeholder": "coach'@'yourclub.com",
+      "placeholder": "coach{'@'}yourclub.com",
       "invalidEmail": "Please enter a valid email address.",
       "successTitle": "You're in. Welcome.",
       "successMessage": "We'll reach out within 24 hours to activate your account. Thank you for choosing to test Athlete Hub.",
