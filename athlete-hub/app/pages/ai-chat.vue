@@ -20,7 +20,7 @@ const { t } = useI18n()
       </div>
     </div>
 
-    <!-- Chat fills remaining height, no outer scroll -->
+    <!-- Chat fills remaining hei ght, no outer scroll -->
     <main class="flex-1 overflow-hidden py-5 w-full">
       <AiChat class="h-full" />
     </main>
