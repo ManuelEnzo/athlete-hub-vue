@@ -86,7 +86,7 @@ function processQueue(error: any, token: string | null = null) {
   }
 }
 
-const PUBLIC_ROUTES = ['/Auth/sign-in', '/Auth/sign-up', '/Auth/forgot-password']
+const PUBLIC_ROUTES = ['/Auth/sign-in', '/Auth/sign-up', '/Auth/forgot-password', '/Invitation/generate']
 
 // ============================================
 // REQUEST CACHING CONFIGURATION
@@ -113,10 +113,13 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     return Promise.reject(new axios.Cancel(t('logoutInProgress')))
   }
 
-  // Add authorization token
-  const authStore = useAuthStore()
-  if (authStore.token) {
-    config.headers.Authorization = `Bearer ${authStore.token}`
+  // Add authorization token (skip for public routes — Pinia may not be ready)
+  const isPublicRequest = PUBLIC_ROUTES.some(route => config.url?.includes(route))
+  if (!isPublicRequest) {
+    const authStore = useAuthStore()
+    if (authStore.token) {
+      config.headers.Authorization = `Bearer ${authStore.token}`
+    }
   }
 
   // Attach metadata for tracking
@@ -208,8 +211,14 @@ api.interceptors.response.use(
     if (axios.isCancel(error))
       return Promise.reject(error)
 
-    const authStore = useAuthStore()
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+
+    // For public routes (e.g. landing page) skip all auth handling — Pinia may not be ready
+    const isPublicRequest = PUBLIC_ROUTES.some(route => originalRequest?.url?.includes(route))
+    if (isPublicRequest)
+      return Promise.reject(error)
+
+    const authStore = useAuthStore()
 
     // Stop processing if logout in progress
     if (isLoggingOut)

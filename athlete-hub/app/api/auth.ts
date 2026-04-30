@@ -18,3 +18,16 @@ export const authApi = {
   forgotPassword: (email: string) => api.post('/Auth/forgot-password', { email }),
   resetPasswordExecution: (data: { token: string, newPassword: string }) => api.post('/Auth/reset-password-execution', data),
 }
+
+export interface InvitationResponseDto {
+  code: string
+  email: string
+  createdAt: string
+  expiresAt: string
+}
+
+// NOTE: the backend endpoint requires [AllowAnonymous] (see InvitationController).
+export const invitationApi = {
+  generate: (email: string, validityHours = 48) =>
+    api.post<Result<InvitationResponseDto>>('/Invitation/generate', { email, validityHours }),
+}

@@ -21,9 +21,11 @@ import {
   Watch,
   Zap,
 } from 'lucide-vue-next'
+import emailjs from '@emailjs/browser'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import config from '@/config'
+import { invitationApi } from '~/api/auth'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
@@ -66,19 +68,65 @@ async function handleFormSubmit() {
 
   isSubmitting.value = true
   try {
-    const endpoint = config.formEndpoint || 'https://formsubmit.co/ajax/athletehub.sport@gmail.com'
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ email: emailValue }),
-    })
+    // 1. Generate invitation code from the backend
+    let invitationCode: string | null = null
+    let expiresAt: string | null = null
 
-    if (response.ok) {
-      isSubmitted.value = true
+    if (!config.apiEndpoint) {
+      console.error('[AthleteHub] VITE_ATHLETE_HUB_API non è impostato — il codice invito non verrà generato.')
     }
     else {
-      throw new Error(t('landingpage.alerts.serverError'))
+      try {
+        const invRes = await invitationApi.generate(emailValue)
+        invitationCode = invRes.data?.value?.code ?? null
+        expiresAt = invRes.data?.value?.expiresAt ?? null
+        console.log('[AthleteHub] Invitation code generated:', invitationCode)
+      }
+      catch (invErr: any) {
+        const status = invErr?.response?.status
+        const msg = invErr?.response?.data?.error?.message || invErr?.message || String(invErr)
+        console.error(`[AthleteHub] Invitation API error (HTTP ${status ?? 'N/A'}):`, msg, invErr)
+      }
     }
+
+    // 2. Send admin notification via FormSubmit
+    const endpoint = config.formEndpoint || 'https://formsubmit.co/ajax/athletehub.sport@gmail.com'
+    await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        email: emailValue,
+        _subject: `Nuova iscrizione waitlist AthleteHub — ${emailValue}`,
+        _captcha: false,
+        invitation_code: invitationCode ?? 'n/a',
+      }),
+    })
+
+    // 3. Send confirmation email to subscriber via EmailJS
+    const registerUrl = 'https://athletehub.dev/register'
+    const expiresFormatted = expiresAt
+      ? new Date(expiresAt).toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : ''
+
+    if (config.emailjsServiceId && config.emailjsTemplateId && config.emailjsPublicKey) {
+      await emailjs.send(
+        config.emailjsServiceId,
+        config.emailjsTemplateId,
+        {
+          to_email: emailValue,
+          invitation_code: invitationCode ?? '',
+          expires_at: expiresFormatted,
+          register_url: registerUrl,
+          user_email: emailValue,
+        },
+        config.emailjsPublicKey,
+      )
+    }
+    else {
+      console.warn('[AthleteHub] EmailJS not configured — skipping user confirmation email')
+    }
+
+    isSubmitted.value = true
   }
   catch (err: any) {
     handler.handleError(err instanceof Error ? err : new Error(String(err)))

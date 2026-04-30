@@ -52,6 +52,7 @@
     "release": "release-it"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@iconify-json/lucide": "^1.2.87",
     "@iconify-json/radix-icons": "^1.2.6",
     "@internationalized/date": "^3.10.1",

@@ -11,6 +11,11 @@ const config = {
   apiEndpoint: import.meta.env.VITE_ATHLETE_HUB_API,
   // endpoint used for public forms (waitlist / contact) - can be proxied via backend in production
   formEndpoint: import.meta.env.VITE_ATHLETE_HUB_FORM_ENDPOINT || 'https://formsubmit.co/ajax/athletehub.sport@gmail.com',
+  // EmailJS — used to send the confirmation email to the subscriber
+  // Set these in Vercel Dashboard > Environment Variables (or .env.development locally)
+  emailjsServiceId: import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_skitd7m',
+  emailjsTemplateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_xb0pgaq',
+  emailjsPublicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'Jg2eXQ2uHbNT3mLCO',
   // Social card image for OG/Twitter meta tags — override via env in production
   siteOgImage: import.meta.env.VITE_ATHLETE_HUB_OG_IMAGE || '/social-card.png',
 }
