@@ -338,11 +338,19 @@
       "selectAthlete": "Select...",
       "weight": "Weight (kg)",
       "height": "Height (cm)",
+      "chest": "Chest (cm)",
+      "waist": "Waist (cm)",
+      "hip": "Hip (cm)",
+      "thigh": "Thigh (cm)",
+      "arm": "Arm (cm)",
+      "neck": "Neck (cm)",
+      "calf": "Calf (cm)",
+      "forearm": "Forearm (cm)",
       "notesPlaceholder": "Optional notes",
       "create": "Save",
-      "athlete": "athlete",
-      "notes": "notes",
-      "update": "update"
+      "athlete": "Athlete",
+      "notes": "Notes",
+      "update": "Update"
     },
     "validation": {
       "selectAthlete": "Select an athlete",
@@ -361,7 +369,7 @@
       "saveError": "Error saving measurement",
       "deleteError": "Error deleting measurement",
       "confirmDelete": "Confirm deletion",
-      "deleted": "deleted"
+      "deleted": "Measurement deleted successfully!"
     },
     "dialog": {
       "deleteTitle": "Confirm deletion",
